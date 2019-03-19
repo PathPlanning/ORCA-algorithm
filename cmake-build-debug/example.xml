@@ -1,0 +1,9 @@
+<root>
+    <default_parameters size="1" movespeed="10" agentsmaxnum="10" timeboundary = "25" sightradius = "30"/>
+    <agents number="3">
+        <agent id="0" start.x="10" start.y="10" goal.x="100" goal.y="100"/>
+        <agent id="1" start.x="100" start.y="100" goal.x="10" goal.y="10"/>
+        <agent id="2" start.x="10" start.y="100" goal.x="100" goal.y="10"/>
+    </agents>
+    <algorithm timestep = "0.25" delta = "1"/>
+</root>

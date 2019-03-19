@@ -1,7 +1,14 @@
 #include <iostream>
+#include "Agent.h"
+#include "Point.h"
+#include "XmlLogger.h"
+#include "Mission.h"
+#include <fstream>
 
 int main()
 {
-    std::cout << "Hello, World!" << std::endl;
+    Mission aaa("example.xml");
+    aaa.StartMission();
+
     return 0;
 }

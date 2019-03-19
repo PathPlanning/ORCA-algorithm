@@ -1,21 +1,34 @@
-//
-// Created by Stepan on 03/02/2019.
-//
-
 #ifndef ORCA_POINT_H
 #define ORCA_POINT_H
 
+#include <cmath>
 
 class Point
 {
     public:
-        double GetX();
-        double GetY();
-        void SetX(double x);
-        void SetY(double y);
+        Point();
+        Point(double x, double y);
+        Point(const Point &obj);
+        double GetX() const;
+        double GetY() const;
+        std::pair<double, double> GetPair();
+
+        double ScalarProduct(const Point &another) const;
+        double EuclideanNorm() const;
+        double SquaredEuclideanNorm() const;
+        double Det(Point another) const;
+
+        Point operator - (const Point &another) const;
+        Point operator + (const Point &another) const;
+        bool operator == (const Point &another) const;
+        Point operator * (double k) const;
+        Point operator / (double k) const;
+
+
     private:
         double x;
         double y;
+        double sqEqNorm;
 };
 
 
