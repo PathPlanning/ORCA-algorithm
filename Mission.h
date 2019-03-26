@@ -36,9 +36,11 @@ class Mission
         double defaultSightRadius;
         double delta;
         XmlLogger *log;
-
+        vector<vector<pair<double, double>>> stepsLog;
+        vector<pair<bool, int>> results;
         bool isFinished();
         bool ReadMissionFromFile();
+        int stepsTreshhold;
 
 
 

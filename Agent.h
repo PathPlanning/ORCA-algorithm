@@ -22,11 +22,14 @@ class Agent
         void AddNeighbour(Agent& neighbour);
         Point GetPosition();
         Point GetVelocity();
+        Point GetPrefVelocity();
         double GetMaxSpeed();
+        int GetID();
         void SetPosition(Point pos);
         void SetPrefVelocity(const Velocity &newpref);
         void Stop();
         bool operator == (const Agent &another) const;
+        bool operator != (const Agent &another) const;
 
     private:
         int id;

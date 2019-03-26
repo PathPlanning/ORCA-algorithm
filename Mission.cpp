@@ -3,32 +3,46 @@
 
 Mission::Mission(string filename)
 {
+    double maxlength = 0;
     this->fileName = filename;
     if(!ReadMissionFromFile())
     {
-        cout<<"Error\n";
         exit(-1);
     }
     vector<pair<double, double>> starts, goals;
     for(auto &agent : agents)
     {
-        starts.push_back({agent.first.GetPosition().GetPair()});
-        goals.push_back(agent.second.GetPair());
+        auto tmpstart = agent.first.GetPosition().GetPair();
+        auto tmpgoal = agent.second.GetPair();
+        starts.push_back(tmpstart);
+        goals.push_back(tmpgoal);
+        double tmplength = sqrt((tmpstart.first - tmpgoal.first) * (tmpstart.first - tmpgoal.first) + (tmpstart.second - tmpgoal.second) * (tmpstart.second - tmpgoal.second));
+        if(tmplength > maxlength)
+        {
+            maxlength = tmplength;
+        }
     }
 
-    log =  new XmlLogger(agentNumber, defaultRadius, starts, goals);
+    log = new XmlLogger(agentNumber, defaultRadius, defaultMaxSpeed, defaultAgentsMaxNum, defaultTimeBoundary, defaultSightRadius, starts, goals);
+    log->WriteAlgorithmParam(timeStep, delta);
     step = 0;
+    stepsLog = vector<vector<pair<double, double>>> (agentNumber);
+    results = vector<pair<bool, int>>(agentNumber);
+    stepsTreshhold = 10 * (int)round(maxlength/(defaultMaxSpeed * timeStep));
 
 }
 
 bool Mission::isFinished()
 {
     bool result = true;
-    for(auto it = agents.begin(); it != agents.end(); ++it)
+    int i = 0;
+    for(auto it = agents.begin(); it != agents.end(); ++it, i++)
     {
-        bool localres = (abs((*it).first.GetPosition().GetX() - (*it).second.GetX()) < delta) && (abs((*it).first.GetPosition().GetY() - (*it).second.GetY()) < delta);
-        if(localres)
+        bool localres = (((*it).first.GetPosition() - (*it).second).EuclideanNorm() < delta);
+        if(localres && !results[i].first)
         {
+            results[i].first = true;
+            results[i].second = step;
             (*it).first.Stop();
         }
         result = result && localres;
@@ -44,7 +58,8 @@ Mission::~Mission()
 
 void Mission::StartMission()
 {
-    //TODO Добавить лимит по шагам
+    std::cout<<"Start\n";
+    auto startpnt = std::chrono::high_resolution_clock::now();
     do
     {
 
@@ -65,6 +80,7 @@ void Mission::StartMission()
         for(auto &agent : agents)
         {
             agent.first.CalculateVelocity();
+
         }
 
         int i = 0;
@@ -72,8 +88,8 @@ void Mission::StartMission()
         {
             agent.first.UpdateVelocity();
             Point tmppos = agent.first.GetPosition() + agent.first.GetVelocity() * timeStep;
-            log->WriteStep(step, i, agent.first.GetPosition().GetX(), agent.first.GetPosition().GetY());
             agent.first.SetPosition(tmppos);
+            stepsLog[i].push_back({agent.first.GetPosition().GetX(), agent.first.GetPosition().GetY()});
             i++;
 
         }
@@ -81,9 +97,18 @@ void Mission::StartMission()
         step++;
 
     }
-    while(!isFinished());
+    while(!isFinished() && step < stepsTreshhold);
+    auto endpnt = std::chrono::high_resolution_clock::now();
+    long long int res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
+    for(auto &node : results)
+    {
+        if(!node.first)
+        {
+            node.second = step;
+        }
+    }
+    log->Save(stepsLog, results, ((double) res) / 1000);
     std::cout<<"Succsess\n";
-    log->Save();
 }
 
 bool Mission::ReadMissionFromFile()

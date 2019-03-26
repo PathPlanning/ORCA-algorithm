@@ -57,6 +57,7 @@ Agent::Agent(const Agent &obj)
     currV = obj.currV;
     finished = obj.finished;
     sightRadius = obj.sightRadius;
+    id = obj.id;
 }
 
 void Agent::CalculateVelocity()
@@ -78,11 +79,13 @@ void Agent::CalculateVelocity()
     {
         Neighbours.erase(std::next(Neighbours.begin(), agentsMaxNum), Neighbours.end());
     }
+    //cout<<"\n"<<this->id<<" ";
 
     for(auto &Neighbour : Neighbours)
     {
 
         curragent = *Neighbour.second;
+        //cout<<curragent.id<<" ";
         auto circlecenter = curragent.position - this->position; //(P_b - P_a)
         auto relvelocity = this->currV - curragent.currV; //(V_a - V_b)
         auto radiussum = this->radius + curragent.radius; //(R_a + R_b)
@@ -102,7 +105,7 @@ void Agent::CalculateVelocity()
             {
                 double wlength = std::sqrt( sqwlength );
                 Vector nw = w / wlength;
-                currline.dir = Vector( nw.GetX(), -nw.GetY());
+                currline.dir = Vector( nw.GetY(), -nw.GetX());
                 u = nw * (radiussum / timeBoundary - wlength);
             }
             else
@@ -125,16 +128,15 @@ void Agent::CalculateVelocity()
                 double rvproj = relvelocity.ScalarProduct( currline.dir );
 
                 u = currline.dir * rvproj - relvelocity;
+                //cout<<currline.dir.ScalarProduct(u)/(currline.dir.EuclideanNorm()*u.EuclideanNorm())<<"\n";
             }
         }
         else
         {
             /* Vector from cutoff center to relative velocity. */
             Vector w = relvelocity - circlecenter / timeBoundary;
-
             double wlength = w.EuclideanNorm();
             Vector wn = w / wlength;
-
             currline.dir = Vector(wn.GetY(), -wn.GetX());
             u = wn * (radiussum / timeBoundary - wlength);
         }
@@ -143,20 +145,21 @@ void Agent::CalculateVelocity()
 
         ORCALines.push_back(currline);
     }
-    auto lineFail = linearProgram2(ORCALines, this->maxSpeed, this->prefV, false, this->newV);
 
+    auto lineFail = linearProgram2(ORCALines, this->maxSpeed, this->prefV, false, this->newV);
     if (lineFail < this->ORCALines.size())
     {
         linearProgram3(ORCALines, 0, lineFail, this->maxSpeed, this->newV);
     }
     Neighbours.clear();
+
 }
 
 
 void Agent::AddNeighbour(Agent &neighbour)
 {
     double dist = (this->position - neighbour.position).EuclideanNorm();
-    if(dist < sightRadius)
+    if(dist <= sightRadius)
     {
         Neighbours.insert(std::pair<double, Agent*>(dist, &neighbour));
     }
@@ -212,6 +215,20 @@ bool Agent::operator ==(const Agent &another) const
         return this->id == another.id;
 }
 
+bool Agent::operator != (const Agent &another) const
+{
+    return this->id != another.id;
+}
+
+int Agent::GetID()
+{
+    return id;
+}
+
+Point Agent::GetPrefVelocity()
+{
+    return prefV;
+}
 
 bool linearProgram1(const std::vector<Line> &lines, unsigned long curr, double radius, const Vector &optVelocity, bool directionOpt, Vector &result)
 {

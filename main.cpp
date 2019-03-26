@@ -4,11 +4,24 @@
 #include "XmlLogger.h"
 #include "Mission.h"
 #include <fstream>
+#include <string>
 
-int main()
+using namespace std;
+
+int main(int argc, char* argv[])
 {
-    Mission aaa("example.xml");
-    aaa.StartMission();
+    string inp;
+    if(argc < 2)
+    {
+        std::cout<<"Error! Pathfinding task file (XML) is not specified!"<<std::endl;
+        return -1;
+    }
+    else
+    {
+        inp = string(argv[1]);
+    }
+    Mission mission(inp);
+    mission.StartMission();
 
     return 0;
 }

@@ -5,13 +5,15 @@
 #include <string>
 #include <vector>
 
+using namespace std;
 using namespace tinyxml2;
+
 class XmlLogger
 {
     public:
-        XmlLogger(int num, int r,  std::vector<std::pair<double, double>> start, std::vector<std::pair<double, double>> goal);
-        void WriteStep(int step, int agentnum, double x, double y);
-        void Save();
+        XmlLogger(int num, int r, double maxspeed, int neighborsNum, double timeBoundary, double sightradius, vector<pair<double, double>> start, vector<pair<double, double>> goal);
+        void WriteAlgorithmParam(double timestep, double delta);
+        void Save(vector<vector<pair<double, double>>> resultSteps, vector<pair<bool, int>> results ,double time);
 
     private:
         int num;
