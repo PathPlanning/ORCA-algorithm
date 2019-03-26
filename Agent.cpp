@@ -1,10 +1,15 @@
-
 #include "Agent.h"
 #include <iostream>
 
-bool linearProgram1(const std::vector<Line> &lines, unsigned long int curr, double radius, const Vector &optVelocity, bool directionOpt, Vector &result);
-unsigned long int linearProgram2(const std::vector<Line> &lines, double radius, const Vector &optVelocity, bool directionOpt, Vector &result);
-void linearProgram3(const std::vector<Line> &lines, size_t numObstLines, size_t beginLine, double radius, Vector &result);
+bool linearProgram1(const std::vector<Line> &lines, unsigned long int curr, double radius, const Vector &optVelocity,
+                    bool directionOpt, Vector &result);
+
+unsigned long int
+linearProgram2(const std::vector<Line> &lines, double radius, const Vector &optVelocity, bool directionOpt,
+               Vector &result);
+
+void
+linearProgram3(const std::vector<Line> &lines, size_t numObstLines, size_t beginLine, double radius, Vector &result);
 
 
 Agent::Agent()
@@ -14,8 +19,8 @@ Agent::Agent()
     timeBoundary = 15;
     agentsMaxNum = std::numeric_limits<int>::max();
     sightRadius = std::numeric_limits<double>::max();
-    Neighbours = multimap <double, Agent*>();
-    ORCALines = vector <Line>();
+    Neighbours = multimap<double, Agent *>();
+    ORCALines = vector<Line>();
     position = Point(radius, radius);
     prefV = Point();
     newV = Point();
@@ -33,8 +38,8 @@ Agent::Agent(double radius, double maxspeed, int agentsmaxnum, double timebounda
     this->sightRadius = sightradius;
     this->id = id;
 
-    Neighbours = multimap <double, Agent*>();
-    ORCALines = vector <Line>();
+    Neighbours = multimap<double, Agent *>();
+    ORCALines = vector<Line>();
     position = Point(radius, radius);
     prefV = Point();
     newV = Point();
@@ -67,7 +72,7 @@ void Agent::CalculateVelocity()
         return;
     }
 
-    //TODO доделывать
+    //TODO доделывать препятствия
 
     //Получение ORCA-линий
     ORCALines.clear();
@@ -79,23 +84,21 @@ void Agent::CalculateVelocity()
     {
         Neighbours.erase(std::next(Neighbours.begin(), agentsMaxNum), Neighbours.end());
     }
-    //cout<<"\n"<<this->id<<" ";
 
     for(auto &Neighbour : Neighbours)
     {
 
         curragent = *Neighbour.second;
-        //cout<<curragent.id<<" ";
         auto circlecenter = curragent.position - this->position; //(P_b - P_a)
         auto relvelocity = this->currV - curragent.currV; //(V_a - V_b)
         auto radiussum = this->radius + curragent.radius; //(R_a + R_b)
         double radiussum2 = radiussum * radiussum;
 
-        if (circlecenter.SquaredEuclideanNorm() > radiussum2)
+        if(circlecenter.SquaredEuclideanNorm() > radiussum2)
         {
             w = relvelocity - (circlecenter / this->timeBoundary); //w -- вектор на плоскости скоростей от центра малой окружности (основания VO) до скорости другого агента относительно этого
             double sqwlength = w.SquaredEuclideanNorm();
-            double wproj = w.ScalarProduct( circlecenter );
+            double wproj = w.ScalarProduct(circlecenter);
 
 
             // если эти условия выполняются, то вектор w отложенный из центра окружности-основания VO будет своим концом ближе к
@@ -103,9 +106,9 @@ void Agent::CalculateVelocity()
 
             if(wproj < 0 && (wproj * wproj) > sqwlength * radiussum2)
             {
-                double wlength = std::sqrt( sqwlength );
+                double wlength = std::sqrt(sqwlength);
                 Vector nw = w / wlength;
-                currline.dir = Vector( nw.GetY(), -nw.GetX());
+                currline.dir = Vector(nw.GetY(), -nw.GetX());
                 u = nw * (radiussum / timeBoundary - wlength);
             }
             else
@@ -114,21 +117,20 @@ void Agent::CalculateVelocity()
 
                 //длина проекции вектора относительных положений на сторону VO
                 double distsq = circlecenter.SquaredEuclideanNorm();
-                double leg = std::sqrt( distsq - radiussum2 );
+                double leg = std::sqrt(distsq - radiussum2);
 
-                if(circlecenter.Det( w ) > 0) //если точка ближе к левой стороне VO
+                if(circlecenter.Det(w) > 0) //если точка ближе к левой стороне VO
                 {
-                    currline.dir = Vector( circlecenter.GetX() * leg - circlecenter.GetY() * radiussum, circlecenter.GetX() * radiussum + circlecenter.GetY() * leg ) / distsq;
+                    currline.dir = Vector(circlecenter.GetX() * leg - circlecenter.GetY() * radiussum, circlecenter.GetX() * radiussum + circlecenter.GetY() * leg) / distsq;
                 }
                 else //если точка ближе к правой стороне VO
                 {
-                    currline.dir = (Vector( circlecenter.GetX() * leg + circlecenter.GetY() * radiussum, -circlecenter.GetX() * radiussum + circlecenter.GetY() * leg ) / distsq) * -1;
+                    currline.dir = (Vector(circlecenter.GetX() * leg + circlecenter.GetY() * radiussum, -circlecenter.GetX() * radiussum + circlecenter.GetY() * leg) / distsq) * -1;
                 }
 
-                double rvproj = relvelocity.ScalarProduct( currline.dir );
+                double rvproj = relvelocity.ScalarProduct(currline.dir);
 
                 u = currline.dir * rvproj - relvelocity;
-                //cout<<currline.dir.ScalarProduct(u)/(currline.dir.EuclideanNorm()*u.EuclideanNorm())<<"\n";
             }
         }
         else
@@ -147,7 +149,7 @@ void Agent::CalculateVelocity()
     }
 
     auto lineFail = linearProgram2(ORCALines, this->maxSpeed, this->prefV, false, this->newV);
-    if (lineFail < this->ORCALines.size())
+    if(lineFail < this->ORCALines.size())
     {
         linearProgram3(ORCALines, 0, lineFail, this->maxSpeed, this->newV);
     }
@@ -161,7 +163,7 @@ void Agent::AddNeighbour(Agent &neighbour)
     double dist = (this->position - neighbour.position).EuclideanNorm();
     if(dist <= sightRadius)
     {
-        Neighbours.insert(std::pair<double, Agent*>(dist, &neighbour));
+        Neighbours.insert(std::pair<double, Agent *>(dist, &neighbour));
     }
 
 }
@@ -212,10 +214,10 @@ double Agent::GetMaxSpeed()
 
 bool Agent::operator ==(const Agent &another) const
 {
-        return this->id == another.id;
+    return this->id == another.id;
 }
 
-bool Agent::operator != (const Agent &another) const
+bool Agent::operator !=(const Agent &another) const
 {
     return this->id != another.id;
 }
@@ -230,12 +232,13 @@ Point Agent::GetPrefVelocity()
     return prefV;
 }
 
-bool linearProgram1(const std::vector<Line> &lines, unsigned long curr, double radius, const Vector &optVelocity, bool directionOpt, Vector &result)
+bool linearProgram1(const std::vector<Line> &lines, unsigned long curr, double radius, const Vector &optVelocity,
+                    bool directionOpt, Vector &result)
 {
     double dotProduct = lines[curr].liesOn.ScalarProduct(lines[curr].dir);
     double discriminant = dotProduct * dotProduct + radius * radius - lines[curr].liesOn.SquaredEuclideanNorm();
 
-    if (discriminant < 0)
+    if(discriminant < 0)
     {
         // Максимальная скорость не позволяет удовлетворить это условие
         return false;
@@ -245,16 +248,16 @@ bool linearProgram1(const std::vector<Line> &lines, unsigned long curr, double r
     double tLeft = -dotProduct - sqrtDiscriminant;
     double tRight = -dotProduct + sqrtDiscriminant;
 
-    for (int i = 0; i < curr; ++i)
+    for(int i = 0; i < curr; ++i)
     {
 
         double denominator = lines[curr].dir.Det(lines[i].dir);
         double numerator = lines[i].dir.Det(lines[curr].liesOn - lines[i].liesOn);
 
-        if (std::fabs(denominator) <= eps)
+        if(std::fabs(denominator) <= eps)
         {
             // Текущая и сравниваемая линии параллельны
-            if (numerator < 0)
+            if(numerator < 0)
             {
                 return false;
             }
@@ -266,7 +269,7 @@ bool linearProgram1(const std::vector<Line> &lines, unsigned long curr, double r
 
         double t = numerator / denominator;
 
-        if (denominator >= 0.0f)
+        if(denominator >= 0.0f)
         {
             /* Line i bounds line lineNo on the right. */
             tRight = std::min(tRight, t);
@@ -277,22 +280,24 @@ bool linearProgram1(const std::vector<Line> &lines, unsigned long curr, double r
             tLeft = std::max(tLeft, t);
         }
 
-        if (tLeft > tRight)
+        if(tLeft > tRight)
         {
             return false;
         }
     }
 
-    if (directionOpt) {
+    if(directionOpt)
+    {
         /* Optimize direction. */
-        if (optVelocity.ScalarProduct(lines[curr].dir) > 0.0f)
+        if(optVelocity.ScalarProduct(lines[curr].dir) > 0.0f)
         {
             /* Take right extreme. */
             result = lines[curr].liesOn + lines[curr].dir * tRight;
         }
-        else {
+        else
+        {
             /* Take left extreme. */
-            result = lines[curr].liesOn +   lines[curr].dir * tLeft;
+            result = lines[curr].liesOn + lines[curr].dir * tLeft;
         }
     }
     else
@@ -300,13 +305,13 @@ bool linearProgram1(const std::vector<Line> &lines, unsigned long curr, double r
         /* Optimize closest point. */
         double t = lines[curr].dir.ScalarProduct(optVelocity - lines[curr].liesOn);
 
-        if (t < tLeft)
+        if(t < tLeft)
         {
             result = lines[curr].liesOn + lines[curr].dir * tLeft;
         }
-        else if (t > tRight)
+        else if(t > tRight)
         {
-            result = lines[curr].liesOn + lines[curr].dir * tRight ;
+            result = lines[curr].liesOn + lines[curr].dir * tRight;
         }
         else
         {
@@ -317,29 +322,31 @@ bool linearProgram1(const std::vector<Line> &lines, unsigned long curr, double r
     return true;
 }
 
-unsigned long int linearProgram2(const std::vector<Line> &lines, double radius, const Vector &optVelocity, bool directionOpt, Vector &result)
+unsigned long int
+linearProgram2(const std::vector<Line> &lines, double radius, const Vector &optVelocity, bool directionOpt,
+               Vector &result)
 {
-    if (directionOpt)
+    if(directionOpt)
     {
         result = optVelocity * radius;
     }
-    else if (optVelocity.SquaredEuclideanNorm() > radius * radius)
+    else if(optVelocity.SquaredEuclideanNorm() > radius * radius)
     {
-        result = optVelocity/optVelocity.EuclideanNorm() * radius;
+        result = optVelocity / optVelocity.EuclideanNorm() * radius;
     }
     else
     {
         result = optVelocity;
     }
 
-    for (unsigned long int i = 0; i < lines.size(); ++i)
+    for(unsigned long int i = 0; i < lines.size(); ++i)
     {
 
-        if (lines[i].dir.Det(lines[i].liesOn - result) > 0)
+        if(lines[i].dir.Det(lines[i].liesOn - result) > 0)
         {
             Vector tempResult = result;
 
-            if (!linearProgram1(lines, i, radius, optVelocity, directionOpt, result))
+            if(!linearProgram1(lines, i, radius, optVelocity, directionOpt, result))
             {
                 result = tempResult;
                 return i;
@@ -351,42 +358,50 @@ unsigned long int linearProgram2(const std::vector<Line> &lines, double radius, 
 }
 
 
-void linearProgram3(const std::vector<Line> &lines, size_t numObstLines, size_t beginLine, double radius, Vector &result)
+void
+linearProgram3(const std::vector<Line> &lines, size_t numObstLines, size_t beginLine, double radius, Vector &result)
 {
     double distance = 0.0f;
 
-    for (size_t i = beginLine; i < lines.size(); ++i) {
-        if (lines[i].dir.Det(lines[i].liesOn - result) > distance) {
+    for(size_t i = beginLine; i < lines.size(); ++i)
+    {
+        if(lines[i].dir.Det(lines[i].liesOn - result) > distance)
+        {
             /* Result does not satisfy constraint of line i. */
             std::vector<Line> projLines(lines.begin(), lines.begin() + static_cast<ptrdiff_t>(numObstLines));
 
-            for (size_t j = numObstLines; j < i; ++j) {
+            for(size_t j = numObstLines; j < i; ++j)
+            {
                 Line line;
 
                 double determinant = lines[i].dir.Det(lines[j].dir);
 
-                if (std::fabs(determinant) <= eps) {
+                if(std::fabs(determinant) <= eps)
+                {
                     /* Line i and line j are parallel. */
-                    if (lines[i].dir.ScalarProduct(lines[j].dir) > 0.0f) {
+                    if(lines[i].dir.ScalarProduct(lines[j].dir) > 0.0f)
+                    {
                         /* Line i and line j point in the same direction. */
                         continue;
                     }
-                    else {
+                    else
+                    {
                         /* Line i and line j point in opposite direction. */
-                        line.liesOn =  (lines[i].liesOn + lines[j].liesOn) * 0.5;
+                        line.liesOn = (lines[i].liesOn + lines[j].liesOn) * 0.5;
                     }
                 }
-                else {
+                else
+                {
                     line.liesOn = lines[i].liesOn + lines[i].dir * (lines[j].dir.Det(lines[i].liesOn - lines[j].liesOn) / determinant);
                 }
 
-                line.dir = (lines[j].dir - lines[i].dir)/(lines[j].dir - lines[i].dir).EuclideanNorm();
+                line.dir = (lines[j].dir - lines[i].dir) / (lines[j].dir - lines[i].dir).EuclideanNorm();
                 projLines.push_back(line);
             }
 
             const Vector tempResult = result;
 
-            if (linearProgram2(projLines, radius, Vector(-lines[i].dir.GetY(), lines[i].dir.GetX()), true, result) < projLines.size())
+            if(linearProgram2(projLines, radius, Vector(-lines[i].dir.GetY(), lines[i].dir.GetX()), true, result) < projLines.size())
             {
                 result = tempResult;
             }
