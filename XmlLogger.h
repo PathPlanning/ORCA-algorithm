@@ -11,16 +11,15 @@ using namespace tinyxml2;
 class XmlLogger
 {
     public:
-        XmlLogger(int num, int r, double maxspeed, int neighborsNum, double timeBoundary, double sightradius, vector<pair<double, double>> start, vector<pair<double, double>> goal);
-        void WriteAlgorithmParam(double timestep, double delta);
-        void Save(vector<vector<pair<double, double>>> resultSteps, vector<pair<bool, int>> results ,double time);
+        XmlLogger(int num, float r, float maxspeed, int neighborsNum, float timeBoundary, float sightradius, vector<pair<float, float>> start, vector<pair<float, float>> goal);
+        void WriteAlgorithmParam(float timestep, float delta);
+        void Save(vector<vector<pair<float, float>>> resultSteps, vector<pair<bool, int>> results ,float time);
 
     private:
         int num;
-        int radius;
+        float radius;
         XMLDocument *doc;
         XMLElement *root;
-        XMLElement *steps;
         std::vector<XMLElement*> agentsteps;
 
 };

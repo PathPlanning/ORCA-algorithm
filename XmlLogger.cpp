@@ -1,7 +1,7 @@
+ #include "XmlLogger.h"
 
-#include "XmlLogger.h"
 
-XmlLogger::XmlLogger(int num, int r, double maxspeed, int neighborsNum, double timeBoundary, double sightradius, vector<pair<double, double>> start, vector<pair<double, double>> goal)
+XmlLogger::XmlLogger(int num, float r, float maxspeed, int neighborsNum, float timeBoundary, float sightradius, vector<pair<float, float>> start, vector<pair<float, float>> goal)
 {
     doc = new XMLDocument();
     this->num = num;
@@ -10,7 +10,7 @@ XmlLogger::XmlLogger(int num, int r, double maxspeed, int neighborsNum, double t
     doc->InsertFirstChild(root);
     XMLElement *defparam = doc->NewElement("default_parameters");
     defparam->SetAttribute("size", radius);
-    defparam->SetAttribute("movespeed", maxspeed); //TODO
+    defparam->SetAttribute("movespeed", maxspeed);
     defparam->SetAttribute("agentsmaxnum", neighborsNum);
     defparam->SetAttribute("timeboundary", timeBoundary);
     defparam->SetAttribute("sightradius", sightradius);
@@ -18,9 +18,6 @@ XmlLogger::XmlLogger(int num, int r, double maxspeed, int neighborsNum, double t
     XMLElement *agents = doc->NewElement("agents");
     agents->SetAttribute("number", num);
     XMLElement *ag;
-    //steps = doc->NewElement("Steps");
-
-
 
     for(int i = 0; i < num; i++)
     {
@@ -33,41 +30,15 @@ XmlLogger::XmlLogger(int num, int r, double maxspeed, int neighborsNum, double t
         ag->SetAttribute("goal.y", goal[i].second);
         agents->InsertEndChild(ag);
         XMLElement *tmpag = doc->NewElement(name.c_str());
-
         agentsteps.push_back(tmpag);
-        //steps->InsertEndChild(tmpag);
     }
-
     root->InsertEndChild(defparam);
     root->InsertEndChild(agents);
-    //root->InsertEndChild(steps);
+
 }
 
-//void XmlLogger::WriteStep(int step, int agentnum, double x, double y)
-//{
-//    if(agentnum >= num)
-//        return;
-//
-//    XMLElement *tmpag = agentsteps[agentnum];
-//
-//    std::string stepname("Step");
-//    XMLElement *tmpstep = doc->NewElement(stepname.c_str());
-//    tmpstep->SetAttribute("num", step);
-//    tmpstep->SetAttribute("X", x);
-//    tmpstep->SetAttribute("Y", y);
-//    tmpag->InsertEndChild(tmpstep);
-//
-//}
 
-
-//
-//void XmlLogger::WriteSummary()
-//{
-//   // <summary agentssolved="100.000000%"  flowtime="13719.313" avgduration="214.36427" makespan="492.27024218944149" time="0.37608677978818322"/>
-//}
-
-
-void XmlLogger::WriteAlgorithmParam(double timestep, double delta)
+void XmlLogger::WriteAlgorithmParam(float timestep, float delta)
 {
     XMLElement *tmpalg = doc->NewElement("algorithm");
     tmpalg->SetAttribute("timestep", timestep);
@@ -76,11 +47,11 @@ void XmlLogger::WriteAlgorithmParam(double timestep, double delta)
 }
 
 
-void XmlLogger::Save(vector<vector<pair<double, double>>> resultSteps, vector<pair<bool, int>> results, double time)
+void XmlLogger::Save(vector<vector<pair<float, float>>> resultSteps, vector<pair<bool, int>> results, float time)
 {
     XMLElement *tmpsum, *tmpagent, *tmppath, *tmpstep;
-    double rate = 0;
-    int i = 0, j = 0, stepmax = 0;
+    float rate = 0;
+    int i = 0, j = 0;
     tmpsum = doc->NewElement("summary");
     root->InsertEndChild(tmpsum);
     for(auto &agent : resultSteps)
@@ -92,20 +63,17 @@ void XmlLogger::Save(vector<vector<pair<double, double>>> resultSteps, vector<pa
         tmppath->SetAttribute("pathfound", results[i].first);
         tmppath->SetAttribute("steps", results[i].second);
         rate += results[i].first;
-        //TODO pathfound="true" duration="346.31885627123097" nodescreated="607" time="0.0041928069354103346"
+        //TODO  переделать time на процессорное время
 
         for(auto &step : agent)
         {
             tmpstep = doc->NewElement("step");
-            //<section number="0" start.x="13" start.y="43" finish.x="13" finish.y="43" duration="4.1054588307284714"/>
             tmpstep->SetAttribute("number", j);
             tmpstep->SetAttribute("x", step.first);
             tmpstep->SetAttribute("y", step.second);
             j++;
             tmppath->InsertEndChild(tmpstep);
         }
-
-
 
         tmpagent->InsertEndChild(tmppath);
         root->InsertEndChild(tmpagent);
@@ -116,7 +84,7 @@ void XmlLogger::Save(vector<vector<pair<double, double>>> resultSteps, vector<pa
     tmpsum->SetAttribute("agentssolved", rate);
     tmpsum->SetAttribute("maxsteps", j);
     tmpsum->SetAttribute("runtime", time);
-    XMLError eResult = doc->SaveFile("resultlog.xml");
+    doc->SaveFile("resultlog.xml");
 }
 
 

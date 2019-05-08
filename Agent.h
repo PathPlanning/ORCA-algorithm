@@ -1,12 +1,13 @@
 #include "Point.h"
 #include "Line.h"
-#include <map>
 #include <vector>
+#include <cmath>
+#include<algorithm>
 
 #ifndef ORCA_AGENT_H
 #define ORCA_AGENT_H
 #define Velocity Point
-#define eps 1e-5
+#define eps 0.00001f
 
 using namespace std;
 
@@ -14,8 +15,9 @@ class Agent
 {
     public:
         Agent();
-        Agent(double radius, double maxspeed, int agentsmaxnum, double timeboundary, double sightradius, int id);
+        Agent(float radius, float maxspeed, int agentsmaxnum, float timeboundary, float sightradius, int id);
         Agent(const Agent &obj);
+
 
         void CalculateVelocity();
         void UpdateVelocity();
@@ -23,29 +25,28 @@ class Agent
         Point GetPosition();
         Point GetVelocity();
         Point GetPrefVelocity();
-        double GetMaxSpeed();
+        float GetMaxSpeed();
         int GetID();
         void SetPosition(Point pos);
         void SetPrefVelocity(const Velocity &newpref);
-        void Stop();
         bool operator == (const Agent &another) const;
         bool operator != (const Agent &another) const;
 
     private:
         int id;
-        double radius;
-        double maxSpeed;
+        float radius;
+        float maxSpeed;
         int agentsMaxNum;
-        double timeBoundary;
-        double sightRadius;
+        float timeBoundary;
+        float sightRadius;
+        int count;
 
-        multimap <double, Agent*> Neighbours;
+        vector <pair<float, Agent*>> Neighbours;
         vector <Line> ORCALines;
         Point position;
         Velocity prefV;
         Velocity newV;
         Velocity currV;
-        bool finished;
 };
 
 

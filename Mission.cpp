@@ -1,34 +1,39 @@
 #include "Mission.h"
 
 
-Mission::Mission(string filename)
+Mission::Mission(string taskFile, string commLogFile, int agentsTreshhold)
 {
-    double maxlength = 0;
-    this->fileName = filename;
+    float maxlength = 0;
+    this->agNumTreshhold = agentsTreshhold;
+    this->fileName = taskFile;
+    commonLog.open(commLogFile, ios_base::app);
+
     if(!ReadMissionFromFile())
     {
         exit(-1);
     }
-    vector<pair<double, double>> starts, goals;
+    vector<pair<float, float>> starts, goals;
     for(auto &agent : agents)
     {
         auto tmpstart = agent.first.GetPosition().GetPair();
         auto tmpgoal = agent.second.GetPair();
         starts.push_back(tmpstart);
         goals.push_back(tmpgoal);
-        double tmplength = sqrt((tmpstart.first - tmpgoal.first) * (tmpstart.first - tmpgoal.first) + (tmpstart.second - tmpgoal.second) * (tmpstart.second - tmpgoal.second));
+        float tmplength = sqrt((tmpstart.first - tmpgoal.first) * (tmpstart.first - tmpgoal.first) + (tmpstart.second - tmpgoal.second) * (tmpstart.second - tmpgoal.second));
         if(tmplength > maxlength)
         {
             maxlength = tmplength;
         }
     }
+    #ifndef NDEBUG
+        log = new XmlLogger(agentNumber, defaultRadius, defaultMaxSpeed, defaultAgentsMaxNum, defaultTimeBoundary, defaultSightRadius, starts, goals);
+        log->WriteAlgorithmParam(timeStep, delta);
+        stepsLog = vector<vector<pair<float, float>>> (agentNumber);
+    #endif
 
-    log = new XmlLogger(agentNumber, defaultRadius, defaultMaxSpeed, defaultAgentsMaxNum, defaultTimeBoundary, defaultSightRadius, starts, goals);
-    log->WriteAlgorithmParam(timeStep, delta);
     step = 0;
-    stepsLog = vector<vector<pair<double, double>>> (agentNumber);
     results = vector<pair<bool, int>>(agentNumber);
-    stepsTreshhold = 10 * (int)round(maxlength/(defaultMaxSpeed * timeStep));
+    stepsTreshhold = 100 * (int)round(maxlength/(defaultMaxSpeed * timeStep));
 
 }
 
@@ -36,16 +41,17 @@ bool Mission::isFinished()
 {
     bool result = true;
     int i = 0;
-    for(auto it = agents.begin(); it != agents.end(); ++it, i++)
+    for(auto &agent : agents)
     {
-        bool localres = (((*it).first.GetPosition() - (*it).second).EuclideanNorm() < delta);
+        bool localres = ((agent.first.GetPosition() - agent.second).EuclideanNorm() < delta);
+        results[i].first = localres && results[i].first;
         if(localres && !results[i].first)
         {
             results[i].first = true;
             results[i].second = step;
-            (*it).first.Stop();
         }
         result = result && localres;
+        i++;
     }
 
     return result;
@@ -67,7 +73,11 @@ void Mission::StartMission()
         {
 
             Vector goalVector = agent.second - agent.first.GetPosition();
-            goalVector = (goalVector/goalVector.EuclideanNorm());// * agent.first.GetMaxSpeed();
+            if(goalVector.SquaredEuclideanNorm() > 1.0f)
+            {
+                goalVector = (goalVector/goalVector.EuclideanNorm()) * agent.first.GetMaxSpeed();
+            }
+
             agent.first.SetPrefVelocity(goalVector);
 
             for(auto &nagent : agents)
@@ -86,35 +96,56 @@ void Mission::StartMission()
         int i = 0;
         for(auto &agent : agents)
         {
+
             agent.first.UpdateVelocity();
-            Point tmppos = agent.first.GetPosition() + agent.first.GetVelocity() * timeStep;
+            Point tmppos = agent.first.GetPosition() + (agent.first.GetVelocity() * timeStep);
             agent.first.SetPosition(tmppos);
-            stepsLog[i].push_back({agent.first.GetPosition().GetX(), agent.first.GetPosition().GetY()});
+
+            #ifndef NDEBUG
+                stepsLog[i].push_back({agent.first.GetPosition().GetX(), agent.first.GetPosition().GetY()});
+            #endif
+
             i++;
-
         }
-
         step++;
-
     }
     while(!isFinished() && step < stepsTreshhold);
+
     auto endpnt = std::chrono::high_resolution_clock::now();
     long long int res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
+    double summ = 0;
+    double rate = 0;
     for(auto &node : results)
     {
+        summ += node.second;
         if(!node.first)
         {
             node.second = step;
         }
+        else
+        {
+            rate++;
+        }
+
     }
-    log->Save(stepsLog, results, ((double) res) / 1000);
+    rate = rate * 100 / results.size();
+    commonLog<<rate<<"\t";
+    commonLog<< ((float) res) / 1000 <<"\t";
+    commonLog<<summ<<"\t\t";
+    commonLog<<step <<"\n";
+    commonLog.close();
+
+    #ifndef NDEBUG
+        log->Save(stepsLog, results, ((float) res) / 1000);
+    #endif
+
     std::cout<<"Succsess\n";
 }
 
 bool Mission::ReadMissionFromFile()
 {
-    double stx, sty, gx, gy;
-    int id;
+    float stx, sty, gx, gy;
+    int id, counter = 0;
     XMLDocument doc;
     if(doc.LoadFile(fileName.c_str()))
     {
@@ -122,7 +153,7 @@ bool Mission::ReadMissionFromFile()
         return false;
     }
 
-    XMLNode * root = doc.FirstChild();
+    XMLElement * root = doc.FirstChildElement();
     if (root == nullptr)
     {
         std::cout << "Root not found\n";
@@ -136,11 +167,11 @@ bool Mission::ReadMissionFromFile()
         std::cout << "Default parameters not found\n";
     }
 
-    tmpElement->QueryDoubleAttribute("size", &defaultRadius);
-    tmpElement->QueryDoubleAttribute("movespeed", &defaultMaxSpeed);
+    tmpElement->QueryFloatAttribute("size", &defaultRadius);
+    tmpElement->QueryFloatAttribute("movespeed", &defaultMaxSpeed);
     tmpElement->QueryIntAttribute("agentsmaxnum", &defaultAgentsMaxNum);
-    tmpElement->QueryDoubleAttribute("timeboundary", &defaultTimeBoundary);
-    tmpElement->QueryDoubleAttribute("sightradius", &defaultSightRadius);
+    tmpElement->QueryFloatAttribute("timeboundary", &defaultTimeBoundary);
+    tmpElement->QueryFloatAttribute("sightradius", &defaultSightRadius);
 
     // Чтение информации об агентах
     //TODO не дефолтные параметры агентов
@@ -148,19 +179,27 @@ bool Mission::ReadMissionFromFile()
     if (tmpElement == nullptr)
     {
         std::cout << "Agents parameters not found\n";
-        return false;
+        defaultRadius = 1;
+        defaultMaxSpeed = 1;
+        defaultAgentsMaxNum = 20;
+        defaultTimeBoundary = 25;
+        defaultSightRadius = 20;
     }
 
     tmpElement->QueryIntAttribute("number", &agentNumber);
+    if(agentNumber > agNumTreshhold)
+    {
+        agentNumber = agNumTreshhold;
+    }
 
-    for(auto e = tmpElement->FirstChildElement("agent"); e != NULL; e = e->NextSiblingElement("agent"))
+    for(auto e = tmpElement->FirstChildElement("agent"); e != NULL && counter < agentNumber; e = e->NextSiblingElement("agent"), counter++)
     {
         e->QueryIntAttribute("id", &id);
-        e->QueryDoubleAttribute("start.x", &stx);
-        e->QueryDoubleAttribute("start.y", &sty);
+        e->QueryFloatAttribute("start.x", &stx);
+        e->QueryFloatAttribute("start.y", &sty);
 
-        e->QueryDoubleAttribute("goal.x", &gx);
-        e->QueryDoubleAttribute("goal.y", &gy);
+        e->QueryFloatAttribute("goal.x", &gx);
+        e->QueryFloatAttribute("goal.y", &gy);
         agents.push_back({Agent(defaultRadius, defaultMaxSpeed, defaultAgentsMaxNum, defaultTimeBoundary, defaultSightRadius, id), Point(gx,gy)});
         agents[agents.size()-1].first.SetPosition(Point(stx, sty));
     }
@@ -172,7 +211,7 @@ bool Mission::ReadMissionFromFile()
         std::cout << "Algorithm parameters not found\n";
         return false;
     }
-    tmpElement->QueryDoubleAttribute("timestep", &timeStep);
-    tmpElement->QueryDoubleAttribute("delta", &delta);
+    tmpElement->QueryFloatAttribute("timestep", &timeStep);
+    tmpElement->QueryFloatAttribute("delta", &delta);
     return true;
 }

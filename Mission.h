@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <cmath>
+#include <fstream>
 
 #include "Agent.h"
 #include "Point.h"
@@ -17,7 +18,7 @@ using namespace tinyxml2;
 class Mission
 {
     public:
-        Mission(string filename);
+        Mission(string taskFile, string commLogFile, int agentsTreshhold);
         ~Mission();
         void StartMission();
 
@@ -27,20 +28,22 @@ class Mission
         string fileName;
         vector<pair<Agent, Point>> agents;
         int step;
-        double timeStep;
+        float timeStep;
         int agentNumber;
-        double defaultRadius;
-        double defaultMaxSpeed;
+        float defaultRadius;
+        float defaultMaxSpeed;
         int defaultAgentsMaxNum;
-        double defaultTimeBoundary;
-        double defaultSightRadius;
-        double delta;
+        float defaultTimeBoundary;
+        float defaultSightRadius;
+        float delta;
         XmlLogger *log;
-        vector<vector<pair<double, double>>> stepsLog;
+        ofstream commonLog;
+        vector<vector<pair<float, float>>> stepsLog;
         vector<pair<bool, int>> results;
         bool isFinished();
         bool ReadMissionFromFile();
         int stepsTreshhold;
+        int agNumTreshhold;
 
 
 
