@@ -123,13 +123,13 @@ Summary example:
 Agent's path example:
 ```xml
 <agent number="0">
-        <path pathfound="true" steps="4">
-            <step number="0" x="33.18066" y="9.1728058"/>
-            <step number="1" x="33.36132" y="9.3456116"/>
-            <step number="2" x="33.541981" y="9.5184174"/>
-            <step number="3" x="33.722641" y="9.6912231"/>
-        </path>
-    </agent>
+    <path pathfound="true" steps="4">
+        <step number="0" x="33.18066" y="9.1728058"/>
+        <step number="1" x="33.36132" y="9.3456116"/>
+        <step number="2" x="33.541981" y="9.5184174"/>
+        <step number="3" x="33.722641" y="9.6912231"/>
+    </path>
+</agent>
 ```
 ## Links
 1. [Van Den Berg J. et al. Reciprocal n-body collision avoidance //Robotics research. – Springer, Berlin, Heidelberg, 2011. – p. 3-19.](http://gamma.cs.unc.edu/ORCA/)
