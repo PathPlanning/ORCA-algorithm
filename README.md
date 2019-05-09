@@ -95,7 +95,7 @@ Input file should contain:
         * `start.y` - defines the coordinate of start position on the y-axis 
         * `goal.x` - defines the coordinate of finish position on the x-axis 
         * `goal.y` - defines the coordinate of finish position on the y-axis 
-        * 
+  
 Examples locates in directory [Task examples](https://github.com/haiot4105/ORCA-alorithm/tree/master/Task%20examples).
 ### Output files
 #### General log
