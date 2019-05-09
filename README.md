@@ -35,7 +35,7 @@ make
 > in progress
 
 ## Launch
-Use the following commands to launch:
+Use the following command to launch:
 #### Linux or MacOS
 ```sh
 .\ORCA
