@@ -96,7 +96,7 @@ Input file should contain:
         * `goal.x` - defines the coordinate of finish position on the x-axis 
         * `goal.y` - defines the coordinate of finish position on the y-axis 
         * 
-Examples locates in directory [Task examples](Task examples/img.png) 
+Examples locates in directory [Task examples](https://github.com/haiot4105/ORCA-alorithm/tree/master/Task%20examples).
 ### Output files
 #### General log
 Contains the main information about the execution of tasks. For example:
