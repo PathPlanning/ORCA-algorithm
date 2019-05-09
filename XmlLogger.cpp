@@ -47,7 +47,7 @@ void XmlLogger::WriteAlgorithmParam(float timestep, float delta)
 }
 
 
-void XmlLogger::Save(vector<vector<pair<float, float>>> resultSteps, vector<pair<bool, int>> results, float time)
+void XmlLogger::Save(vector<vector<pair<float, float>>> resultSteps, vector<pair<bool, int>> results, float time, string filename)
 {
     XMLElement *tmpsum, *tmpagent, *tmppath, *tmpstep;
     float rate = 0;
@@ -84,7 +84,7 @@ void XmlLogger::Save(vector<vector<pair<float, float>>> resultSteps, vector<pair
     tmpsum->SetAttribute("agentssolved", rate);
     tmpsum->SetAttribute("maxsteps", j);
     tmpsum->SetAttribute("runtime", time);
-    doc->SaveFile("resultlog.xml");
+    doc->SaveFile(filename.c_str());
 }
 
 

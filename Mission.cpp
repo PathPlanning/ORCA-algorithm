@@ -1,8 +1,9 @@
 #include "Mission.h"
 
 
-Mission::Mission(string taskFile, string commLogFile, int agentsTreshhold)
+Mission::Mission(string taskFile, string commLogFile, string logFile, int agentsTreshhold)
 {
+    this->logFile = logFile;
     float maxlength = 0;
     this->agNumTreshhold = agentsTreshhold;
     this->fileName = taskFile;
@@ -136,7 +137,7 @@ void Mission::StartMission()
     commonLog.close();
 
     #ifndef NDEBUG
-        log->Save(stepsLog, results, ((float) res) / 1000);
+        log->Save(stepsLog, results, ((float) res) / 1000, logFile);
     #endif
 
     std::cout<<"Succsess\n";
@@ -173,6 +174,15 @@ bool Mission::ReadMissionFromFile()
     tmpElement->QueryFloatAttribute("timeboundary", &defaultTimeBoundary);
     tmpElement->QueryFloatAttribute("sightradius", &defaultSightRadius);
 
+    tmpElement = root->FirstChildElement("algorithm");
+    if (tmpElement == nullptr)
+    {
+        std::cout << "Algorithm parameters not found\n";
+        return false;
+    }
+    tmpElement->QueryFloatAttribute("timestep", &timeStep);
+    tmpElement->QueryFloatAttribute("delta", &delta);
+
     // Чтение информации об агентах
     //TODO не дефолтные параметры агентов
     tmpElement = root->FirstChildElement("agents");
@@ -185,6 +195,8 @@ bool Mission::ReadMissionFromFile()
         defaultTimeBoundary = 25;
         defaultSightRadius = 20;
     }
+
+
 
     tmpElement->QueryIntAttribute("number", &agentNumber);
     if(agentNumber > agNumTreshhold)
@@ -200,18 +212,11 @@ bool Mission::ReadMissionFromFile()
 
         e->QueryFloatAttribute("goal.x", &gx);
         e->QueryFloatAttribute("goal.y", &gy);
-        agents.push_back({Agent(defaultRadius, defaultMaxSpeed, defaultAgentsMaxNum, defaultTimeBoundary, defaultSightRadius, id), Point(gx,gy)});
+        agents.push_back({Agent(defaultRadius, defaultMaxSpeed, defaultAgentsMaxNum, defaultTimeBoundary, timeStep, defaultSightRadius, id), Point(gx,gy)});
         agents[agents.size()-1].first.SetPosition(Point(stx, sty));
     }
 
 
-    tmpElement = root->FirstChildElement("algorithm");
-    if (tmpElement == nullptr)
-    {
-        std::cout << "Algorithm parameters not found\n";
-        return false;
-    }
-    tmpElement->QueryFloatAttribute("timestep", &timeStep);
-    tmpElement->QueryFloatAttribute("delta", &delta);
+
     return true;
 }

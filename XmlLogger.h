@@ -13,7 +13,7 @@ class XmlLogger
     public:
         XmlLogger(int num, float r, float maxspeed, int neighborsNum, float timeBoundary, float sightradius, vector<pair<float, float>> start, vector<pair<float, float>> goal);
         void WriteAlgorithmParam(float timestep, float delta);
-        void Save(vector<vector<pair<float, float>>> resultSteps, vector<pair<bool, int>> results ,float time);
+        void Save(vector<vector<pair<float, float>>> resultSteps, vector<pair<bool, int>> results ,float time, string filename);
 
     private:
         int num;

@@ -18,7 +18,7 @@ using namespace tinyxml2;
 class Mission
 {
     public:
-        Mission(string taskFile, string commLogFile, int agentsTreshhold);
+        Mission(string taskFile, string commLogFile, string logFile, int agentsTreshhold);
         ~Mission();
         void StartMission();
 
@@ -26,6 +26,7 @@ class Mission
 
     private:
         string fileName;
+        string logFile;
         vector<pair<Agent, Point>> agents;
         int step;
         float timeStep;

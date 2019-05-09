@@ -15,7 +15,7 @@ class Agent
 {
     public:
         Agent();
-        Agent(float radius, float maxspeed, int agentsmaxnum, float timeboundary, float sightradius, int id);
+        Agent(float radius, float maxspeed, int agentsmaxnum, float timeboundary, float timeStep, float sightradius, int id);
         Agent(const Agent &obj);
 
 
@@ -38,6 +38,7 @@ class Agent
         float maxSpeed;
         int agentsMaxNum;
         float timeBoundary;
+        float timeStep;
         float sightRadius;
         int count;
 

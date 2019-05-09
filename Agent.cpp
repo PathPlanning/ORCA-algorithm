@@ -26,6 +26,7 @@ Agent::Agent()
     radius = 1;
     maxSpeed = 10;
     timeBoundary = 15;
+    timeStep = 0.25;
     agentsMaxNum = std::numeric_limits<int>::max();
     sightRadius = std::numeric_limits<float>::max();
     Neighbours =  vector <pair<float, Agent*>>();
@@ -38,7 +39,7 @@ Agent::Agent()
 }
 
 
-Agent::Agent(float radius, float maxspeed, int agentsmaxnum, float timeboundary, float sightradius, int id)
+Agent::Agent(float radius, float maxspeed, int agentsmaxnum, float timeboundary, float timeStep, float sightradius, int id)
 {
     this->radius = radius;
     this->maxSpeed = maxspeed;
@@ -46,6 +47,7 @@ Agent::Agent(float radius, float maxspeed, int agentsmaxnum, float timeboundary,
     this->timeBoundary = timeboundary;
     this->sightRadius = sightradius;
     this->id = id;
+    this->timeStep = timeStep;
 
     Neighbours =  vector <pair<float, Agent*>>();
     ORCALines = vector<Line>();
@@ -72,6 +74,7 @@ Agent::Agent(const Agent &obj)
     currV = obj.currV;
     sightRadius = obj.sightRadius;
     id = obj.id;
+    timeStep = obj.timeStep;
 }
 
 void Agent::CalculateVelocity()
@@ -139,7 +142,7 @@ void Agent::CalculateVelocity()
         else
         {
 
-            const float invTimeStep = 1.0f / 0.25;
+            const float invTimeStep = 1.0f / timeStep;
 
             Vector w = relvelocity - circlecenter * invTimeStep;
             float wlength = w.EuclideanNorm();
