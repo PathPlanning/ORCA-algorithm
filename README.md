@@ -118,7 +118,7 @@ Includes same tags as input file, summary (same as general log, but without Flow
 
 Summary example:
 ```xml
-    <summary Success="100" Makespan="242" Runtime="0.0049999999"/>
+<summary Success="100" Makespan="242" Runtime="0.0049999999"/>
 ```
 Agent's path example:
 ```xml
