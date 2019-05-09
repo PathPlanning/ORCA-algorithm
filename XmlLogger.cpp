@@ -81,9 +81,9 @@ void XmlLogger::Save(vector<vector<pair<float, float>>> resultSteps, vector<pair
     }
 
     rate = rate * 100 / results.size();
-    tmpsum->SetAttribute("agentssolved", rate);
-    tmpsum->SetAttribute("maxsteps", j);
-    tmpsum->SetAttribute("runtime", time);
+    tmpsum->SetAttribute("Success", rate);
+    tmpsum->SetAttribute("Makespan", j);
+    tmpsum->SetAttribute("Runtime", time);
     doc->SaveFile(filename.c_str());
 }
 

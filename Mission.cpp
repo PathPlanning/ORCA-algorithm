@@ -166,6 +166,7 @@ bool Mission::ReadMissionFromFile()
     if (tmpElement == nullptr)
     {
         std::cout << "Default parameters not found\n";
+        return false;
     }
 
     tmpElement->QueryFloatAttribute("size", &defaultRadius);
@@ -189,11 +190,7 @@ bool Mission::ReadMissionFromFile()
     if (tmpElement == nullptr)
     {
         std::cout << "Agents parameters not found\n";
-        defaultRadius = 1;
-        defaultMaxSpeed = 1;
-        defaultAgentsMaxNum = 20;
-        defaultTimeBoundary = 25;
-        defaultSightRadius = 20;
+        return false;
     }
 
 
@@ -209,7 +206,6 @@ bool Mission::ReadMissionFromFile()
         e->QueryIntAttribute("id", &id);
         e->QueryFloatAttribute("start.x", &stx);
         e->QueryFloatAttribute("start.y", &sty);
-
         e->QueryFloatAttribute("goal.x", &gx);
         e->QueryFloatAttribute("goal.y", &gy);
         agents.push_back({Agent(defaultRadius, defaultMaxSpeed, defaultAgentsMaxNum, defaultTimeBoundary, timeStep, defaultSightRadius, id), Point(gx,gy)});

@@ -20,6 +20,7 @@ int main(int argc, char* argv[])
         std::cout<<"Pathfinding log file (XML) is not specified!"<<std::endl;
         log = "logfile.txt";
         std::cout<<"Common log file name will be set: logfile.txt"<<std::endl;
+        sup = 210, inf = 15, step = 15;
     }
     else
     {
