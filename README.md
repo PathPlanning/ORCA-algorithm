@@ -47,7 +47,7 @@ To run the compiled file and get a result you need to pass a correct input XML-f
 ```
 *number*_task.xml
 ```
-Moreover, the numbering of tasks should form a sequence of numbers from **_0_** to **_n-1_**, where **_n_** is the total number of tasks.
+Moreover, the numbering of tasks should form a sequence of numbers from **_0_** to **_n-1_**, where **_n_** is the total number of tasks. The maximum number of tasks is 100.
 For example:
 ```
 0_task.xml
@@ -74,7 +74,7 @@ If the number of agents in the task is less than the required value, it will be 
 
 ## Input and Output files
 ### Input files
-Input files are an XML files with a specific structure. 
+Input files are an XML files with a specific structure.  
 Input file should contain:
 
 * Mandatory tag `<default_parameters>`. It describes parameters of agents and agent's perception.
@@ -95,7 +95,8 @@ Input file should contain:
         * `start.y` - defines the coordinate of start position on the y-axis 
         * `goal.x` - defines the coordinate of finish position on the x-axis 
         * `goal.y` - defines the coordinate of finish position on the y-axis 
-
+        * 
+Examples locates in directory [Task examples](Task examples/img.png) 
 ### Output files
 #### General log
 Contains the main information about the execution of tasks. For example:
