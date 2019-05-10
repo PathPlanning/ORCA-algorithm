@@ -102,9 +102,9 @@ Examples locates in directory [Task examples](https://github.com/haiot4105/ORCA-
 Contains the main information about the execution of tasks. For example:
 ```
 Success	Runtime	Flowtime    Makespan Collisions
-100	0.013	2050	    243  0
-100	0.012	1892	    189  0
-100	0.011	2486	    277  0
+100	0.013	2050	    243     0
+100	0.012	1892	    189     0
+100	0.011	2486	    277     0
 ```
 There are 4 columns:
 * `Success` -  shows the percent of agents, which succsed their tasks; 
