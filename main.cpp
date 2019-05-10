@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
     }
     cout<<"\n";
     ofstream pre_log(log);
-    pre_log<< "Success\tRuntime\tFlowtime\tMakespan\tColissions\n";
+    pre_log<< "Success\tRuntime\tFlowtime\tMakespan\tCollisions\n";
     pre_log.close();
 
     string tmpinp = "_task.xml";

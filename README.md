@@ -111,6 +111,7 @@ There are 4 columns:
 * `Runtime` -  shows the time of running of task;
 * `Flowtime` - shows the sum of steps of all agents;
 * `Makespan` - shows the maximum value of steps of amoung all agents;
+* `Collisions` - shows the number of collisions between agents while execution of task;
 
 #### Local log
 

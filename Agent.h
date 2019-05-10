@@ -19,7 +19,7 @@ class Agent
         Agent(const Agent &obj);
 
 
-        void CalculateVelocity(int *colission);
+        void CalculateVelocity(int *collision);
         void UpdateVelocity();
         void AddNeighbour(Agent& neighbour);
         Point GetPosition();
