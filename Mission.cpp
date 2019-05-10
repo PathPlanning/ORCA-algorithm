@@ -1,7 +1,7 @@
 #include "Mission.h"
 
 
-Mission::Mission(string taskFile, string commLogFile, string logFile, int agentsTreshhold)
+Mission::Mission(string taskFile, string commLogFile, string logFile, int agentsTreshhold, bool *fileOpened)
 {
     this->logFile = logFile;
     float maxlength = 0;
@@ -11,7 +11,8 @@ Mission::Mission(string taskFile, string commLogFile, string logFile, int agents
 
     if(!ReadMissionFromFile())
     {
-        exit(-1);
+        *fileOpened = false;
+        return;
     }
     vector<pair<float, float>> starts, goals;
     for(auto &agent : agents)
@@ -35,7 +36,8 @@ Mission::Mission(string taskFile, string commLogFile, string logFile, int agents
     step = 0;
     results = vector<pair<bool, int>>(agentNumber);
     stepsTreshhold = 100 * (int)round(maxlength/(defaultMaxSpeed * timeStep));
-
+    collision = 0;
+    *fileOpened = true;
 }
 
 bool Mission::isFinished()
@@ -90,7 +92,7 @@ void Mission::StartMission()
 
         for(auto &agent : agents)
         {
-            agent.first.CalculateVelocity();
+            agent.first.CalculateVelocity(&collision);
 
         }
 
@@ -132,8 +134,9 @@ void Mission::StartMission()
     rate = rate * 100 / results.size();
     commonLog<<rate<<"\t";
     commonLog<< ((float) res) / 1000 <<"\t";
-    commonLog<<summ<<"\t\t";
-    commonLog<<step <<"\n";
+    commonLog<<summ<<"\t";
+    commonLog<<step <<"\t";
+    commonLog<<collision/2<<"\n";
     commonLog.close();
 
     #ifndef NDEBUG

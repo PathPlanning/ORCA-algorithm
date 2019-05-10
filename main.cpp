@@ -14,6 +14,7 @@ int main(int argc, char* argv[])
     vector<int> numAg = vector<int>();
     //vector<int> numAg;
     int sup, inf, step;
+    bool fileOpend;
     string log;
     if(argc < 2)
     {
@@ -58,10 +59,11 @@ int main(int argc, char* argv[])
     }
     cout<<"\n";
     ofstream pre_log(log);
-    pre_log<< "Success\tRuntime\tFlowtime\tMakespan\n";
+    pre_log<< "Success\tRuntime\tFlowtime\tMakespan\tColissions\n";
     pre_log.close();
 
     string tmpinp = "_task.xml";
+
     for(auto &num : numAg)
     {
         cout<<"Number of agents: "<<num<<"\n";
@@ -70,8 +72,16 @@ int main(int argc, char* argv[])
             string inp = std::to_string(i) + tmpinp;
             string locallog = std::to_string(i) + "_" + std::to_string(num) + "_log.xml";
             cout<<"File: "<<inp<<"\n";
-            Mission mission(inp, log, locallog, num);
-            mission.StartMission();
+            Mission mission(inp, log, locallog, num, &fileOpend);
+            if(fileOpend)
+            {
+                mission.StartMission();
+            }
+            else
+            {
+                break;
+            }
+
         }
     }
 

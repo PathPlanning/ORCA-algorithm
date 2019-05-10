@@ -77,7 +77,7 @@ Agent::Agent(const Agent &obj)
     timeStep = obj.timeStep;
 }
 
-void Agent::CalculateVelocity()
+void Agent::CalculateVelocity(int *colission)
 {
     //TODO препятствия
 
@@ -141,7 +141,7 @@ void Agent::CalculateVelocity()
         }
         else
         {
-
+            (*colission)++;
             const float invTimeStep = 1.0f / timeStep;
 
             Vector w = relvelocity - circlecenter * invTimeStep;
