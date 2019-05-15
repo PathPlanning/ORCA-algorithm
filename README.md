@@ -4,7 +4,7 @@ Implementation of ORCA algorithm
 
 ## Description
 Optimal Reciprocal Collision Avoidance (ORCA) - the principle, which provides a sufficient condition for multiple robots to avoid collisions among one another, and thus can guarantee collision-free navigation [[1](http://gamma.cs.unc.edu/ORCA/)]. This algorithm based on ORCA principle and is intended to avoid collisions when planning the movement of multiple agents.
-
+The ORCA principle is based on the concept of velocity obstacles, which are used to search for a new  speed of agent so that during the time **_t_** there is no collision with other agents. In the process of searching for a new velocity, algorithm creates a set of n-1 linear constraints(where n is the number of agents that the current one takes into account). A new velocity (Vnew) that satisfies these constraints and is close to the preferred velocity, are searched using an linear programming . The preferred velocity is selected so that the agent makes a move to the target point. The agent is a disk of radius r centered at p. For each neighboring agent (located at a distance R or less), their position and current speed are known. At each simulation step, for each agent, a new velocities are searched, after which the global simulation time is changed to dt and the position of all agents is changed to dt * Vnew (own for each agent).
 
 ## Build
 
