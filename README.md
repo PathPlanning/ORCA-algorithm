@@ -9,9 +9,9 @@ The ORCA principle is based on the concept of velocity obstacles, which are used
 ## Build
 
 To build the project you can use CMake, CMakeLists file is available in the repo. Please note that the code relies on C++11 standart. Make sure that your compiler supports it. If you only need a summary of the results, then use the following commands to build:
-#### Linux or MacOS
+#### MacOS
 ```bash
-git clone https://github.com/haiot4105/ORCA-alorithm.git
+git clone https://github.com/PathPlanning/ORCA-alorithm.git
 cd ORCA-alorithm
 mkdir Release
 cd Release
@@ -22,9 +22,9 @@ make
 > in progress
 
 If you need a full log about every task, then use the following commands to build (performance may decrease):
-#### Linux or MacOS
+#### MacOS
 ```sh
-git clone https://github.com/haiot4105/ORCA-alorithm.git
+git clone https://github.com/PathPlanning/ORCA-alorithm.git
 cd ORCA-alorithm
 mkdir Debug
 cd Debug
@@ -36,7 +36,7 @@ make
 
 ## Launch
 Use the following command to launch:
-#### Linux or MacOS
+#### MacOS
 ```sh
 .\ORCA
 ```
@@ -57,7 +57,7 @@ For example:
 ```
 
 To set additional parameters it is possible to use command line arguments (All arguments are required when using additional parameters).
-#### Linux or MacOS
+#### MacOS
 ```sh
 .\ORCA [filename Nmin Nstep Nmax]
 ```
