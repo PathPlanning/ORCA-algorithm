@@ -5,3 +5,4 @@ tinyxml2.cpp
 .DS_Store
 /cmake-build-debug
 /cmake-build-release
+README.html
