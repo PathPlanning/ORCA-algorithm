@@ -61,6 +61,8 @@ int main(int argc, char* argv[])
     ofstream pre_log(log);
     pre_log<< "Success\tRuntime\tFlowtime\tMakespan\tCollisions\n";
     pre_log.close();
+    pre_log.open("aaa.txt");
+    pre_log.close();
 
     string tmpinp = "_task.xml";
 

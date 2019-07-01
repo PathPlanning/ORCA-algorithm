@@ -15,6 +15,8 @@ Mission::Mission(string taskFile, string commLogFile, string logFile, int agents
         return;
     }
     vector<pair<float, float>> starts, goals;
+    ofstream pre_log("aaa.txt", ios_base::app);
+    double sum = 0;
     for(auto &agent : agents)
     {
         auto tmpstart = agent.first.GetPosition().GetPair();
@@ -22,11 +24,13 @@ Mission::Mission(string taskFile, string commLogFile, string logFile, int agents
         starts.push_back(tmpstart);
         goals.push_back(tmpgoal);
         float tmplength = sqrt((tmpstart.first - tmpgoal.first) * (tmpstart.first - tmpgoal.first) + (tmpstart.second - tmpgoal.second) * (tmpstart.second - tmpgoal.second));
+        sum += tmplength;
         if(tmplength > maxlength)
         {
             maxlength = tmplength;
         }
     }
+    pre_log<<sum<<"\t"<<maxlength<<"\n";
     #ifndef NDEBUG
         log = new XmlLogger(agentNumber, defaultRadius, defaultMaxSpeed, defaultAgentsMaxNum, defaultTimeBoundary, defaultSightRadius, starts, goals);
         log->WriteAlgorithmParam(timeStep, delta);
@@ -38,6 +42,7 @@ Mission::Mission(string taskFile, string commLogFile, string logFile, int agents
     stepsTreshhold = 100 * (int)round(maxlength/(defaultMaxSpeed * timeStep));
     collision = 0;
     *fileOpened = true;
+    pre_log.close();
 }
 
 bool Mission::isFinished()

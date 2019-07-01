@@ -2,3 +2,6 @@
 tinyxml2.cpp
 tinyxml2.cpp
 .idea/codeStyles/codeStyleConfig.xml
+.DS_Store
+/cmake-build-debug
+/cmake-build-release

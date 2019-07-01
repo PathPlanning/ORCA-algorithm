@@ -1,10 +1,16 @@
-# ORCA algorithm
+# ORCA Algorithm
 
 Implementation of ORCA algorithm
 
 ## Description
-Optimal Reciprocal Collision Avoidance (ORCA) - the principle, which provides a sufficient condition for multiple robots to avoid collisions among one another, and thus can guarantee collision-free navigation [[1](http://gamma.cs.unc.edu/ORCA/)]. This algorithm based on ORCA principle and is intended to avoid collisions when planning the movement of multiple agents.
-The ORCA principle is based on the concept of velocity obstacles, which are used to search for a new  speed of agent so that during the time **_t_** there is no collision with other agents. In the process of searching for a new velocity, algorithm creates a set of n-1 linear constraints(where n is the number of agents that the current one takes into account). A new velocity (Vnew) that satisfies these constraints and is close to the preferred velocity, are searched using an linear programming . The preferred velocity is selected so that the agent makes a move to the target point. The agent is a disk of radius r centered at p. For each neighboring agent (located at a distance R or less), their position and current speed are known. At each simulation step, for each agent, a new velocities are searched, after which the global simulation time is changed to dt and the position of all agents is changed to dt * Vnew (own for each agent).
+The ORCA algorithm is a decentralized collision avoidance algorithm in a multi-agent environment. The main idea of ​​the algorithm is iterative selection of new agent speed, close to a certain preferred velocity. Selection of the new speed is based on ORCA principle.
+
+Optimal Reciprocal Collision Avoidance (ORCA) — the principle, which provides a sufficient condition for multiple robots to avoid collisions among one another, and thus can guarantee collision-free navigation [[1](http://gamma.cs.unc.edu/ORCA/)]. 
+The principle is based on the concept of velocity obstacles, which are used to search for a new  speed of agent so that during the time **_t_** there is no collision with other agents. In the process of searching for a new velocity, algorithm creates a set of n-1 linear constraints(where n is the number of agents that the current one takes into account). A new velocity (Vnew) that satisfies these constraints and is close to the preferred velocity, are searched using an linear programming. The preferred velocity is selected so that the agent makes a move to the target point. The agent is a disk of radius r centered at p. For each neighboring agent (located at a distance R or less), their position and current speed are known. At each simulation step, for each agent, a new velocities are searched, after which the global simulation time is changed to dt and the position of all agents is changed to dt * Vnew (own for each agent).
+
+![Block scheme](/images/ORCA-scheme.png)
+
+More information about ORCA algorithm you can find at ORCA creators web page [[2](http://gamma.cs.unc.edu/RVO2/)].
 
 ## Build
 
@@ -78,7 +84,7 @@ Input files are an XML files with a specific structure.
 Input file should contain:
 
 * Mandatory tag `<default_parameters>`. It describes parameters of agents and agent's perception.
-    * `agentsmaxnum` - mandatory attribute that define a number of neighbors, that the agent takes into account;
+    * `agentsmaxnum` — mandatory attribute that define a number of neighbors, that the agent takes into account;
     * `movespeed` - mandatory attribute that define maximum speed of agent;
     * `sightradius` - mandatory attribute that define the radius in which the agent takes neighbors into account;
     * `size` - mandatory attribute that define size of the agent (radius of the agent);
@@ -135,4 +141,4 @@ Agent's path example:
 ```
 ## Links
 1. [Van Den Berg J. et al. Reciprocal n-body collision avoidance //Robotics research. – Springer, Berlin, Heidelberg, 2011. – p. 3-19.](http://gamma.cs.unc.edu/ORCA/)
-2. [ORCA creators webpage](http://gamma.cs.unc.edu/RVO2/publications/)
+2. [ORCA creators webpage](http://gamma.cs.unc.edu/RVO2/)
