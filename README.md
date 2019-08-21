@@ -35,7 +35,7 @@ or direct downloading.
 There are two options to build this project. If you only need a summary of the results, then use the following commands to build:
 ##### MacOS and Linux
 ```bash
-cd ORCA-alorithm-ORCAStar
+cd ORCA-alorithm
 mkdir Release
 cd Release
 cmake -DCMAKE_BUILD_TYPE=Release ..
@@ -45,7 +45,7 @@ cd Tests
 If you need a full log about every task, then use the following commands to build (performance may decrease):
 ##### MacOS and Linux
 ```bash
-cd ORCA-alorithm-ORCAStar
+cd ORCA-alorithm
 mkdir Debug
 cd Debug
 cmake -DCMAKE_BUILD_TYPE=Debug ..
