@@ -26,7 +26,7 @@ To build and run the project you can use CMake, CMakeLists file is available in 
 
 Download current repository to your local machine. Use
 ```bash
-git clone -b ORCAStar https://github.com/PathPlanning/ORCA-alorithm/
+git clone -b ORCAStar https://github.com/PathPlanning/ORCA-alorithm.git
 ```
 or direct downloading.
 
