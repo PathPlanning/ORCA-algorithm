@@ -2,12 +2,12 @@
 #include "PathPlanner.h"
 #include "ThetaStar.h"
 
-
 #include <vector>
 #include <cmath>
 #include <algorithm>
 #include <iostream>
 #include <type_traits>
+#include <cstddef>
 
 #ifndef ORCA_AGENT_H
 #define ORCA_AGENT_H
