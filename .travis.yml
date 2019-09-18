@@ -1,15 +1,16 @@
 dist: trusty
 sudo: required
 language: cpp
-
 matrix:
   include:
-  - os: osx
-      compiler: clang
-      env:
-        - CXX_COMPILER='clang++'
-        - C_COMPILER='clang'
-        - BUILD_TYPE='Release'
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-4.9']
+      env: COMPILER=g++-4.9
+      
 script:
   - mkdir Release
   - cd Release
