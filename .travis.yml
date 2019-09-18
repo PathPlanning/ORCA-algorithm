@@ -1,0 +1,18 @@
+dist: trusty
+sudo: required
+language: cpp
+matrix:
+  include:
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-4.9']
+      env: COMPILER=g++-4.9
+
+script:
+  - mkdir Release
+  - cd Release
+  - cmake -DCMAKE_BUILD_TYPE=Release ..
+  - make
