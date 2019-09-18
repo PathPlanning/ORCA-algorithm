@@ -30,7 +30,7 @@ git clone -b ORCAStar https://github.com/PathPlanning/ORCA-alorithm.git
 ```
 or direct downloading.
 
-### Build
+### Build [![Build Status](https://travis-ci.com/haiot4105/ORCA-alorithm.svg?branch=ORCAStar)](https://travis-ci.com/haiot4105/ORCA-alorithm)
 
 There are two options to build this project. If you only need a summary of the results, then use the following commands to build:
 ##### MacOS and Linux
