@@ -1,4 +1,3 @@
-\\ Testing on single task
 #include <iostream>
 #include <string>
 
