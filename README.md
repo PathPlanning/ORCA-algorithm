@@ -183,7 +183,7 @@ Success	    Runtime	    Makespan	Flowtime    Collisions	CollisionsObst
 100.000000	0.541000	106.400002	491.600006	0	        0
 ```
 There are 6 columns:
-* `Success` — shows the percent of agents, which succsed their tasks; 
+* `Success` — shows the percent of agents, which succeed their tasks; 
 * `Runtime` — shows the time of running of task;
 * `Flowtime` — shows the sum of steps of all agents;
 * `Makespan` — shows the maximum value of steps of amoung all agents;
