@@ -22,8 +22,8 @@ class Summary
         {
             return std::to_string(successRate) + "\t"
                  + std::to_string(runTime) + "\t"
-                 + std::to_string(flowTime) + "\t"
                  + std::to_string(makeSpan) + "\t"
+                 + std::to_string(flowTime) + "\t"
                  + std::to_string(collisions) + "\t"
                  + std::to_string(collisionsObst) + "\n";
         }

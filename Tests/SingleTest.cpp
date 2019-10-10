@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     if(task.ReadTask())
     {
         std::string result = task.StartMission().ToString();
-        std::cout << "\nSuccess\tRuntime\tFlowtime\tMakespan\tCollisions\tCollisionsObst\n";
+        std::cout << "\nSuccess\tRuntime\tMakespan\tFlowtime\tCollisions\tCollisionsObst\n";
         std::cout << result;
 
 #ifndef NDEBUG

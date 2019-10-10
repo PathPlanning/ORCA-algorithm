@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    pre_log<< "Success\tRuntime\tFlowtime\tMakespan\tCollisions\tCollisionsObst\n";
+    pre_log<< "Success\tRuntime\tMakespan\tFlowtime\tCollisions\tCollisionsObst\n";
 
     for(auto &num : numAg)
     {

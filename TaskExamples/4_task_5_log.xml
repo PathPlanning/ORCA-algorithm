@@ -1211,7 +1211,7 @@
         <delta>0.1</delta>
     </algorithm>
     <log>
-        <summary successrate="100" runtime="0.91799998" flowtime="29.800001" makespan="77.200005" collisions="0" collisionsobst="0"/>
+        <summary successrate="100" runtime="0.94800001" flowtime="77.200005" makespan="29.800001" collisions="0" collisionsobst="0"/>
         <agent id="4">
             <path pathfound="true" steps="163">
                 <step number="0" xr="24.5" yr="33.5"/>

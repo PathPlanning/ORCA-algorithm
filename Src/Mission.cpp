@@ -155,8 +155,8 @@ Summary Mission::StartMission()
     missionResult.successRate = rate * 100 / agentsNum;
     missionResult.runTime = ((float) res) / 1000;
     missionResult.collisions = collisionsCount / 2;
-    missionResult.flowTime = stepsCount * options->timestep;
-    missionResult.makeSpan = stepsSum * options->timestep;
+    missionResult.flowTime = stepsSum * options->timestep;
+    missionResult.makeSpan = stepsCount * options->timestep;
     missionResult.collisionsObst = collisionsObstCount;
 
     std::cout<<"End\n";
