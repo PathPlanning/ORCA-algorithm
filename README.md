@@ -26,16 +26,16 @@ To build and run the project you can use CMake, CMakeLists file is available in 
 
 Download current repository to your local machine. Use
 ```bash
-git clone -b ORCAStar https://github.com/PathPlanning/ORCA-alorithm.git
+git clone -b ORCAStar https://github.com/PathPlanning/ORCA-algorithm.git
 ```
 or direct downloading.
 
-### Build [![Build Status](https://travis-ci.com/PathPlanning/ORCA-alorithm.svg?branch=ORCAStar)](https://travis-ci.com/PathPlanning/ORCA-alorithm)
+### Build [![Build Status](https://travis-ci.com/PathPlanning/ORCA-algorithm.svg?branch=ORCAStar)](https://travis-ci.com/PathPlanning/ORCA-algorithm)
 
 There are two options to build this project. If you only need a summary of the results, then use the following commands to build:
 ##### MacOS and Linux
 ```bash
-cd ORCA-alorithm
+cd ORCA-algorithm
 mkdir Release
 cd Release
 cmake -DCMAKE_BUILD_TYPE=Release ..
@@ -45,7 +45,7 @@ cd Tests
 If you need a full log about every task, then use the following commands to build (performance may decrease):
 ##### MacOS and Linux
 ```bash
-cd ORCA-alorithm
+cd ORCA-algorithm
 mkdir Debug
 cd Debug
 cmake -DCMAKE_BUILD_TYPE=Debug ..
@@ -168,7 +168,7 @@ Input file should contain:
 
 ![Map scheme](/images/map.png)
 
-Examples locates in directory [TaskExamples](https://github.com/haiot4105/ORCA-alorithm/tree/ORCAStar/TaskExamples).
+Examples locates in directory [TaskExamples](https://github.com/PathPlanning/ORCA-algorithm/tree/ORCAStar/TaskExamples).
 ### Output files
 #### Summary
 Contains the main information about the execution of tasks. For example:
@@ -206,7 +206,7 @@ Agent's path example:
     </path>
 </agent>
 ```
-Examples locates in directory [TaskExamples](https://github.com/haiot4105/ORCA-alorithm/tree/ORCAStar/TaskExamples).
+Examples locates in directory [TaskExamples](https://github.com/PathPlanning/ORCA-algorithm/tree/ORCAStar/TaskExamples).
 ## Links
 
 1. [Daniel K. et al. Theta*: Any-angle path planning on grids // Journal of Artificial Intelligence Research. – 2010. – vol. 39. – p. 533-579.](https://arxiv.org/pdf/1401.3843.pdf)
