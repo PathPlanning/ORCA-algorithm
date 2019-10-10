@@ -11,7 +11,8 @@ SET(ORCA_HEADERS    Agent.h
                     Geom.h
                     Summary.h
                     ThetaStar.h
-                    LineOfSight.h)
+                    LineOfSight.h
+                    DirectPlanner.h)
 
 SET(ORCA_SOURCES    Agent.cpp
                     XMLLogger.cpp
@@ -20,6 +21,7 @@ SET(ORCA_SOURCES    Agent.cpp
                     XMLReader.cpp
                     ThetaStar.cpp
                     Geom.cpp
-                    EnvironmentOptions.cpp)
+                    EnvironmentOptions.cpp
+                    DirectPlanner.cpp)
 
 add_library(ORCA ${ORCA_HEADERS} ${ORCA_SOURCES})

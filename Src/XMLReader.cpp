@@ -404,6 +404,29 @@ bool XMLReader::ReadData()
 //        std::cout <<CNS_TAG_MT <<" element not found in XML file. It was defined to "<< CN_DEFAULT_METRIC_TYPE<<"\n";
 //    }
 
+    int plannertype = CN_DEFAULT_ST;
+    tagFlag = (tmpElement = alg->FirstChildElement(CNS_TAG_ST)) && tmpElement->GetText();
+    if(!tagFlag)
+    {
+        std::cout <<CNS_TAG_ST <<" element not found in XML file. It was defined to "<< CNS_DEFAULT_ST <<"\n";
+    }
+    else
+    {
+        auto tmpst = std::string(tmpElement->GetText());
+        if (tmpst == CNS_SP_ST_THETA)
+        {
+            plannertype = CN_SP_ST_THETA;
+        }
+        else if(tmpst == CNS_SP_ST_DIR)
+        {
+            plannertype = CN_SP_ST_DIR;
+        }
+        else
+        {
+            std::cout <<CNS_TAG_ST <<" element are incorrect. It was defined to "<< CNS_DEFAULT_ST <<"\n";
+        }
+    }
+
     tagFlag = (tmpElement = alg->FirstChildElement(CNS_TAG_BT)) && (tmpElement->QueryBoolText(&(options->breakingties)) == XMLError::XML_SUCCESS);
     if(!tagFlag)
     {
@@ -618,7 +641,26 @@ bool XMLReader::ReadData()
 
         std::cout<<"Agent "<<id<< " was added at position "<< Point(stx, sty).ToString()<<"\n";
         Agent *a = new Agent(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
-         a->SetPlanner(ThetaStar(*map, *options, Point(stx, sty), Point(gx, gy), param.radius));
+
+        switch(plannertype)
+        {
+            case CN_SP_ST_THETA:
+            {
+                a->SetPlanner(ThetaStar(*map, *options, Point(stx, sty), Point(gx, gy), param.radius));
+                break;
+            }
+            case CN_SP_ST_DIR:
+            {
+                a->SetPlanner(DirectPlanner(*map, *options, Point(stx, sty), Point(gx, gy), param.radius));
+                break;
+            }
+            default:
+            {
+                a->SetPlanner(ThetaStar(*map, *options, Point(stx, sty), Point(gx, gy), param.radius));
+                break;
+            }
+        }
+
         allAgents->push_back(a);
     }
 

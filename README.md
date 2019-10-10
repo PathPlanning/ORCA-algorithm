@@ -3,7 +3,7 @@
 Implementation of ORCA algorithm with global path planner based on Theta* algorithm
 
 ## Description
-The algorithm is based on the idea of planning a global path for all agents independently and moving along this path with local collision avoidance. Theta* algorithm are using to global path planning and ORCA algorithm are using for local collision avoidance with agents and static obstacles.
+The algorithm is based on the idea of planning a global path for all agents independently and moving along this path with local collision avoidance. Theta* algorithm are using to global path planning and ORCA algorithm are using for local collision avoidance with agents and static obstacles. Also direct moving to goal without global planning is available.
 
 **Theta*** is a version of A* algorithm for any-angle path planning on grids. Theta* mostly the same as A*, but, unlike A*, Theta* allows parent of current vertex may be any other vertex, which are visible from current [[1](https://arxiv.org/pdf/1401.3843.pdf)].
 
@@ -15,6 +15,8 @@ The agent is a disk of radius _r_ centered at _p_ with their start and global go
 Block scheme of the algorithm is shown in the figures below. 
 
 ![Block scheme](/images/ORCA*-scheme.png)
+
+
 
 The implementation is self-contained. Code is written in C++ and is meant to be cross-platform. Implementation relies only on C++11 standard and STL. Open-source library to work with XML (tinyXML) is included at the source level (i.e. .h and .cpp files are part of the project).
 
@@ -30,7 +32,8 @@ git clone -b ORCAStar https://github.com/PathPlanning/ORCA-alorithm.git
 ```
 or direct downloading.
 
-### Build [![Build Status](https://travis-ci.com/haiot4105/ORCA-alorithm.svg?branch=ORCAStar)](https://travis-ci.com/haiot4105/ORCA-alorithm)
+### Build 
+[![Build Status](https://travis-ci.com/PathPlanning/ORCA-algorithm.svg?branch=ORCAStar)](https://travis-ci.com/PathPlanning/ORCA-algorithm)
 
 There are two options to build this project. If you only need a summary of the results, then use the following commands to build:
 ##### MacOS and Linux
@@ -66,7 +69,7 @@ where
 
 For example:
 ```bash
-./Single ../../TaskExamples/0_task.xml 10
+./Single ../../TaskExamples/empty_task.xml 10
 ```
   
 Summary will be displayed after execution using standard output, full log (if such option was chosen) will be saved in same directory as task file and will be named according to the following pattern:
@@ -75,7 +78,7 @@ Summary will be displayed after execution using standard output, full log (if su
 ```
 For example:
 ```
-task_15_log.xml
+empty_task_10_log.xml
 ```
 
 
@@ -92,7 +95,7 @@ where
 
 For example:
 ```bash
-./Series 5 5 10 2 ../../TaskExamples
+./Series 5 5 10 5 ../../TaskExamples
 ```
 
 To run the series tests and get a result you need to pass a correct input XML-file(s). The task files must be named according to the following pattern:
@@ -136,10 +139,10 @@ Input file should contain:
       * `timeboundaryobst` — mandatory attribute that defines the time within which the algorithm ensures collision avoidance with static obstacles.
     * `<agent>` — mandatory tags that defines parameters of each agent.
         * `id` — mandatory attribute that defines the identifier of agent;
-        * `start.x` — mandatory attribute that defines the coordinate of start position on the x-axis (hereinafter, excluding `map` tag, points (x,y) are in coordinate system, which has an origin (0,0) in lower left corner. More about coordinate systems in the illustration below);
-        * `start.y` — mandatory attribute that defines the coordinate of start position on the y-axis; 
-        * `goal.x` — mandatory attribute that defines the coordinate of finish position on the x-axis; 
-        * `goal.y` — mandatory attribute that defines the coordinate of finish position on the y-axis; 
+        * `start.xr` — mandatory attribute that defines the coordinate of start position on the x-axis (hereinafter, excluding `map` tag, points (x,y) are in coordinate system, which has an origin (0,0) in lower left corner. More about coordinate systems in the illustration below);
+        * `start.yr` — mandatory attribute that defines the coordinate of start position on the y-axis; 
+        * `goal.xr` — mandatory attribute that defines the coordinate of finish position on the x-axis; 
+        * `goal.yr` — mandatory attribute that defines the coordinate of finish position on the y-axis; 
         * `agentsmaxnum` — attribute that defines a number of neighbors, that the agent takes into account;
         * `movespeed` — attribute that defines maximum speed of agent;
         * `sightradius` — attribute that defines the radius in which the agent takes neighbors into account;
@@ -155,16 +158,17 @@ Input file should contain:
   * `number` — mandatory attribute that defines the number of obstacles;
   * `<obstacle>` — mandatory tags which defines each static obstacles for collision avoidance.
     * `<vertex>` — mandatory tags which defines vertex of static obstacle for collision avoidance. 
-      *  `x` — mandatory attribute that defines the coordinate of vertex on the x-axis; 
-      *  `y` — mandatory attribute that defines the coordinate of vertex on the y-axis.
+      *  `xr` — mandatory attribute that defines the coordinate of vertex on the x-axis; 
+      *  `yr` — mandatory attribute that defines the coordinate of vertex on the y-axis.
   
 * Mandatory tag `<algorithm>`. It describes the parameters of the algorithm.
-  * `<delta>` — mandatory tag that defines the distance between the center of the agent and the finish, which is enough to reach the finish (ORCA);
-  * `<timestep>` — mandatory tag that defines the time step of simulation (ORCA);
-  * `<breakingties>` - tag that defines the priority in OPEN list for nodes with equal f-values. Possible values - "0" (break ties in favor of the node with smaller g-value), "1" (break ties in favor of the node with greater g-value). Default value is "0" (Theta*);
-  * `<cutcorners>` - boolean tag that defines the possibilty to make diagonal moves when one adjacent cell is untraversable. The tag is ignored if diagonal moves are not allowed. Default value is "false" (Theta*);
-  *  `<allowsqueeze>` - boolean tag that defines the possibility to make diagonal moves when both adjacent cells are untraversable. The tag is ignored if cutting corners is not allowed. Default value is "false" (Theta*);
-  *  `<hweight` - defines the weight of the heuristic function. Should be real number greater or equal 1. Default value is "1" (Theta*);
+  * `<delta>` — mandatory tag that defines the distance between the center of the agent and the finish, which is enough to reach the finish (ORCA parameter);
+  * `<timestep>` — mandatory tag that defines the time step of simulation (ORCA parameter);
+  * `<searchtype>` — tag that defines the type of planning. Possible values - "thetastar" (use Theta* for planning), "direct" (turn off global planning and always use direction to global goal). Default value is "thetastar" (global planning parameter);
+  * `<breakingties>` — tag that defines the priority in OPEN list for nodes with equal f-values. Possible values - "0" (break ties in favor of the node with smaller g-value), "1" (break ties in favor of the node with greater g-value). Default value is "0" (Theta* parameter);
+  * `<cutcorners>` — boolean tag that defines the possibilty to make diagonal moves when one adjacent cell is untraversable. The tag is ignored if diagonal moves are not allowed. Default value is "false" (Theta* parameter);
+  *  `<allowsqueeze>` — boolean tag that defines the possibility to make diagonal moves when both adjacent cells are untraversable. The tag is ignored if cutting corners is not allowed. Default value is "false" (Theta* parameter);
+  *  `<hweight` — defines the weight of the heuristic function. Should be real number greater or equal 1. Default value is "1" (Theta* parameter);
 
 ![Map scheme](/images/map.png)
 
@@ -173,18 +177,18 @@ Examples locates in directory [TaskExamples](https://github.com/haiot4105/ORCA-a
 #### Summary
 Contains the main information about the execution of tasks. For example:
 ```
-Success	    Runtime	    Flowtime	Makespan	Collisions	CollisionsObst
+Success	    Runtime	    Makespan	Flowtime    Collisions	CollisionsObst
 100.000000	0.072000	86.599998	231.600006	0	        0
 100.000000	0.302000	136.600006	362.300018	0	        0
 100.000000	0.541000	106.400002	491.600006	0	        0
 ```
 There are 6 columns:
-* `Success` -  shows the percent of agents, which succsed their tasks; 
-* `Runtime` -  shows the time of running of task;
-* `Flowtime` - shows the maximum value of steps of amoung all agents;
-* `Makespan` - shows the sum of steps of all agents;
-* `Collisions` - shows the number of collisions between agents while execution of task;
-* `CollisionsObst` - shows the number of collisions between agents and static obstacles while execution of task;
+* `Success` — shows the percent of agents, which succsed their tasks; 
+* `Runtime` — shows the time of running of task;
+* `Flowtime` — shows the sum of steps of all agents;
+* `Makespan` — shows the maximum value of steps of amoung all agents;
+* `Collisions` — shows the number of collisions between agents while execution of task;
+* `CollisionsObst` — shows the number of collisions between agents and static obstacles while execution of task;
 
 #### Full log
 

@@ -27,12 +27,13 @@
 
 #define CNS_TAG_AGENT                   "agent"
     #define CNS_TAG_ATTR_ID             "id"
-    #define CNS_TAG_ATTR_STX             "start.x"
-    #define CNS_TAG_ATTR_STY             "start.y"
-    #define CNS_TAG_ATTR_GX             "goal.x"
-    #define CNS_TAG_ATTR_GY             "goal.y"
+    #define CNS_TAG_ATTR_STX             "start.xr"
+    #define CNS_TAG_ATTR_STY             "start.yr"
+    #define CNS_TAG_ATTR_GX             "goal.xr"
+    #define CNS_TAG_ATTR_GY             "goal.yr"
 
 #define CNS_TAG_ALG         "algorithm"
+    #define CNS_TAG_ST          "searchtype"
     #define CNS_TAG_MT          "metrictype"
     #define CNS_TAG_BT          "breakingties"
     #define CNS_TAG_AS          "allowsqueeze"
@@ -51,8 +52,8 @@
 #define CNS_TAG_OBSTS       "obstacles"
     #define CNS_TAG_OBST        "obstacle"
     #define CNS_TAG_VERTEX      "vertex"
-    #define CNS_TAG_ATTR_X      "x"
-    #define CNS_TAG_ATTR_Y      "y"
+    #define CNS_TAG_ATTR_X      "xr"
+    #define CNS_TAG_ATTR_Y      "yr"
 
 #define CNS_TAG_LOG         "log"
     #define CNS_TAG_SUM             "summary"
@@ -68,19 +69,22 @@
     #define CNS_TAG_STEP            "step"
 
 
+#define CNS_SP_ST_THETA     "thetastar"
+#define CNS_SP_ST_DIR       "direct"
 
 
-#define CNS_SP_MT_DIAG  "diagonal"
-#define CNS_SP_MT_MANH  "manhattan"
-#define CNS_SP_MT_EUCL  "euclid"
-#define CNS_SP_MT_CHEB  "chebyshev"
+#define CNS_SP_MT_DIAG      "diagonal"
+#define CNS_SP_MT_MANH      "manhattan"
+#define CNS_SP_MT_EUCL      "euclid"
+#define CNS_SP_MT_CHEB      "chebyshev"
 
 #define CN_SP_MT_DIAG   0
 #define CN_SP_MT_MANH   1
 #define CN_SP_MT_EUCL   2
 #define CN_SP_MT_CHEB   3
 
-
+#define CN_SP_ST_THETA  0
+#define CN_SP_ST_DIR    1
 
 
 
@@ -100,14 +104,8 @@
 #define CN_DEFAULT_TIME_STEP 0.25
 #define CN_DEFAULT_DELTA 0.1
 
-
-
-
-
-
-
-
-
+#define CN_DEFAULT_ST CN_SP_ST_THETA
+#define CNS_DEFAULT_ST CNS_SP_ST_THETA
 
 
 
@@ -147,37 +145,6 @@
 
 
 //Search Parameters
-#define CN_SP_ST 0
-
-#define CNS_SP_ST_BFS           "bfs"
-#define CNS_SP_ST_DIJK          "dijkstra"
-#define CNS_SP_ST_ASTAR         "astar"
-#define CNS_SP_ST_JP_SEARCH     "jp_search"
-#define CNS_SP_ST_TH            "theta"
-
-#define CN_SP_ST_BFS            0
-#define CN_SP_ST_DIJK           1
-#define CN_SP_ST_ASTAR          2
-#define CN_SP_ST_JP_SEARCH      3
-#define CN_SP_ST_TH             4
-
-#define CN_SP_AD 1 //AllowDiagonal
-
-#define CN_SP_CC 2 //CutCorners
-
-#define CN_SP_AS 3 //AllowSqueeze
-
-#define CN_SP_MT 4 //MetricType
-
-
-
-#define CN_SP_HW 5 //HeuristicWeight
-
-#define CN_SP_BT 6 //BreakingTies
-
-#define CNS_SP_BT_GMIN "g-min"
-#define CNS_SP_BT_GMAX "g-max"
-
 #define CN_SP_BT_GMIN 0
 #define CN_SP_BT_GMAX 1
 

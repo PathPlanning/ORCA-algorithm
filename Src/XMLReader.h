@@ -6,6 +6,7 @@
 #include "Const.h"
 #include "Agent.h"
 #include "ThetaStar.h"
+#include "DirectPlanner.h"
 
 
 
