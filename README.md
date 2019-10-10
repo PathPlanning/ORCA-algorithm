@@ -84,14 +84,14 @@ empty_task_10_log.xml
 
 Use the following command to launch series test:
 ```bash
-./Series {Nmin Nstep Nmax Ntasks path}
+./Series {Nmin Nstep Nmax Ntasks Path}
 ```
 where 
 - `Nmin` — the initial number of agents at which tasks will run;
 - `Nstep` — step of changing the number of agents when restarting tasks;
 - `Nmax` — the final number of agents at which tasks will run;
 - `Ntasks` — the number of tasks in series;
-- `path` — path to the folder, which contains task files; 
+- `Path` — path to the folder, which contains task files; 
 
 For example:
 ```bash
