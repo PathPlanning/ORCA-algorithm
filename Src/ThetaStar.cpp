@@ -31,30 +31,31 @@ bool ThetaStar::GetNext(const Point &curr, Point &next)
 {
     if(glPathCreated)
     {
-
-        float sqDistToLast = (currPath.front() - curr).SquaredEuclideanNorm();
-        float sqDelta = options->delta * options->delta;
-        if(sqDistToLast < sqDelta)
+        if(currPath.size() > 1)
         {
-                currPath.pop_front();
-                if(currPath.empty())
-                {
-                    currPath.push_front(glGoal);
-                }
+            auto currGoal = currPath.front();
+            currPath.pop_front();
+            float sqDistToCurr = (currGoal - curr).SquaredEuclideanNorm();
+            float sqDelta = options->delta * options->delta;
+            if(sqDistToCurr < sqDelta)
+            {
                 next = currPath.front();
+                return true;
+            }
 
-            return true;
+            currPath.push_front(currGoal);
         }
 
         Node currNode = map->GetClosestNode(curr), nextNode = map->GetClosestNode(currPath.front());
-
         if(currNode == nextNode || visChecker.checkLine(currNode.i, currNode.j, nextNode.i, nextNode.j, *map))
         {
             next = currPath.front();
             return true;
         }
+
         Point last = currPath.front();
         currPath.pop_front();
+        //currPath.clear();
 
         bool isLastAccessible = SearchPath(map->GetClosestNode(curr), map->GetClosestNode(last));
         if(isLastAccessible)
@@ -262,13 +263,15 @@ float ThetaStar::Distance(int i1, int j1, int i2, int j2) const
 
 void ThetaStar::MakePrimaryPath(Node curNode)
 {
+
+
     Node current = curNode;
     while(current.parent)
     {
         currPath.push_front(map->GetPoint(current));
         current = *current.parent;
     }
-    currPath.push_front(map->GetPoint(current));
+    //std::cout<<map->GetPoint(current).ToString();
 }
 
 
@@ -319,7 +322,7 @@ bool ThetaStar::CreateGlobalPath()
         Node goal  = map->GetClosestNode(glGoal);
 
         glPathCreated = SearchPath(start, goal);
-        currPath.push_back(glGoal);
+        //currPath.push_back(glGoal);
     }
     return  glPathCreated;
 }

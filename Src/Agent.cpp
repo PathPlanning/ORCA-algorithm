@@ -484,16 +484,25 @@ Point Agent::GetPosition() const
 
 bool Agent::UpdatePrefVelocity()
 {
+
     Point next;
+    if(isFinished())
+    {
+        prefV = Point(0,0);
+        return true;
+    }
 
     if (planner->GetNext(position, next))
     {
+
+
         Vector goalVector = next - position;
         float dist = goalVector.EuclideanNorm();
-        if(dist > 1.0f)
+        if(dist != 0)
         {
             goalVector = (goalVector/dist) * param.maxSpeed;
         }
+
         prefV = goalVector;
         return true;
     }
@@ -591,6 +600,11 @@ Agent &Agent::operator = (const Agent &obj)
         planner = (obj.planner == nullptr) ? nullptr : obj.planner->Clone();;
     }
     return *this;
+}
+
+float Agent::GetDistToGoal() const
+{
+    return (position - goal).EuclideanNorm();
 }
 
 
