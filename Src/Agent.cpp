@@ -263,7 +263,7 @@ void Agent::ComputeNewVelocity()
     size_t numObstLines = ORCALines.size();
 
     //Получение ORCA-линий агентов
-    std::sort(Neighbours.begin(),Neighbours.end(), Compare);
+    //std::sort(Neighbours.begin(),Neighbours.end(), Compare);
 
     Line currline;
     Agent curragent;
@@ -459,7 +459,18 @@ bool Agent::operator != (const Agent &another) const
 
 void Agent::AddNeighbour(Agent &neighbour, float distSq)
 {
-    Neighbours.emplace_back(std::pair<float, Agent *>(distSq, &neighbour));
+    int i = 0;
+    auto tmpit = Neighbours.begin();
+    while(tmpit != Neighbours.end() && i < param.agentsMaxNum && Neighbours[i].first < distSq)
+    {
+        i++;
+        tmpit++;
+    }
+    if(i < param.agentsMaxNum)
+    {
+        Neighbours.insert(tmpit,std::pair<float, Agent *>(distSq, &neighbour));
+    }
+    //Neighbours.emplace_back(std::pair<float, Agent *>(distSq, &neighbour));
 }
 
 
@@ -484,21 +495,18 @@ Point Agent::GetPosition() const
 
 bool Agent::UpdatePrefVelocity()
 {
-
     Point next;
-    if(isFinished())
-    {
-        prefV = Point(0,0);
-        return true;
-    }
-
     if (planner->GetNext(position, next))
     {
-
-
         Vector goalVector = next - position;
         float dist = goalVector.EuclideanNorm();
-        if(dist != 0)
+        if(next == goal && dist < options->delta)
+        {
+            prefV = Point();
+            return true;
+        }
+
+        if(dist > CN_EPS)
         {
             goalVector = (goalVector/dist) * param.maxSpeed;
         }

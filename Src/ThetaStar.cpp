@@ -33,17 +33,14 @@ bool ThetaStar::GetNext(const Point &curr, Point &next)
     {
         if(currPath.size() > 1)
         {
-            auto currGoal = currPath.front();
-            currPath.pop_front();
-            float sqDistToCurr = (currGoal - curr).SquaredEuclideanNorm();
+            float sqDistToCurr = (currPath.front() - curr).SquaredEuclideanNorm();
             float sqDelta = options->delta * options->delta;
             if(sqDistToCurr < sqDelta)
             {
+                currPath.pop_front();
                 next = currPath.front();
                 return true;
             }
-
-            currPath.push_front(currGoal);
         }
 
         Node currNode = map->GetClosestNode(curr), nextNode = map->GetClosestNode(currPath.front());
@@ -55,7 +52,6 @@ bool ThetaStar::GetNext(const Point &curr, Point &next)
 
         Point last = currPath.front();
         currPath.pop_front();
-        //currPath.clear();
 
         bool isLastAccessible = SearchPath(map->GetClosestNode(curr), map->GetClosestNode(last));
         if(isLastAccessible)
