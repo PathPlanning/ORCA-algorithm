@@ -47,6 +47,9 @@ class Agent
         Point GetVelocity() const;
         float GetRadius() const;
         float GetSightRadius() const;
+
+        float GetDistToGoal() const;
+
         std::pair<unsigned int, unsigned int> GetCollision() const;
         int GetID() const;
 

@@ -67,23 +67,25 @@ int main(int argc, char* argv[])
         {
             string taskfile = path + "/" +std::to_string(i) + INPUT_FILE_PART;
             cout<<"File: "<<taskfile<<"\n";
-            Mission task = Mission(taskfile, num, STEP_MAX);
+            Mission *task = new Mission(taskfile, num, STEP_MAX);
 
-            if(task.ReadTask())
+            if(task->ReadTask())
             {
-                std::string result = task.StartMission().ToString();
-                pre_log << result;
+                std::string result = task->StartMission().ToString();
+                pre_log <<result;
 
 #ifndef NDEBUG
-                task.SaveLog();
+                task->SaveLog();
 #endif
-
+                delete task;
             }
             else
             {
                 std::cout<<"Error during task execution\n\n";
+                delete task;
                 continue;
             }
+
         }
     }
 
