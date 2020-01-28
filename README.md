@@ -1,6 +1,6 @@
 # ORCA* Algorithm
 
-Implementation of ORCA algorithm with global path planner based on Theta* algorithm
+Implementation of ORCA algorithm with global path planner based on Theta* algorithm and computing differential-drive control outputs 
 
 ## Description
 The algorithm is based on the idea of planning a global path for all agents independently and moving along this path with local collision avoidance. Theta* algorithm are using to global path planning and ORCA algorithm are using for local collision avoidance with agents and static obstacles. Also direct moving to goal without global planning is available.
