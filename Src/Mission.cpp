@@ -245,7 +245,7 @@ Mission &Mission::operator = (const Mission &obj)
         vector<Agent *> tmpAgents = vector<Agent *>(obj.agents.size());
         for(int i = 0; i < obj.agents.size(); i++)
         {
-            tmpAgents.push_back(new Agent(*obj.agents[i]));
+            tmpAgents.push_back(obj.agents[i]->Clone());
         }
 
         for(auto &agent : agents)

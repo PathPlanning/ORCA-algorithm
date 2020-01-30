@@ -1,6 +1,7 @@
 #include "Const.h"
 #include "PathPlanner.h"
 #include "ThetaStar.h"
+#include "Geom.h"
 
 #include <vector>
 #include <cmath>
@@ -35,25 +36,25 @@ class Agent
         Agent();
         Agent(const int &id, const Point &start, const Point &goal, const Map &map, const EnvironmentOptions &options, AgentParam param);
         Agent(const Agent &obj);
-        ~Agent();
+        virtual ~Agent();
+
+        virtual Agent* Clone() const = 0;
+        virtual void ComputeNewVelocity() =0;
+        virtual void ApplyNewVelocity() = 0;
+        virtual bool UpdatePrefVelocity() = 0;
 
         bool InitPath();
-
-        void ComputeNewVelocity();
-        void ApplyNewVelocity();
-        bool UpdatePrefVelocity();
-
+        int GetID() const;
         Point GetPosition() const;
         Point GetVelocity() const;
         float GetRadius() const;
         float GetSightRadius() const;
-
         float GetDistToGoal() const;
 
         std::pair<unsigned int, unsigned int> GetCollision() const;
-        int GetID() const;
 
-        void SetPosition(const Point &pos);
+
+        virtual void SetPosition(const Point &pos);
 
         bool isFinished();
         void AddNeighbour(Agent &neighbour, float distSq);
@@ -70,7 +71,9 @@ class Agent
         }
 
 
-    private:
+    protected:
+
+        int id;
         Point start;
         Point goal;
         PathPlanner *planner;
@@ -78,8 +81,9 @@ class Agent
         const Map *map;
         std::vector <std::pair<float, Agent*>> Neighbours;
         std::vector <std::pair<float, ObstacleSegment>> NeighboursObst;
+
         std::vector <Line> ORCALines;
-        int id;
+
         Point position;
         Velocity prefV;
         Velocity newV;

@@ -4,9 +4,9 @@
 
 #include "Const.h"
 
-
 #ifndef ORCA_GEOM_H
 #define ORCA_GEOM_H
+
 
 class Node
 {
@@ -97,6 +97,30 @@ class ObstacleSegment
 
 };
 
+
+namespace Utils
+{
+    float SqPointSegDistance(Point L1, Point L2, Point P);
+
+    bool linearProgram1(const std::vector<Line> &lines, unsigned long curr, float radius, const Vector &optVelocity,
+                               bool directionOpt, Vector &result);
+    unsigned long int linearProgram2(const std::vector<Line> &lines, float radius, const Vector &optVelocity,
+                                bool directionOpt, Vector &result);
+    void linearProgram3(const std::vector<Line> &lines, size_t numObstLines, size_t beginLine,
+                                float radius, Vector &result);
+
+    template<typename T>
+    bool More( std::pair<float, T> a, std::pair<float, T> b)
+    {
+        return (a.first > b.first);
+    }
+
+    template<typename T>
+    bool Less( std::pair<float, T> a, std::pair<float, T> b)
+    {
+        return (a.first < b.first);
+    }
+};
 
 /*********************************************************
  *                Methods Implementations                *
@@ -202,5 +226,7 @@ inline Vertex& Vertex::operator = (const Vertex &obj)
     convex = obj.convex;
     return *this;
 }
+
+
 
 #endif //ORCA_GEOM_H

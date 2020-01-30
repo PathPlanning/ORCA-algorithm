@@ -640,7 +640,7 @@ bool XMLReader::ReadData()
         }
 
         std::cout<<"Agent "<<id<< " was added at position "<< Point(stx, sty).ToString()<<"\n";
-        Agent *a = new Agent(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
+        Agent *a = new ORCADDAgent(id, Point(stx, sty), Point(gx, gy), *map, *options, param, 2 * param.radius, 2 * param.radius);
 
         switch(plannertype)
         {
