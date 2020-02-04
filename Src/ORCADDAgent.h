@@ -35,6 +35,9 @@ class ORCADDAgent : public Agent
 
         float leftV;
         float rightV;
+        float cos0;
+        float sin0;
+        float tet;
 
 
 //    std::vector <std::pair<float, Agent*>> Neighbours;
