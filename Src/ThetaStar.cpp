@@ -31,6 +31,12 @@ bool ThetaStar::GetNext(const Point &curr, Point &next)
 {
     if(glPathCreated)
     {
+        if(currPath.size() == 0)
+        {
+            next = curr;
+            return true;
+        }
+
         if(currPath.size() > 1)
         {
             float sqDistToCurr = (currPath.front() - curr).SquaredEuclideanNorm();
