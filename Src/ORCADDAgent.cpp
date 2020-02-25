@@ -19,7 +19,7 @@ ORCADDAgent::ORCADDAgent(const int &id, const Point &start, const Point &goal, c
 {
     this->effectiveRadius = effR;
     this->wheelTrack = wheelTrack;
-    this->D = effR - param.radius;
+    this->D = effR - param.radius - param.rEps;
     leftV = 0;
     rightV = 0;
     effectivePosition = Point();
@@ -27,6 +27,7 @@ ORCADDAgent::ORCADDAgent(const int &id, const Point &start, const Point &goal, c
     sin0 = 0.0f;
     cos0 = 1.0f;
     tet = 0.0f;
+    effectivePosition = Point(position.X() + D * cos0, position.Y() + D * sin0);
 }
 
 
@@ -40,6 +41,7 @@ ORCADDAgent::ORCADDAgent(const ORCADDAgent &obj) : Agent(obj)
     sin0 = obj.sin0;
     cos0 = obj.cos0;
     tet = obj.tet;
+
 }
 
 ORCADDAgent::~ORCADDAgent() = default;
@@ -118,10 +120,12 @@ void ORCADDAgent::ComputeNewVelocity()
 
         float lSqDist = lRelativePosition.SquaredEuclideanNorm();
         float rSqDist = rRelativePosition.SquaredEuclideanNorm();
+
         float lTrueSqDist = lTrueRelativePosition.SquaredEuclideanNorm();
         float rTrueSqDist = rTrueRelativePosition.SquaredEuclideanNorm();
 
         float sqEfRadius = effectiveRadius * effectiveRadius;
+
         float sqRadius = param.radius * param.radius;
 
         Vector obstacleVector = *right - *left;
@@ -131,8 +135,13 @@ void ORCADDAgent::ComputeNewVelocity()
         float lineSqDist = (-lRelativePosition - obstacleVector * s).SquaredEuclideanNorm();
         float lineSqDistTrue = (-lTrueRelativePosition - obstacleVector * sTrue).SquaredEuclideanNorm();
 
+        if ((sTrue < 0.0f && lTrueSqDist < sqRadius) || (sTrue > 1.0f && rTrueSqDist < sqRadius) ||
+            (sTrue >= 0.0f && sTrue < 1.0f && lineSqDistTrue < sqRadius))
+        {
+            collisionsObst++;
+        }
 
-        if (s < 0.0f && lSqDist <= sqEfRadius)
+        if (s < 0.0f && lSqDist < sqEfRadius)
         {
             if (left->IsConvex())
             {
@@ -143,7 +152,7 @@ void ORCADDAgent::ComputeNewVelocity()
 
             continue;
         }
-        else if (s > 1.0f && rSqDist <= sqEfRadius)
+        else if (s > 1.0f && rSqDist < sqEfRadius)
         {
             if (right->IsConvex() && rRelativePosition.Det(NeighboursObst[i].second.next->dir) >= 0.0f)
             {
@@ -155,7 +164,7 @@ void ORCADDAgent::ComputeNewVelocity()
 
             continue;
         }
-        else if (s >= 0.0f && s < 1.0f && lineSqDist <= sqEfRadius)
+        else if (s >= 0.0f && s < 1.0f && lineSqDist < sqEfRadius)
         {
             line.liesOn = Point();
             line.dir = -(NeighboursObst[i].second.dir);
@@ -163,11 +172,7 @@ void ORCADDAgent::ComputeNewVelocity()
             continue;
         }
 
-        if ((sTrue < 0.0f && lTrueSqDist <= sqRadius) || (sTrue > 1.0f && rTrueSqDist <= sqRadius) ||
-            (sTrue >= 0.0f && sTrue < 1.0f && lineSqDistTrue <= sqRadius))
-        {
-            collisionsObst++;
-        }
+
 
         Vector lLegDirection, rLegDirection;
 
@@ -325,7 +330,13 @@ void ORCADDAgent::ComputeNewVelocity()
         float radiussum2 = radiussum * radiussum;
         float distSq = circlecenter.SquaredEuclideanNorm();
 
-        if(distSq > radiussum2)
+        float trueSqRadSum = (param.radius + curragent->param.radius) * (param.radius + curragent->param.radius);
+        if((position - curragent->position).SquaredEuclideanNorm() < trueSqRadSum)
+        {
+            collisions++;
+        }
+
+        if(distSq >= radiussum2)
         {
             w = relvelocity - (circlecenter * invTimeBoundary); //w -- вектор на плоскости скоростей от центра малой окружности (основания VO) до скорости другого агента относительно этого
             float sqwlength = w.SquaredEuclideanNorm();
@@ -364,11 +375,7 @@ void ORCADDAgent::ComputeNewVelocity()
         }
         else
         {
-            float trueSqRadSum = (param.radius + curragent->param.radius) * (param.radius + curragent->param.radius);
-            if((position - curragent->position).SquaredEuclideanNorm() <= trueSqRadSum)
-            {
-                collisions++;
-            }
+
 
             const float invTimeStep = 1.0f / options->timestep;
 
@@ -398,28 +405,30 @@ void ORCADDAgent::ApplyNewVelocity()
 {
     ComputeWheelsSpeed();
     effectiveVelocity = newV;
-
-
-
 }
 
 
 bool ORCADDAgent::UpdatePrefVelocity()
 {
     Point next;
-    if (planner->GetNext(position, next))
+    if (planner->GetNext(effectivePosition, next))
     {
-        Vector goalVector = next - position;
+        Vector goalVector = next - effectivePosition;
         float dist = goalVector.EuclideanNorm();
+
+
+
         if(next == goal && dist < options->delta)
         {
             prefV = Point();
             return true;
         }
 
+
+
         if(dist > CN_EPS)
         {
-            goalVector = (goalVector/dist) * param.maxSpeed;
+            goalVector = (goalVector / dist) * param.maxSpeed;
         }
 
         prefV = goalVector;
@@ -435,7 +444,7 @@ void ORCADDAgent::ComputeWheelsSpeed()
     // TODO : make it faster
     // TODO : make comments
 
-    float invL = 1 / wheelTrack;
+    const float invL = 1 / wheelTrack;
     float A1 = cos0 * 0.5f + D * sin0 * invL;
     float A2 = sin0 * 0.5f - D * cos0 * invL;
     float B1 = cos0 * 0.5f - D * sin0 * invL;
@@ -445,9 +454,11 @@ void ORCADDAgent::ComputeWheelsSpeed()
 
     float invden = 1 / (A1 - A2 * divB);
     float l = (newV.X() - newV.Y() * divB) * invden;
-    float r = (newV.Y() - A2 * leftV) * (1 / B2);
+    float r = (newV.Y() - A2 * l) * (1 / B2);
+
     this->leftV = (abs(l) <= param.maxSpeed) ? l : copysign(param.maxSpeed, l);
     this->rightV = (abs(r) <= param.maxSpeed) ? r : copysign(param.maxSpeed, r);
+
     float avg = (leftV + rightV) * 0.5f;
     tet = tet + ((rightV - leftV) * invL) * options->timestep;
     sin0 = sin(tet);
@@ -460,15 +471,10 @@ void ORCADDAgent::ComputeWheelsSpeed()
 void ORCADDAgent::SetPosition(const Point &pos)
 {
     Agent::SetPosition(pos);
-    float abs = effectiveVelocity.EuclideanNorm();
-    float sin = 0.0, cos = 1.0;
-    if(abs != 0.0)
-    {
-        float invAbs = 1 / abs;
-        sin = effectiveVelocity.Y() * invAbs;
-        cos = effectiveVelocity.X() * invAbs;
-    }
+    effectivePosition = Point(pos.X() + D * cos0, pos.Y() + D * sin0);
+}
 
-
-    effectivePosition = Point(pos.X() + D * cos, pos.Y() + D * sin);
+bool ORCADDAgent::isFinished()
+{
+    return ((this->effectivePosition - this->goal).EuclideanNorm() < effectiveRadius);
 }

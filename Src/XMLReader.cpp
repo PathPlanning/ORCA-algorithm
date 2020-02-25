@@ -11,6 +11,8 @@ XMLReader::XMLReader(const std::string &fileName)
     this->options = nullptr;
     this->grid = nullptr;
     this->obstacles = nullptr;
+    this->root = nullptr;
+    this->plannertype = 0;
 }
 
 
@@ -24,25 +26,32 @@ XMLReader::XMLReader()
     this->options = nullptr;
     this->grid = nullptr;
     this->obstacles = nullptr;
+    this->root = nullptr;
+    this->plannertype = 0;
 }
-
 
 
 XMLReader::XMLReader(const XMLReader &obj)
 {
 
     fileName = obj.fileName;
+    if(doc != nullptr)
+    {
+        delete doc;
+        doc = nullptr;
+    }
+
 
     if(obj.doc != nullptr)
     {
         doc = new XMLDocument();
         obj.doc->DeepCopy(doc);
-    }
-    else
-    {
-        doc = nullptr;
+        root = doc->FirstChildElement(CNS_TAG_ROOT);
+
     }
 
+
+    plannertype = obj.plannertype;
     allAgents = (obj.allAgents == nullptr) ? nullptr : new std::vector<Agent *>(*(obj.allAgents));
     map = (obj.map == nullptr) ? nullptr : new Map(*obj.map);
     options = (obj.options == nullptr) ? nullptr : new EnvironmentOptions(*obj.options);
@@ -86,6 +95,7 @@ XMLReader::~XMLReader()
     {
         delete doc;
         doc = nullptr;
+        root = nullptr;
     }
 
 }
@@ -139,6 +149,7 @@ bool XMLReader::GetAgents(std::vector<Agent *> &agents, const int &numThreshold)
     return false;
 }
 
+
 bool XMLReader::ReadData()
 {
 
@@ -146,9 +157,6 @@ bool XMLReader::ReadData()
     {
         return false;
     }
-
-    bool tagFlag;
-    XMLElement *tmpElement;
 
     // Чтение XML-файла с заданием / Reading task from XML-file //
 
@@ -158,13 +166,81 @@ bool XMLReader::ReadData()
         return false;
     }
 
-    XMLElement *root = doc->FirstChildElement(CNS_TAG_ROOT);
+    root = doc->FirstChildElement(CNS_TAG_ROOT);
     if (!root)
     {
         std::cout <<CNS_TAG_ROOT <<" element not found in XML file\n";
         return false;
     }
 
+    return ReadMap() && ReadAlgorithmOptions() && ReadAgents();
+}
+
+XMLReader &XMLReader::operator = (const XMLReader &obj)
+{
+    if (this != &obj)
+    {
+        fileName = obj.fileName;
+        if(doc != nullptr)
+        {
+            delete doc;
+        }
+
+        if(obj.doc != nullptr)
+        {
+            doc = new XMLDocument();
+            obj.doc->DeepCopy(doc);
+            root = root = doc->FirstChildElement(CNS_TAG_ROOT);
+        }
+        else
+        {
+            doc = nullptr;
+            root = nullptr;
+        }
+
+        if(allAgents != nullptr)
+        {
+            delete allAgents;
+        }
+        allAgents = (obj.allAgents == nullptr) ? nullptr : new std::vector<Agent *>(*(obj.allAgents));
+
+        if(map != nullptr)
+        {
+            delete map;
+        }
+        map = (obj.map == nullptr) ? nullptr : new Map(*obj.map);
+
+        if(options != nullptr)
+        {
+            delete options;
+        }
+        options = (obj.options == nullptr) ? nullptr : new EnvironmentOptions(*obj.options);
+
+        if(grid != nullptr)
+        {
+            delete grid;
+        }
+        grid = (obj.grid == nullptr) ? nullptr : new std::vector<std::vector<int>>(*obj.grid);
+
+        if(obstacles != nullptr)
+        {
+            delete obstacles;
+        }
+        obstacles = (obj.obstacles == nullptr) ? nullptr : new std::vector<std::vector<Point>>(*obj.obstacles);
+
+        plannertype = obj.plannertype;
+    }
+    return *this;
+}
+
+XMLReader *XMLReader::Clone() const
+{
+    return new XMLReader(*this);
+}
+
+bool XMLReader::ReadMap()
+{
+    XMLElement *tmpElement;
     // Чтение информации о карте и препятствиях / Reading information about map and obstacles //
 
     XMLElement *mapTag = 0, *element = 0, *mapnode, *obsts = 0, *obstElem = 0;
@@ -211,18 +287,22 @@ bool XMLReader::ReadData()
         {
             if (hasHeight)
             {
+#if FULL_OUTPUT
                 std::cout << "Warning! Duplicate '" << CNS_TAG_HEIGHT << "' encountered." << std::endl;
                 std::cout << "Only first value of '" << CNS_TAG_HEIGHT << "' =" << height << "will be used." << std::endl;
+#endif
             }
             else
             {
                 if (!((stream >> height) && (height > 0)))
                 {
+#if FULL_OUTPUT
                     std::cout << "Warning! Invalid value of '" << CNS_TAG_HEIGHT
                               << "' tag encountered (or could not convert to integer)." << std::endl;
                     std::cout << "Value of '" << CNS_TAG_HEIGHT << "' tag should be an integer >=0" << std::endl;
                     std::cout << "Continue reading XML and hope correct value of '" << CNS_TAG_HEIGHT
                               << "' tag will be encountered later..." << std::endl;
+#endif
                 }
                 else
                 {
@@ -234,19 +314,22 @@ bool XMLReader::ReadData()
         {
             if (hasWidth)
             {
+#if FULL_OUTPUT
                 std::cout << "Warning! Duplicate '" << CNS_TAG_WIDTH << "' encountered." << std::endl;
                 std::cout << "Only first value of '" << CNS_TAG_WIDTH << "' =" << width << "will be used." << std::endl;
+#endif
             }
             else
             {
                 if (!((stream >> width) && (width > 0)))
                 {
+#if FULL_OUTPUT
                     std::cout << "Warning! Invalid value of '" << CNS_TAG_WIDTH
                               << "' tag encountered (or could not convert to integer)." << std::endl;
                     std::cout << "Value of '" << CNS_TAG_WIDTH << "' tag should be an integer AND >0" << std::endl;
                     std::cout << "Continue reading XML and hope correct value of '" << CNS_TAG_WIDTH
                               << "' tag will be encountered later..." << std::endl;
-
+#endif
                 }
                 else
                 {
@@ -258,18 +341,22 @@ bool XMLReader::ReadData()
         {
             if (hasCellSize)
             {
+#if FULL_OUTPUT
                 std::cout << "Warning! Duplicate '" << CNS_TAG_CELLSIZE << "' encountered." << std::endl;
                 std::cout << "Only first value of '" << CNS_TAG_CELLSIZE << "' =" << cellSize << "will be used."
                           << std::endl;
+#endif
             }
             else {
                 if (!((stream >> cellSize) && (cellSize > 0))) {
+#if FULL_OUTPUT
                     std::cout << "Warning! Invalid value of '" << CNS_TAG_CELLSIZE
                               << "' tag encountered (or could not convert to double)." << std::endl;
                     std::cout << "Value of '" << CNS_TAG_CELLSIZE
                               << "' tag should be double AND >0. By default it is defined to '1'" << std::endl;
                     std::cout << "Continue reading XML and hope correct value of '" << CNS_TAG_CELLSIZE
                               << "' tag will be encountered later..." << std::endl;
+#endif
                 }
                 else
                     hasCellSize = true;
@@ -339,9 +426,7 @@ bool XMLReader::ReadData()
         return false;
     }
 
-
     // Чтение препятствий / Obstacles reading //
-
     obsts = root->FirstChildElement(CNS_TAG_OBSTS);
     if (!obsts)
     {
@@ -384,6 +469,13 @@ bool XMLReader::ReadData()
     }
 
     map = new Map(cellSize, *grid, *obstacles);
+    return true;
+}
+
+bool XMLReader::ReadAlgorithmOptions()
+{
+    XMLElement *tmpElement;
+    bool tagFlag;
 
     // Чтение информации о параметрах окружения и алгоритма// Reading options of the environment and algorithm //
 
@@ -394,6 +486,7 @@ bool XMLReader::ReadData()
     if(!alg)
     {
         std::cout <<CNS_TAG_ALG <<" element not found in XML file\n";
+        return false;
     }
 
     // Нет необходимости в считывании типа эвристики / Metric type not necessary //
@@ -404,11 +497,13 @@ bool XMLReader::ReadData()
 //        std::cout <<CNS_TAG_MT <<" element not found in XML file. It was defined to "<< CN_DEFAULT_METRIC_TYPE<<"\n";
 //    }
 
-    int plannertype = CN_DEFAULT_ST;
+    plannertype = CN_DEFAULT_ST;
     tagFlag = (tmpElement = alg->FirstChildElement(CNS_TAG_ST)) && tmpElement->GetText();
     if(!tagFlag)
     {
+#if FULL_OUTPUT
         std::cout <<CNS_TAG_ST <<" element not found in XML file. It was defined to "<< CNS_DEFAULT_ST <<"\n";
+#endif
     }
     else
     {
@@ -430,43 +525,62 @@ bool XMLReader::ReadData()
     tagFlag = (tmpElement = alg->FirstChildElement(CNS_TAG_BT)) && (tmpElement->QueryBoolText(&(options->breakingties)) == XMLError::XML_SUCCESS);
     if(!tagFlag)
     {
+#if FULL_OUTPUT
         std::cout <<CNS_TAG_BT <<" element not found in XML file. It was defined to "<< CN_DEFAULT_BREAKINGTIES<<"\n";
+#endif
     }
 
     tagFlag = (tmpElement = alg->FirstChildElement(CNS_TAG_AS)) && (tmpElement->QueryBoolText(&(options->allowsqueeze)) == XMLError::XML_SUCCESS);
     if(!tagFlag)
     {
+#if FULL_OUTPUT
         std::cout <<CNS_TAG_AS <<" element not found in XML file. It was defined to "<< CN_DEFAULT_ALLOWSQUEEZE<<"\n";
+#endif
     }
 
     tagFlag = (tmpElement = alg->FirstChildElement(CNS_TAG_CC)) && (tmpElement->QueryBoolText(&(options->cutcorners)) == XMLError::XML_SUCCESS);
     if(!tagFlag)
     {
+#if FULL_OUTPUT
         std::cout <<CNS_TAG_CC <<" element not found in XML file. It was defined to "<< CN_DEFAULT_CUTCORNERS<<"\n";
+#endif
     }
 
     tagFlag = (tmpElement = alg->FirstChildElement(CNS_TAG_HW)) && (tmpElement->QueryFloatText(&(options->hweight)) == XMLError::XML_SUCCESS);
     if(!tagFlag)
     {
+#if FULL_OUTPUT
         std::cout <<CNS_TAG_HW <<" element not found in XML file. It was defined to "<< CN_DEFAULT_HWEIGHT<<"\n";
+#endif
     }
 
     tagFlag = (tmpElement = alg->FirstChildElement(CNS_TAG_TS)) && (tmpElement->QueryFloatText(&(options->timestep)) == XMLError::XML_SUCCESS);
     if(!tagFlag)
     {
+#if FULL_OUTPUT
         std::cout <<CNS_TAG_TS <<" element not found in XML file. It was defined to "<< CN_DEFAULT_TIME_STEP<<"\n";
+#endif
     }
 
     tagFlag = (tmpElement = alg->FirstChildElement(CNS_TAG_DEL)) && (tmpElement->QueryFloatText(&(options->delta)) == XMLError::XML_SUCCESS);
     if(!tagFlag)
     {
+#if FULL_OUTPUT
         std::cout <<CNS_TAG_DEL <<" element not found in XML file. It was defined to "<< CN_DEFAULT_DELTA<<"\n";
+#endif
     }
+    return true;
+}
 
+bool XMLReader::ReadAgents()
+{
+    XMLElement *tmpElement;
+    int count;
     // Чтение информации о агентах// Reading agents information //
 
     AgentParam defaultParam = AgentParam();
     int  agentsNumber;
+    const char* agType = CNS_DEFAULT_AGENT_TYPE;
 
     XMLElement *agents = root->FirstChildElement(CNS_TAG_AGENTS);
     if(!agents)
@@ -480,10 +594,18 @@ bool XMLReader::ReadData()
         std::cout <<CNS_TAG_ATTR_NUM <<" element not found at " << CNS_TAG_AGENTS << " tag in XML file\n";
         return false;
     }
+    if(agents->QueryStringAttribute(CNS_TAG_ATTR_TYPE, &agType) != XMLError::XML_SUCCESS)
+    {
+#if FULL_OUTPUT
+        std::cout <<CNS_TAG_ATTR_TYPE <<" element not found at " << CNS_TAG_AGENTS << " tag in XML file. It was defined to "<< CNS_DEFAULT_AGENT_TYPE<<"\n";
+#endif
+    }
+
 
     tmpElement = agents->FirstChildElement(CNS_TAG_DEF_PARAMS);
     if (!tmpElement)
     {
+#if FULL_OUTPUT
         std::cout <<CNS_TAG_DEF_PARAMS <<" element not found in XML file. The following default values was defined\n";
         std::cout << "Default " <<CNS_TAG_ATTR_SIZE << " = " << CN_DEFAULT_SIZE <<"\n";
         std::cout << "Default " <<CNS_TAG_ATTR_MAXSPEED << " = " << CN_DEFAULT_MAX_SPEED <<"\n";
@@ -491,32 +613,52 @@ bool XMLReader::ReadData()
         std::cout << "Default " <<CNS_TAG_ATTR_TIMEBOUNDARY << " = " << CN_DEFAULT_TIME_BOUNDARY <<"\n";
         std::cout << "Default " <<CNS_TAG_ATTR_SIGHTRADIUS << " = " << CN_DEFAULT_RADIUS_OF_SIGHT <<"\n";
         std::cout << "Default " <<CNS_TAG_ATTR_TIMEBOUNDARYOBST << " = " << CN_DEFAULT_OBS_TIME_BOUNDARY <<"\n";
+        std::cout << "Default " <<CNS_TAG_ATTR_REPS << " = " << CN_DEFAULT_REPS <<"\n";
+#endif
     }
     else
     {
         if(tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_SIZE, &defaultParam.radius) != XMLError::XML_SUCCESS)
         {
+#if FULL_OUTPUT
             std::cout <<CNS_TAG_ATTR_SIZE <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_SIZE<<"\n";
+#endif
         }
         if(tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_MAXSPEED, &defaultParam.maxSpeed) != XMLError::XML_SUCCESS)
         {
+#if FULL_OUTPUT
             std::cout <<CNS_TAG_ATTR_MAXSPEED <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_MAX_SPEED<<"\n";
+#endif
         }
         if(tmpElement->QueryIntAttribute(CNS_TAG_ATTR_AGENTSMAXNUM, &defaultParam.agentsMaxNum) != XMLError::XML_SUCCESS)
         {
+#if FULL_OUTPUT
             std::cout <<CNS_TAG_ATTR_AGENTSMAXNUM <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_AGENTS_MAX_NUM<<"\n";
+#endif
         }
         if(tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_TIMEBOUNDARY, &defaultParam.timeBoundary) != XMLError::XML_SUCCESS)
         {
+#if FULL_OUTPUT
             std::cout <<CNS_TAG_ATTR_TIMEBOUNDARY <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_TIME_BOUNDARY<<"\n";
+#endif
         }
         if(tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_SIGHTRADIUS, &defaultParam.sightRadius) != XMLError::XML_SUCCESS)
         {
+#if FULL_OUTPUT
             std::cout <<CNS_TAG_ATTR_SIGHTRADIUS <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_RADIUS_OF_SIGHT<<"\n";
+#endif
         }
         if(tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_TIMEBOUNDARYOBST, &defaultParam.timeBoundaryObst) != XMLError::XML_SUCCESS)
         {
+#if FULL_OUTPUT
             std::cout <<CNS_TAG_ATTR_TIMEBOUNDARYOBST <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_OBS_TIME_BOUNDARY<<"\n";
+#endif
+        }
+        if(tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_REPS, &defaultParam.rEps) != XMLError::XML_SUCCESS)
+        {
+#if FULL_OUTPUT
+            std::cout <<CNS_TAG_ATTR_REPS <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_REPS<<"\n";
+#endif
         }
     }
     tmpElement = agents->FirstChildElement(CNS_TAG_AGENT);
@@ -567,44 +709,63 @@ bool XMLReader::ReadData()
         }
         if(tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_SIZE, &param.radius) != XMLError::XML_SUCCESS || param.radius <= 0)
         {
+#if FULL_OUTPUT
             std::cout <<CNS_TAG_ATTR_SIZE <<" element not found in XML file (or it is incorrect) at agent "<<id<<"\n";
+#endif
             param.radius = defaultParam.radius;
         }
         if(tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_MAXSPEED, &param.maxSpeed) != XMLError::XML_SUCCESS || param.maxSpeed <= 0)
         {
+#if FULL_OUTPUT
             std::cout <<CNS_TAG_ATTR_MAXSPEED <<" element not found in XML file (or it is incorrect) at agent "<<id<<"\n";
+#endif
             param.maxSpeed = defaultParam.maxSpeed;
         }
         if(tmpElement->QueryIntAttribute(CNS_TAG_ATTR_AGENTSMAXNUM, &param.agentsMaxNum) != XMLError::XML_SUCCESS || param.agentsMaxNum <= 0)
         {
+#if FULL_OUTPUT
             std::cout <<CNS_TAG_ATTR_AGENTSMAXNUM <<" element not found in XML file (or it is incorrect) at agent "<<id<<"\n";
+#endif
             param.agentsMaxNum = defaultParam.agentsMaxNum;
         }
         if(tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_TIMEBOUNDARY, &param.timeBoundary) != XMLError::XML_SUCCESS || param.timeBoundary <= 0)
         {
+#if FULL_OUTPUT
             std::cout <<CNS_TAG_ATTR_TIMEBOUNDARY <<" element not found in XML file (or it is incorrect) at agent "<<id<<"\n";
+#endif
             param.timeBoundary = defaultParam.timeBoundary;
         }
         if(tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_SIGHTRADIUS, &param.sightRadius) != XMLError::XML_SUCCESS || param.sightRadius <= 0)
         {
+#if FULL_OUTPUT
             std::cout <<CNS_TAG_ATTR_SIGHTRADIUS <<" element not found in XML file (or it is incorrect) at agent "<<id<<"\n";
+#endif
             param.sightRadius = defaultParam.sightRadius;
         }
         if(tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_TIMEBOUNDARYOBST, &param.timeBoundaryObst) != XMLError::XML_SUCCESS || param.timeBoundaryObst <= 0)
         {
+#if FULL_OUTPUT
             std::cout <<CNS_TAG_ATTR_TIMEBOUNDARYOBST <<" element not found in XML file (or it is incorrect) at agent "<<id<<"\n";
+#endif
             param.timeBoundaryObst = defaultParam.timeBoundaryObst;
+        }
+        if(tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_REPS, &param.rEps) != XMLError::XML_SUCCESS || param.rEps < 0)
+        {
+#if FULL_OUTPUT
+            std::cout <<CNS_TAG_ATTR_REPS <<" element not found in XML file (or it is incorrect) at agent "<<id<<"\n";
+#endif
+            param.rEps = defaultParam.rEps;
         }
 
 
 
 
         if(stx <= param.radius || sty <= param.radius ||
-            gx <= param.radius || gy <= param.radius  ||
+           gx <= param.radius || gy <= param.radius  ||
            stx >= (map->GetWidth() * map->GetCellSize()) - param.radius  ||
-            gx >= (map->GetWidth() * map->GetCellSize()) - param.radius  ||
+           gx >= (map->GetWidth() * map->GetCellSize()) - param.radius  ||
            sty >= (map->GetHeight() * map->GetCellSize()) - param.radius ||
-            gy >= (map->GetHeight() * map->GetCellSize()) - param.radius)
+           gy >= (map->GetHeight() * map->GetCellSize()) - param.radius)
         {
             std::cout <<"Start or goal position of agent "<<id<<" is out of map or too close to boundaries\n";
             correct = false;
@@ -635,94 +796,49 @@ bool XMLReader::ReadData()
 
         if(!correct)
         {
+#if FULL_OUTPUT
             std::cout<<"Agent "<<id<< " was skipped\n\n";
+#endif
             continue;
         }
-
+#if FULL_OUTPUT
         std::cout<<"Agent "<<id<< " was added at position "<< Point(stx, sty).ToString()<<"\n";
-        Agent *a = new ORCADDAgent(id, Point(stx, sty), Point(gx, gy), *map, *options, param, 2 * param.radius, 2 * param.radius);
+#endif
+        Agent *a;
+        std::string agTypeStr = std::string(agType);
+        if(agTypeStr == CNS_AT_ST_ORCA)
+        {
+            a = new ORCAAgent(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
+        }
+        else if (agTypeStr == CNS_AT_ST_ORCADD)
+        {
+            a = new ORCADDAgent(id, Point(stx, sty), Point(gx, gy), *map, *options, param, 2 * (param.radius + param.rEps), 2 * (param.radius));
+        }
+        else
+        {
+           a = new ORCAAgent(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
+        }
+
 
         switch(plannertype)
         {
             case CN_SP_ST_THETA:
             {
-                a->SetPlanner(ThetaStar(*map, *options, Point(stx, sty), Point(gx, gy), param.radius));
+                a->SetPlanner(ThetaStar(*map, *options, Point(stx, sty), Point(gx, gy), param.radius + param.rEps));
                 break;
             }
             case CN_SP_ST_DIR:
             {
-                a->SetPlanner(DirectPlanner(*map, *options, Point(stx, sty), Point(gx, gy), param.radius));
+                a->SetPlanner(DirectPlanner(*map, *options, Point(stx, sty), Point(gx, gy), param.radius + param.rEps));
                 break;
             }
             default:
             {
-                a->SetPlanner(ThetaStar(*map, *options, Point(stx, sty), Point(gx, gy), param.radius));
+                a->SetPlanner(ThetaStar(*map, *options, Point(stx, sty), Point(gx, gy), param.radius + param.rEps));
                 break;
             }
         }
-
         allAgents->push_back(a);
     }
-
     return true;
 }
-
-XMLReader &XMLReader::operator = (const XMLReader &obj)
-{
-    if (this != &obj)
-    {
-        fileName = obj.fileName;
-        if(doc != nullptr)
-        {
-            delete doc;
-        }
-
-        if(obj.doc != nullptr)
-        {
-            doc = new XMLDocument();
-            obj.doc->DeepCopy(doc);
-        }
-        else
-        {
-            doc = nullptr;
-        }
-
-        if(allAgents != nullptr)
-        {
-            delete allAgents;
-        }
-        allAgents = (obj.allAgents == nullptr) ? nullptr : new std::vector<Agent *>(*(obj.allAgents));
-
-        if(map != nullptr)
-        {
-            delete map;
-        }
-        map = (obj.map == nullptr) ? nullptr : new Map(*obj.map);
-
-        if(options != nullptr)
-        {
-            delete options;
-        }
-        options = (obj.options == nullptr) ? nullptr : new EnvironmentOptions(*obj.options);
-
-        if(grid != nullptr)
-        {
-            delete grid;
-        }
-        grid = (obj.grid == nullptr) ? nullptr : new std::vector<std::vector<int>>(*obj.grid);
-
-        if(obstacles != nullptr)
-        {
-            delete obstacles;
-        }
-        obstacles = (obj.obstacles == nullptr) ? nullptr : new std::vector<std::vector<Point>>(*obj.obstacles);
-    }
-    return *this;
-}
-
-XMLReader *XMLReader::Clone() const
-{
-    return new XMLReader(*this);
-}
-
-

@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
                 std::string result = task->StartMission().ToString();
                 pre_log <<result;
 
-#ifndef NDEBUG
+#if FULL_LOG
                 task->SaveLog();
 #endif
                 delete task;

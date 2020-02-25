@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
         std::cout << "\nSuccess\tRuntime\tMakespan\tFlowtime\tCollisions\tCollisionsObst\n";
         std::cout << result;
 
-#ifndef NDEBUG
+#if FULL_LOG
         task.SaveLog();
 #endif
 

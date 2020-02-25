@@ -16,6 +16,7 @@
 
 #define CNS_TAG_AGENTS                  "agents"
     #define CNS_TAG_ATTR_NUM            "number"
+    #define CNS_TAG_ATTR_TYPE           "type"
 
 #define CNS_TAG_DEF_PARAMS              "default_parameters"
     #define CNS_TAG_ATTR_SIZE               "size"
@@ -24,6 +25,7 @@
     #define CNS_TAG_ATTR_TIMEBOUNDARY       "timeboundary"
     #define CNS_TAG_ATTR_SIGHTRADIUS        "sightradius"
     #define CNS_TAG_ATTR_TIMEBOUNDARYOBST   "timeboundaryobst"
+    #define CNS_TAG_ATTR_REPS               "reps"
 
 #define CNS_TAG_AGENT                   "agent"
     #define CNS_TAG_ATTR_ID             "id"
@@ -72,6 +74,8 @@
 #define CNS_SP_ST_THETA     "thetastar"
 #define CNS_SP_ST_DIR       "direct"
 
+#define CNS_AT_ST_ORCA      "orca"
+#define CNS_AT_ST_ORCADD    "orcadd"
 
 #define CNS_SP_MT_DIAG      "diagonal"
 #define CNS_SP_MT_MANH      "manhattan"
@@ -103,10 +107,11 @@
 #define CN_DEFAULT_HWEIGHT 1
 #define CN_DEFAULT_TIME_STEP 0.25
 #define CN_DEFAULT_DELTA 0.1
+#define CN_DEFAULT_REPS 0.05
 
 #define CN_DEFAULT_ST CN_SP_ST_THETA
 #define CNS_DEFAULT_ST CNS_SP_ST_THETA
-
+#define CNS_DEFAULT_AGENT_TYPE CNS_AT_ST_ORCA
 
 
 

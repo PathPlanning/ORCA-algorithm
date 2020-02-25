@@ -17,8 +17,8 @@ class AgentParam
 {
     public:
         AgentParam() : sightRadius(CN_DEFAULT_RADIUS_OF_SIGHT), timeBoundary(CN_DEFAULT_TIME_BOUNDARY), timeBoundaryObst(CN_DEFAULT_OBS_TIME_BOUNDARY),
-            radius(CN_DEFAULT_SIZE), maxSpeed(CN_DEFAULT_MAX_SPEED), agentsMaxNum(CN_DEFAULT_AGENTS_MAX_NUM) {}
-        AgentParam(float sr, float tb, float tbo, float r, float ms, int amn) : sightRadius(sr), timeBoundary(tb), timeBoundaryObst(tbo), radius(r),
+            radius(CN_DEFAULT_SIZE), maxSpeed(CN_DEFAULT_MAX_SPEED), agentsMaxNum(CN_DEFAULT_AGENTS_MAX_NUM), rEps(CN_DEFAULT_REPS) {}
+        AgentParam(float sr, float tb, float tbo, float r, float reps, float ms, int amn) : sightRadius(sr), timeBoundary(tb), timeBoundaryObst(tbo), radius(r), rEps(reps),
             maxSpeed(ms), agentsMaxNum(amn) {}
         ~AgentParam() = default;
 
@@ -26,6 +26,7 @@ class AgentParam
         float timeBoundary;
         float timeBoundaryObst;
         float radius;
+        float rEps;
         float maxSpeed;
         int agentsMaxNum;
 };
@@ -56,7 +57,7 @@ class Agent
 
         virtual void SetPosition(const Point &pos);
 
-        bool isFinished();
+        virtual bool isFinished();
         void AddNeighbour(Agent &neighbour, float distSq);
         void UpdateNeighbourObst();
 

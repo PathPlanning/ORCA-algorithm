@@ -19,6 +19,7 @@ class ORCADDAgent : public Agent
         void ApplyNewVelocity() override;
         bool UpdatePrefVelocity() override;
         void SetPosition(const Point &pos) override;
+        bool isFinished() override;
 
         bool operator == (const ORCADDAgent &another) const;
         bool operator != (const ORCADDAgent &another) const;

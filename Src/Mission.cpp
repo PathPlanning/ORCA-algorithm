@@ -14,7 +14,7 @@ Mission::Mission(std::string fileName, unsigned int agentsNum, unsigned int step
     resultsLog = std::unordered_map<int, std::pair<bool, int>>();
     resultsLog.reserve(agentsNum);
 
-#ifndef NDEBUG
+#if FULL_LOG
     taskLogger = new XMLLogger(XMLLogger::GenerateLogFileName(fileName, agentsNum), fileName);
     stepsLog = std::unordered_map<int, std::vector<Point>>();
     stepsLog.reserve(agentsNum);
@@ -40,7 +40,7 @@ Mission::Mission(const Mission &obj)
     stepsCount = obj.stepsCount;
     taskReader = (obj.taskReader == nullptr) ? nullptr : obj.taskReader->Clone();
 
-#ifndef NDEBUG
+#if FULL_LOG
     taskLogger = (obj.taskLogger == nullptr) ? nullptr : obj.taskLogger->Clone();
     stepsLog = obj.stepsLog;
 #endif
@@ -77,7 +77,7 @@ Mission::~Mission()
         taskReader = nullptr;
     }
 
-#ifndef NDEBUG
+#if FULL_LOG
     if(taskLogger != nullptr)
     {
         delete taskLogger;
@@ -95,19 +95,23 @@ bool Mission::ReadTask()
 
 Summary Mission::StartMission()
 {
+#if FULL_OUTPUT
     std::cout<<"Start\n";
+#endif
 
     auto startpnt = std::chrono::high_resolution_clock::now();
     for(auto agent : agents)
     {
         bool found = agent->InitPath();
+#if FULL_OUTPUT
         if(!found)
         {
             std::cout<<agent->GetID()<< " "<< "Path not found\n";
         }
+#endif
         resultsLog.insert({agent->GetID(), {false, 0}});
 
-#ifndef NDEBUG
+#if FULL_LOG
         stepsLog.insert({agent->GetID(), std::vector<Point>()});
         stepsLog[agent->GetID()].push_back({agent->GetPosition()});
 #endif
@@ -158,13 +162,14 @@ Summary Mission::StartMission()
     missionResult.flowTime = stepsSum * options->timestep;
     missionResult.makeSpan = stepsCount * options->timestep;
     missionResult.collisionsObst = collisionsObstCount;
-
+#if FULL_OUTPUT
     std::cout<<"End\n";
+#endif
     return missionResult;
 }
 
 
-#ifndef NDEBUG
+#if FULL_LOG
 bool Mission::SaveLog()
 {
     taskLogger->SetResults(stepsLog, resultsLog);
@@ -182,7 +187,7 @@ void Mission::UpdateSate()
         Point newPos = agent->GetPosition() + (agent->GetVelocity() * options->timestep);
         agent->SetPosition(newPos);
 
-#ifndef NDEBUG
+#if FULL_LOG
         stepsLog[agent->GetID()].push_back(newPos);
 #endif
 
@@ -273,7 +278,7 @@ Mission &Mission::operator = (const Mission &obj)
         }
         taskReader = (obj.taskReader == nullptr) ? nullptr : obj.taskReader->Clone();
 
-#ifndef NDEBUG
+#if FULL_LOG
         if(taskLogger != nullptr)
         {
             delete taskLogger;

@@ -23,6 +23,9 @@ public:
     bool operator == (const ORCAAgent &another) const;
     bool operator != (const ORCAAgent &another) const;
     ORCAAgent &operator = (const ORCAAgent &obj);
+
+private:
+    float fakeRadius;
 };
 
 

@@ -29,7 +29,7 @@ class Mission
 
         Mission & operator = (const Mission &obj);
 
-#ifndef NDEBUG
+#if FULL_LOG
         bool SaveLog();
 #endif
 
@@ -51,7 +51,7 @@ class Mission
         unsigned int collisionsCount;
         unsigned int collisionsObstCount;
 
-#ifndef NDEBUG
+#if FULL_LOG
         Logger *taskLogger;
         std::unordered_map<int, std::vector<Point>> stepsLog;
 #endif
