@@ -6,7 +6,7 @@
 
 #define RESULT_FILE         "result.txt"
 #define INPUT_FILE_PART     "_task.xml"
-#define STEP_MAX            5000
+#define STEP_MAX            10000
 
 
 int main(int argc, char* argv[])

@@ -14,7 +14,7 @@ The agent is a disk of radius _r_ centered at _p_ with their start and global go
 
 Block scheme of the algorithm is shown in the figures below. 
 
-![Block scheme](/images/ORCA*-scheme.png)
+![Block scheme](./images/ORCA*-scheme.png)
 
 
 
@@ -170,7 +170,7 @@ Input file should contain:
   *  `<allowsqueeze>` — boolean tag that defines the possibility to make diagonal moves when both adjacent cells are untraversable. The tag is ignored if cutting corners is not allowed. Default value is "false" (Theta* parameter);
   *  `<hweight` — defines the weight of the heuristic function. Should be real number greater or equal 1. Default value is "1" (Theta* parameter);
 
-![Map scheme](/images/map.png)
+![Map scheme](./images/map.png)
 
 Examples locates in directory [TaskExamples](https://github.com/PathPlanning/ORCA-alorithm/tree/ORCAStar/TaskExamples).
 ### Output files

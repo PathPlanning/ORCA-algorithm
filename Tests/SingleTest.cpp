@@ -3,7 +3,7 @@
 
 #include "Mission.h"
 
-#define STEP_MAX 5000
+#define STEP_MAX 10000
 
 int main(int argc, char* argv[])
 {
