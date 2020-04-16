@@ -17,9 +17,9 @@ class AgentParam
 {
     public:
         AgentParam() : sightRadius(CN_DEFAULT_RADIUS_OF_SIGHT), timeBoundary(CN_DEFAULT_TIME_BOUNDARY), timeBoundaryObst(CN_DEFAULT_OBS_TIME_BOUNDARY),
-            radius(CN_DEFAULT_SIZE), maxSpeed(CN_DEFAULT_MAX_SPEED), agentsMaxNum(CN_DEFAULT_AGENTS_MAX_NUM), rEps(CN_DEFAULT_REPS) {}
-        AgentParam(float sr, float tb, float tbo, float r, float reps, float ms, int amn) : sightRadius(sr), timeBoundary(tb), timeBoundaryObst(tbo), radius(r), rEps(reps),
-            maxSpeed(ms), agentsMaxNum(amn) {}
+            radius(CN_DEFAULT_SIZE), maxSpeed(CN_DEFAULT_MAX_SPEED), agentsMaxNum(CN_DEFAULT_AGENTS_MAX_NUM), rEps(CN_DEFAULT_REPS), PARNum(CN_DEFAULT_PARACTNUM) {}
+        AgentParam(float sr, float tb, float tbo, float r, float reps, float ms, int amn, int parNum) : sightRadius(sr), timeBoundary(tb), timeBoundaryObst(tbo), radius(r), rEps(reps),
+            maxSpeed(ms), agentsMaxNum(amn), PARNum(parNum) {}
         ~AgentParam() = default;
 
         float sightRadius;
@@ -29,6 +29,7 @@ class AgentParam
         float rEps;
         float maxSpeed;
         int agentsMaxNum;
+        int PARNum;
 };
 
 class Agent
@@ -44,6 +45,12 @@ class Agent
         virtual void ApplyNewVelocity() = 0;
         virtual bool UpdatePrefVelocity() = 0;
 
+
+
+        virtual void SetPosition(const Point &pos);
+        virtual void AddNeighbour(Agent &neighbour, float distSq);
+        virtual bool isFinished();
+
         bool InitPath();
         int GetID() const;
         Point GetPosition() const;
@@ -51,14 +58,10 @@ class Agent
         float GetRadius() const;
         float GetSightRadius() const;
         float GetDistToGoal() const;
+        Point GetNext() const;
+
 
         std::pair<unsigned int, unsigned int> GetCollision() const;
-
-
-        virtual void SetPosition(const Point &pos);
-
-        virtual bool isFinished();
-        void AddNeighbour(Agent &neighbour, float distSq);
         void UpdateNeighbourObst();
 
         bool operator == (const Agent &another) const;
@@ -97,6 +100,8 @@ class Agent
 
         unsigned int collisions;
         unsigned int collisionsObst;
+
+        Point nextForLog;
 
 };
 

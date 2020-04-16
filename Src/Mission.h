@@ -54,6 +54,7 @@ class Mission
 #if FULL_LOG
         Logger *taskLogger;
         std::unordered_map<int, std::vector<Point>> stepsLog;
+        std::unordered_map<int, std::vector<Point>> goalsLog;
 #endif
 };
 

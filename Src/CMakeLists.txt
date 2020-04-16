@@ -13,7 +13,11 @@ SET(ORCA_HEADERS    Agent.h
                     ThetaStar.h
                     LineOfSight.h
                     DirectPlanner.h
-                    ORCAAgent.h ORCADDAgent.cpp ORCADDAgent.h)
+                    ORCAAgent.h
+                    ORCADDAgent.h
+                    ORCAAgentWithPAR.h
+                    PushAndRotate.h
+                    SubMap.h)
 
 SET(ORCA_SOURCES    Agent.cpp
                     XMLLogger.cpp
@@ -24,6 +28,10 @@ SET(ORCA_SOURCES    Agent.cpp
                     Geom.cpp
                     EnvironmentOptions.cpp
                     DirectPlanner.cpp
-                    ORCAAgent.cpp ORCADDAgent.cpp ORCADDAgent.h)
+                    ORCAAgent.cpp
+                    ORCADDAgent.cpp
+                    ORCAAgentWithPAR.cpp
+                    PushAndRotate.cpp
+                    SubMap.cpp PARActorSet.cpp PARActorSet.h PARActor.cpp PARActor.h ISearch.cpp ISearch.h AStar.cpp AStar.h Constraints.cpp Constraints.h ConflictAvoidanceTable.cpp ConflictAvoidanceTable.h)
 
 add_library(ORCA ${ORCA_HEADERS} ${ORCA_SOURCES})

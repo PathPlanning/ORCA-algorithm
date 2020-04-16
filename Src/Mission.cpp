@@ -18,6 +18,9 @@ Mission::Mission(std::string fileName, unsigned int agentsNum, unsigned int step
     taskLogger = new XMLLogger(XMLLogger::GenerateLogFileName(fileName, agentsNum), fileName);
     stepsLog = std::unordered_map<int, std::vector<Point>>();
     stepsLog.reserve(agentsNum);
+
+    goalsLog = std::unordered_map<int, std::vector<Point>>();
+    goalsLog.reserve(agentsNum);
 #endif
 
     collisionsCount = 0;
@@ -43,6 +46,8 @@ Mission::Mission(const Mission &obj)
 #if FULL_LOG
     taskLogger = (obj.taskLogger == nullptr) ? nullptr : obj.taskLogger->Clone();
     stepsLog = obj.stepsLog;
+    goalsLog = obj.goalsLog;
+
 #endif
 
 }
@@ -114,13 +119,19 @@ Summary Mission::StartMission()
 #if FULL_LOG
         stepsLog.insert({agent->GetID(), std::vector<Point>()});
         stepsLog[agent->GetID()].push_back({agent->GetPosition()});
+        goalsLog[agent->GetID()].push_back(agent->GetPosition());
 #endif
-        agent->UpdatePrefVelocity();
+//        agent->UpdatePrefVelocity();
     }
 
     do
     {
         AssignNeighbours();
+
+        for(auto &agent : agents)
+        {
+            agent->UpdatePrefVelocity();
+        }
 
         for(auto &agent : agents)
         {
@@ -154,6 +165,7 @@ Summary Mission::StartMission()
     {
         collisionsCount += agent->GetCollision().first;
         collisionsObstCount += agent->GetCollision().second;
+        //dynamic_cast<ORCAAgentWithPAR*>(agent)->TestPAR();
     }
 
     missionResult.successRate = rate * 100 / agentsNum;
@@ -172,7 +184,7 @@ Summary Mission::StartMission()
 #if FULL_LOG
 bool Mission::SaveLog()
 {
-    taskLogger->SetResults(stepsLog, resultsLog);
+    taskLogger->SetResults(stepsLog, goalsLog, resultsLog);
     taskLogger->SetSummary(missionResult);
     return taskLogger->GenerateLog() && (stepsCount > 0);
 }
@@ -189,26 +201,30 @@ void Mission::UpdateSate()
 
 #if FULL_LOG
         stepsLog[agent->GetID()].push_back(newPos);
+        goalsLog[agent->GetID()].push_back(agent->GetNext());
 #endif
 
-        agent->UpdatePrefVelocity();
+
     }
     stepsCount++;
+//    if(stepsCount % 100 == 0)
+//    {
+//        cout<<stepsCount<<"\n";
+//    }
 }
 
 
 void Mission::AssignNeighbours()
 {
-    float distSq, rSightSq;
     for(auto &agent : agents)
     {
-        rSightSq = agent->GetSightRadius() * agent->GetSightRadius();
-        for(auto &another : agents)
+
+        for(auto &neighbour : agents)
         {
-            if(agent != another &&
-                (distSq = (agent->GetPosition()-another->GetPosition()).SquaredEuclideanNorm()) < rSightSq)
+            if(agent != neighbour)
             {
-                agent->AddNeighbour(*another, distSq);
+                float distSq = (agent->GetPosition() - neighbour->GetPosition()).SquaredEuclideanNorm();
+                agent->AddNeighbour(*neighbour, distSq);
             }
         }
         agent->UpdateNeighbourObst();
@@ -285,6 +301,7 @@ Mission &Mission::operator = (const Mission &obj)
         }
         taskLogger = (obj.taskLogger == nullptr) ? nullptr : obj.taskLogger->Clone();
         stepsLog = obj.stepsLog;
+        goalsLog = obj.goalsLog;
 #endif
 
     }

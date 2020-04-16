@@ -26,6 +26,7 @@
     #define CNS_TAG_ATTR_SIGHTRADIUS        "sightradius"
     #define CNS_TAG_ATTR_TIMEBOUNDARYOBST   "timeboundaryobst"
     #define CNS_TAG_ATTR_REPS               "reps"
+    #define CNS_TAG_ATTR_PARACTNUM          "paractivatingnum"
 
 #define CNS_TAG_AGENT                   "agent"
     #define CNS_TAG_ATTR_ID             "id"
@@ -108,6 +109,8 @@
 #define CN_DEFAULT_TIME_STEP 0.25
 #define CN_DEFAULT_DELTA 0.1
 #define CN_DEFAULT_REPS 0.19
+#define CN_DEFAULT_PARACTNUM 3
+#define CN_DEFAULT_PARMAXTIME 200
 
 #define CN_DEFAULT_ST CN_SP_ST_THETA
 #define CNS_DEFAULT_ST CNS_SP_ST_THETA

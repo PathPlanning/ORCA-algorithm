@@ -114,6 +114,12 @@ bool Agent::operator != (const Agent &another) const
 
 void Agent::AddNeighbour(Agent &neighbour, float distSq)
 {
+    float sightSq = param.sightRadius * param.sightRadius;
+
+    if(distSq >= sightSq)
+    {
+        return;
+    }
     int i = 0;
     auto tmpit = Neighbours.begin();
     while(tmpit != Neighbours.end() && i < param.agentsMaxNum && Neighbours[i].first < distSq)
@@ -125,7 +131,7 @@ void Agent::AddNeighbour(Agent &neighbour, float distSq)
     {
         Neighbours.insert(tmpit,std::pair<float, Agent *>(distSq, &neighbour));
     }
-    //Neighbours.emplace_back(std::pair<float, Agent *>(distSq, &neighbour));
+
 }
 
 
@@ -237,6 +243,11 @@ Agent &Agent::operator = (const Agent &obj)
 float Agent::GetDistToGoal() const
 {
     return (position - goal).EuclideanNorm();
+}
+
+Point Agent::GetNext() const
+{
+    return nextForLog;
 }
 
 

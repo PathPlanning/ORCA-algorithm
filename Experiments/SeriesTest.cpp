@@ -72,7 +72,8 @@ int main(int argc, char* argv[])
             if(task->ReadTask())
             {
                 std::string result = task->StartMission().ToString();
-                pre_log <<result;
+                pre_log << result;
+                std::cout << result;
 
 #if FULL_LOG
                 task->SaveLog();

@@ -21,7 +21,9 @@ class XMLLogger : public Logger
         ~XMLLogger() override;
         bool GenerateLog() override;
         void SetSummary(const Summary &res) override;
-        void SetResults(const std::unordered_map<int, std::vector<Point>> &stepsLog, const std::unordered_map<int, std::pair<bool, int>> &resultsLog) override;
+        void
+        SetResults(const std::unordered_map<int, std::vector<Point>> &stepsLog, const std::unordered_map<int, std::vector<Point>> &goalsLog,
+                   const std::unordered_map<int, std::pair<bool, int>> &resultsLog) override;
         XMLLogger* Clone() const override;
 
         static std::string GenerateLogFileName(std::string inpFileName, int agentsNum);

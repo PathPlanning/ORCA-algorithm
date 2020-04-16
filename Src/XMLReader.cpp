@@ -808,7 +808,8 @@ bool XMLReader::ReadAgents()
         std::string agTypeStr = std::string(agType);
         if(agTypeStr == CNS_AT_ST_ORCA)
         {
-            a = new ORCAAgent(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
+            a = new ORCAAgentWithPAR(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
+            //a = new ORCAAgent(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
         }
         else if (agTypeStr == CNS_AT_ST_ORCADD)
         {

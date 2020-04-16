@@ -348,3 +348,24 @@ ThetaStar *ThetaStar::Clone() const
 {
     return new ThetaStar(*this);
 }
+
+void ThetaStar::AddPointToPath(Point p)
+{
+    currPath.push_front(p);
+}
+
+Point ThetaStar::PullOutNext()
+{
+    if(currPath.size() > 0)
+    {
+        Point res = currPath.front();
+        if(currPath.size() > 1)
+        {
+            currPath.pop_front();
+        }
+        return res;
+    }
+
+
+    return Point();
+}

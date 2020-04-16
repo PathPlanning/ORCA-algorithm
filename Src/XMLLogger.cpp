@@ -57,7 +57,9 @@ void XMLLogger::SetSummary(const Summary &res)
 }
 
 
-void XMLLogger::SetResults(const std::unordered_map<int, std::vector<Point>> &stepsLog, const std::unordered_map<int, std::pair<bool, int>> &resultsLog)
+void XMLLogger::SetResults(const std::unordered_map<int, std::vector<Point>> &stepsLog,
+                           const std::unordered_map<int, std::vector<Point>> &goalsLog,
+                           const std::unordered_map<int, std::pair<bool, int>> &resultsLog)
 {
     if(doc != nullptr)
     {
@@ -73,12 +75,17 @@ void XMLLogger::SetResults(const std::unordered_map<int, std::vector<Point>> &st
             tmppath->SetAttribute(CNS_TAG_ATTR_PATHFOUND, resultsLog.at(agentPath.first).first);
             tmppath->SetAttribute(CNS_TAG_ATTR_STEPS, resultsLog.at(agentPath.first).second);
 
-            for(auto &step : agentPath.second)
+            for(int i = 0; i < agentPath.second.size(); i++)
             {
+                Point step = agentPath.second[i];
                 tmpstep = doc->NewElement(CNS_TAG_STEP);
                 tmpstep->SetAttribute(CNS_TAG_ATTR_NUM, j);
                 tmpstep->SetAttribute(CNS_TAG_ATTR_X, step.X());
                 tmpstep->SetAttribute(CNS_TAG_ATTR_Y, step.Y());
+
+                tmpstep->SetAttribute("next.xr", goalsLog.at(agentPath.first)[i].X());
+                tmpstep->SetAttribute("next.yr", goalsLog.at(agentPath.first)[i].Y());
+
                 j++;
                 tmppath->InsertEndChild(tmpstep);
             }

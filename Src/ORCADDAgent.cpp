@@ -11,6 +11,8 @@ ORCADDAgent::ORCADDAgent() : Agent()
     sin0 = 0.0f;
     cos0 = 0.0f;
     tet = 0.0f;
+    wheelTrack = 0.0f;
+    effectiveRadius = 0.0f;
 }
 
 
@@ -41,6 +43,8 @@ ORCADDAgent::ORCADDAgent(const ORCADDAgent &obj) : Agent(obj)
     sin0 = obj.sin0;
     cos0 = obj.cos0;
     tet = obj.tet;
+    effectiveRadius = obj.effectiveRadius;
+    wheelTrack = obj.wheelTrack;
 
 }
 
@@ -60,6 +64,8 @@ ORCADDAgent & ORCADDAgent::operator = (const ORCADDAgent &obj)
         sin0 = obj.sin0;
         cos0 = obj.cos0;
         tet = obj.tet;
+        effectiveRadius = obj.effectiveRadius;
+        wheelTrack = obj.wheelTrack;
     }
 
     return *this;

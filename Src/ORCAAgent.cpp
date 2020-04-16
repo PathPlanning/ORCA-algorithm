@@ -358,11 +358,10 @@ ORCAAgent & ORCAAgent::operator = (const ORCAAgent &obj)
     if(this != &obj)
     {
         Agent::operator=(obj);
+        fakeRadius = obj.fakeRadius;
     }
     return *this;
 }
-
-
 
 bool ORCAAgent::operator == (const ORCAAgent &another) const
 {
