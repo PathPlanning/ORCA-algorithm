@@ -1,4 +1,4 @@
-SET(ORCA_HEADERS    Agent.h
+SET(ORCAStar_HEADERS    Agent.h
                     Mission.h
                     XMLLogger.h
                     Map.h
@@ -17,9 +17,15 @@ SET(ORCA_HEADERS    Agent.h
                     ORCADDAgent.h
                     ORCAAgentWithPAR.h
                     PushAndRotate.h
-                    SubMap.h)
+                    SubMap.h
+                    PARActorSet.h
+                    PARActor.h
+                    ISearch.h
+                    AStar.h
+                    Constraints.h
+                    ConflictAvoidanceTable.h)
 
-SET(ORCA_SOURCES    Agent.cpp
+SET(ORCAStar_SOURCES    Agent.cpp
                     XMLLogger.cpp
                     Mission.cpp
                     Map.cpp
@@ -32,6 +38,12 @@ SET(ORCA_SOURCES    Agent.cpp
                     ORCADDAgent.cpp
                     ORCAAgentWithPAR.cpp
                     PushAndRotate.cpp
-                    SubMap.cpp PARActorSet.cpp PARActorSet.h PARActor.cpp PARActor.h ISearch.cpp ISearch.h AStar.cpp AStar.h Constraints.cpp Constraints.h ConflictAvoidanceTable.cpp ConflictAvoidanceTable.h)
+                    SubMap.cpp
+                    PARActorSet.cpp
+                    PARActor.cpp
+                    ISearch.cpp
+                    AStar.cpp
+                    Constraints.cpp
+                    ConflictAvoidanceTable.cpp)
 
-add_library(ORCA ${ORCA_HEADERS} ${ORCA_SOURCES})
+add_library(ORCAStar ${ORCAStar_HEADERS} ${ORCAStar_SOURCES})

@@ -56,8 +56,6 @@ class Agent
         Point GetPosition() const;
         Point GetVelocity() const;
         float GetRadius() const;
-        float GetSightRadius() const;
-        float GetDistToGoal() const;
         Point GetNext() const;
 
 

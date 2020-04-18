@@ -20,11 +20,11 @@ SubMap::SubMap(const Map *map, Node mapOrigin, std::pair<int, int> mapSize, int 
     divKoef = divK;
     fullMap = map;
     emptyCells = 0;
-    for(int i = 0; i < mapSize.first; i++)
+    for(int i = 0; i < size.first; i++)
     {
-        for(int j = 0; j < mapSize.second; j++)
+        for(int j = 0; j < size.second; j++)
         {
-            if(map->CellOnGrid(i, j) && map->CellIsTraversable(i, j))
+            if(CellOnGrid(i, j) && CellIsTraversable(i, j))
             {
                 emptyCells++;
             }

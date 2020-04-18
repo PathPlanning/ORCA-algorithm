@@ -29,13 +29,12 @@ class ORCAAgentWithPAR : public Agent
         bool UpdatePrefVelocity() override;
         void AddNeighbour(Agent &neighbour, float distSq) override;
 
+        bool isPARMember() const;
+
+
         bool operator == (const ORCAAgentWithPAR &another) const;
         bool operator != (const ORCAAgentWithPAR &another) const;
         ORCAAgentWithPAR &operator = (const ORCAAgentWithPAR &obj);
-        void TestPAR()
-        {
-            std::cout << id << " " << inPARMode << " " << moveToPARPos << " " << PARExec << "\n";
-        }
 
     private:
         std::vector <std::pair<float, Agent*>>& GetNeighbours();

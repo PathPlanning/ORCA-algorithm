@@ -147,12 +147,6 @@ Point Agent::GetPosition() const
 }
 
 
-float Agent::GetSightRadius() const
-{
-    return param.sightRadius;
-}
-
-
 void Agent::UpdateNeighbourObst()
 {
     NeighboursObst.clear();
@@ -239,11 +233,6 @@ Agent &Agent::operator = (const Agent &obj)
     return *this;
 }
 
-
-float Agent::GetDistToGoal() const
-{
-    return (position - goal).EuclideanNorm();
-}
 
 Point Agent::GetNext() const
 {

@@ -1150,3 +1150,9 @@ bool ORCAAgentWithPAR::UpdatePAR()
  //   std::cout<<"Agent No "<< id <<". End update PAR\n\n";
     return true;
 }
+
+
+bool ORCAAgentWithPAR::isPARMember() const
+{
+    return inPARMode;
+}

@@ -165,7 +165,6 @@ Summary Mission::StartMission()
     {
         collisionsCount += agent->GetCollision().first;
         collisionsObstCount += agent->GetCollision().second;
-        //dynamic_cast<ORCAAgentWithPAR*>(agent)->TestPAR();
     }
 
     missionResult.successRate = rate * 100 / agentsNum;
