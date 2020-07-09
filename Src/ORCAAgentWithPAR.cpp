@@ -793,6 +793,8 @@ void ORCAAgentWithPAR::PreparePARExecution(Point common)
     }
 
     // TODO Save here
+
+
     PARLog->SaveInstance(PARSet, PARMap);
 
 
@@ -876,6 +878,7 @@ bool ORCAAgentWithPAR::ComputePAREnv(Point common, std::vector<std::pair<Point, 
             tmpGoal = PARMap.GetClosestNode(tmpGoalPoint);
             tmpGoal = PARMap.FindAvailableNode(tmpGoal, goals);
 
+
             if(tmpGoal.i < 0)
             {
                 for(auto &ag1 : PARAgents)
@@ -935,6 +938,12 @@ bool ORCAAgentWithPAR::ComputePAREnv(Point common, std::vector<std::pair<Point, 
         }
 
         starts.insert({tmpStart.i * PARMap.GetWidth() + tmpStart.j, tmpStart});
+
+        if(PARMap.CellIsObstacle(tmpGoal.i, tmpGoal.j))
+        {
+            std::cout<< "AAAAAAa Cell:" << tmpGoal.i << " " << tmpGoal.j << "\n";
+        }
+
         goals.insert({tmpGoal.i * PARMap.GetWidth() + tmpGoal.j, tmpGoal});
 
         PARSet.addActor(tmpStart.i, tmpStart.j, tmpGoal.i, tmpGoal.j);

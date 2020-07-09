@@ -73,7 +73,7 @@ bool PARInstancesLogger::SaveInstance(PARActorSet &agents, SubMap &map)
         }
 
         rowXML->SetText(rowStr.c_str());
-        gridXML->InsertFirstChild(rowXML);
+        gridXML->InsertEndChild(rowXML);
     }
     mapXML->InsertEndChild(gridXML);
     rootXML->InsertFirstChild(mapXML);

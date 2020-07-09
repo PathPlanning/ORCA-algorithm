@@ -26,7 +26,6 @@
     #define CNS_TAG_ATTR_SIGHTRADIUS        "sightradius"
     #define CNS_TAG_ATTR_TIMEBOUNDARYOBST   "timeboundaryobst"
     #define CNS_TAG_ATTR_REPS               "reps"
-    #define CNS_TAG_ATTR_PARACTNUM          "paractivatingnum"
 
 #define CNS_TAG_AGENT                   "agent"
     #define CNS_TAG_ATTR_ID             "id"

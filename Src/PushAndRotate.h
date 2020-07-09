@@ -1,6 +1,7 @@
 #include <list>
 #include <vector>
 #include <algorithm>
+#include <chrono>
 
 #include "ISearch.h"
 #include "PARActorSet.h"

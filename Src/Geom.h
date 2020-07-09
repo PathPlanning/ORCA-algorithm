@@ -1,6 +1,7 @@
 #include <cmath>
 #include <vector>
 #include <string>
+#include <tuple>
 
 #include "Const.h"
 

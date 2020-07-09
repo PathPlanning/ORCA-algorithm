@@ -1,6 +1,7 @@
 #include <list>
 #include <unordered_set>
 #include <queue>
+#include <chrono>
 
 #include "Geom.h"
 #include "SubMap.h"
@@ -59,7 +60,7 @@ class ISearch
                                                const ConflictAvoidanceTable &CAT = ConflictAvoidanceTable());
 
         static int convolution(int i, int j, const SubMap &map, int time = 0, bool withTime = false);
-        void getPerfectHeuristic(const SubMap &map, const PARActorSet &aсtorSet);
+        void getPerfectHeuristic(const SubMap &map, const PARActorSet &actorSet);
 
     protected:
         virtual double computeHFromCellToCell(int start_i, int start_j, int fin_i, int fin_j) {return 0;}

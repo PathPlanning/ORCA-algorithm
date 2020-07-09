@@ -3,6 +3,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <iostream>
+#include <algorithm>
 #ifndef ORCA_SUBMAP_H
 #define ORCA_SUBMAP_H
 
