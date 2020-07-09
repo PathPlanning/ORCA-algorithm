@@ -4,6 +4,7 @@ project(ORCAStar)
 
 set(FullOutput OFF)
 set(FullLog OFF)
+set(PAREnvLog OFF)
 
 
 if(FullOutput)
@@ -17,6 +18,12 @@ if(FullLog)
 else(FullLog)
     add_compile_definitions(FULL_LOG=false)
 endif(FullLog)
+
+if(PAREnvLog)
+    add_compile_definitions(PAR_LOG=true)
+else(PAREnvLog)
+    add_compile_definitions(PAR_LOG=false)
+endif(PAREnvLog)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -O0" )
 

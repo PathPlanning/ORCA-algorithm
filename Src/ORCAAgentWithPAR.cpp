@@ -9,7 +9,7 @@ ORCAAgentWithPAR::ORCAAgentWithPAR() : Agent()
     moveToPARPos = false;
     PARExec = false;
     PARMap = SubMap();
-    conf.maxTime = CN_DEFAULT_PARMAXTIME;
+    conf.maxTime = CN_PARMAXTIME;
     PARVis = false;
     PARExec = false;
     PARStart = Point(-1,-1);
@@ -31,7 +31,7 @@ ORCAAgentWithPAR::ORCAAgentWithPAR(const int &id, const Point &start, const Poin
     PARVis = false;
     PARExec = false;
     PARMap = SubMap();
-    conf.maxTime = CN_DEFAULT_PARMAXTIME;
+    conf.maxTime = CN_PARMAXTIME;
     PARStart = Point(-1,-1);
     PARGoal = Point(-1,-1);
     PARsearch = Astar(false);
@@ -161,7 +161,6 @@ void ORCAAgentWithPAR::ComputeNewVelocity()
         }
         else
         {
-            // TODO
             newV = Point();
         }
 
@@ -792,11 +791,12 @@ void ORCAAgentWithPAR::PreparePARExecution(Point common)
         }
     }
 
-    // TODO Save here
 
 
+#if PAR_LOG
+    // Save here
     PARLog->SaveInstance(PARSet, PARMap);
-
+#endif
 
     for(auto &ag : PARAgents)
     {
@@ -939,11 +939,6 @@ bool ORCAAgentWithPAR::ComputePAREnv(Point common, std::vector<std::pair<Point, 
 
         starts.insert({tmpStart.i * PARMap.GetWidth() + tmpStart.j, tmpStart});
 
-        if(PARMap.CellIsObstacle(tmpGoal.i, tmpGoal.j))
-        {
-            std::cout<< "AAAAAAa Cell:" << tmpGoal.i << " " << tmpGoal.j << "\n";
-        }
-
         goals.insert({tmpGoal.i * PARMap.GetWidth() + tmpGoal.j, tmpGoal});
 
         PARSet.addActor(tmpStart.i, tmpStart.j, tmpGoal.i, tmpGoal.j);
@@ -975,7 +970,7 @@ Point ORCAAgentWithPAR::PullOutIntermediateGoal(Point common)
 bool ORCAAgentWithPAR::ComputePAR()
 {
     PARSolver.clear();
-    conf.maxTime = CN_DEFAULT_PARMAXTIME;
+    conf.maxTime = CN_PARMAXTIME;
 //    PARMap.printSubMap();
     PARres = PARSolver.startSearch(PARMap, conf,PARSet);
 
@@ -1155,7 +1150,9 @@ bool ORCAAgentWithPAR::isPARMember() const
     return inPARMode;
 }
 
+#if PAR_LOG
 void ORCAAgentWithPAR::SetPARInstanceLoggerRef(PARInstancesLogger *log)
 {
     PARLog = log;
 }
+#endif

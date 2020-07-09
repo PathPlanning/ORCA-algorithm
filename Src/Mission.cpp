@@ -26,16 +26,20 @@ Mission::Mission(std::string fileName, unsigned int agentsNum, unsigned int step
     collisionsCount = 0;
     collisionsObstCount = 0;
     stepsCount = 0;
+
+#if PAR_LOG
     string tmpPAR = fileName.erase(fileName.find_last_of("."));
     PARLog = PARInstancesLogger(tmpPAR);
-
+#endif
 
 }
 
 
 Mission::Mission(const Mission &obj)
 {
+#if PAR_LOG
     PARLog = obj.PARLog;
+#endif
     agents = obj.agents;
     map = obj.map;
     options = obj.options;
@@ -111,7 +115,9 @@ Summary Mission::StartMission()
     auto startpnt = std::chrono::high_resolution_clock::now();
     for(auto agent : agents)
     {
+#if PAR_LOG
         dynamic_cast<ORCAAgentWithPAR*>(agent)->SetPARInstanceLoggerRef(&PARLog);
+#endif
         bool found = agent->InitPath();
 #if FULL_OUTPUT
         if(!found)
@@ -146,7 +152,7 @@ Summary Mission::StartMission()
         UpdateSate();
 
     }
-    while(!IsFinished() && stepsCount < stepsTreshhold);
+    while(!IsFinished()); // && stepsCount < stepsTreshhold);
 
     auto endpnt = std::chrono::high_resolution_clock::now();
     long long int res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
@@ -266,7 +272,9 @@ Mission &Mission::operator = (const Mission &obj)
         taskReader = obj.taskReader;
         missionResult = obj.missionResult;
         resultsLog = obj.resultsLog;
+#if PAR_LOG
         PARLog = obj.PARLog;
+#endif
 
         vector<Agent *> tmpAgents = vector<Agent *>(obj.agents.size());
         for(int i = 0; i < obj.agents.size(); i++)

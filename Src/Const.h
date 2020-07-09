@@ -9,6 +9,7 @@
 #define CN_EPS 0.00001f
 #define CN_PI_CONSTANT 3.14159265359
 #define CN_SQRT_TWO    1.41421356237
+#define CN_PARMAXTIME 200
 
 
 //XML tags
@@ -26,6 +27,7 @@
     #define CNS_TAG_ATTR_SIGHTRADIUS        "sightradius"
     #define CNS_TAG_ATTR_TIMEBOUNDARYOBST   "timeboundaryobst"
     #define CNS_TAG_ATTR_REPS               "reps"
+    #define CNS_TAG_ATTR_PARACTNUM          "triggernum"
 
 #define CNS_TAG_AGENT                   "agent"
     #define CNS_TAG_ATTR_ID             "id"
@@ -75,7 +77,8 @@
 #define CNS_SP_ST_DIR       "direct"
 
 #define CNS_AT_ST_ORCA      "orca"
-#define CNS_AT_ST_ORCADD    "orcadd"
+#define CNS_AT_ST_ORCADD    "orca-dd"
+#define CNS_AT_ST_ORCAPAR   "orca-par"
 
 #define CNS_SP_MT_DIAG      "diagonal"
 #define CNS_SP_MT_MANH      "manhattan"
@@ -109,7 +112,8 @@
 #define CN_DEFAULT_DELTA 0.1
 #define CN_DEFAULT_REPS 0.19
 #define CN_DEFAULT_PARACTNUM 3
-#define CN_DEFAULT_PARMAXTIME 200
+
+
 
 #define CN_DEFAULT_ST CN_SP_ST_THETA
 #define CNS_DEFAULT_ST CNS_SP_ST_THETA

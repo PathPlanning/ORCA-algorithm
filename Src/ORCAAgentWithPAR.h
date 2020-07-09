@@ -36,7 +36,9 @@ class ORCAAgentWithPAR : public Agent
         bool operator == (const ORCAAgentWithPAR &another) const;
         bool operator != (const ORCAAgentWithPAR &another) const;
         ORCAAgentWithPAR &operator = (const ORCAAgentWithPAR &obj);
+#if PAR_LOG
         void SetPARInstanceLoggerRef(PARInstancesLogger *log);
+#endif
 
     private:
         std::vector <std::pair<float, Agent*>>& GetNeighbours();
@@ -70,7 +72,9 @@ class ORCAAgentWithPAR : public Agent
         int PARActorId;
         Point PARcommon;
         std::vector<Point> buffPar;
+#if PAR_LOG
         PARInstancesLogger *PARLog;
+#endif
 
 
 };

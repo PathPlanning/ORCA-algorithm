@@ -654,10 +654,17 @@ bool XMLReader::ReadAgents()
             std::cout <<CNS_TAG_ATTR_TIMEBOUNDARYOBST <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_OBS_TIME_BOUNDARY<<"\n";
 #endif
         }
+
         if(tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_REPS, &defaultParam.rEps) != XMLError::XML_SUCCESS)
         {
 #if FULL_OUTPUT
             std::cout <<CNS_TAG_ATTR_REPS <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_REPS<<"\n";
+#endif
+        }
+        if(tmpElement->QueryIntAttribute(CNS_TAG_ATTR_PARACTNUM, &defaultParam.PARNum) != XMLError::XML_SUCCESS)
+        {
+#if FULL_OUTPUT
+            std::cout <<CNS_TAG_ATTR_PARACTNUM <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_PARACTNUM<<"\n";
 #endif
         }
     }
@@ -756,7 +763,13 @@ bool XMLReader::ReadAgents()
 #endif
             param.rEps = defaultParam.rEps;
         }
-
+        if(tmpElement->QueryIntAttribute(CNS_TAG_ATTR_PARACTNUM, &param.PARNum) != XMLError::XML_SUCCESS)
+        {
+#if FULL_OUTPUT
+            std::cout <<CNS_TAG_ATTR_PARACTNUM <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_PARACTNUM<<"\n";
+#endif
+            param.PARNum = defaultParam.PARNum;
+        }
 
 
 
@@ -808,12 +821,15 @@ bool XMLReader::ReadAgents()
         std::string agTypeStr = std::string(agType);
         if(agTypeStr == CNS_AT_ST_ORCA)
         {
-            a = new ORCAAgentWithPAR(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
-            //a = new ORCAAgent(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
+            a = new ORCAAgent(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
         }
         else if (agTypeStr == CNS_AT_ST_ORCADD)
         {
             a = new ORCADDAgent(id, Point(stx, sty), Point(gx, gy), *map, *options, param, 2 * (param.radius + param.rEps), 2 * (param.radius));
+        }
+        else if (agTypeStr == CNS_AT_ST_ORCAPAR)
+        {
+            a = new ORCAAgentWithPAR(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
         }
         else
         {
