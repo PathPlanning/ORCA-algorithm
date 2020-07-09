@@ -22,7 +22,7 @@ Block scheme of the algorithm is shown in the figures below.
 
 **TODO**
 
-![Ag](./images/Alg.png)
+![Alg](./images/Alg.png)
 
 ## Getting Started
 The implementation is self-contained. Code is written in C++ and is meant to be cross-platform. Implementation relies only on C++11 standard and STL. Open-source library to work with XML (tinyXML) is included at the source level (i.e. .h and .cpp files are part of the project).
