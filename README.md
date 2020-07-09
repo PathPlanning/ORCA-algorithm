@@ -1,8 +1,10 @@
-# ORCA* Algorithm
+# ORCA* Algorithm + Push And Rotate
 
-Implementation of ORCA algorithm with global path planner based on Theta* algorithm and computing differential-drive control outputs 
+Implementation of ORCA algorithm with global path planner based on Theta* algorithm and local coordinated navigation in case of deadlocks.
 
 ## Description
+
+### Decentrilized Navigation
 The algorithm is based on the idea of planning a global path for all agents independently and moving along this path with local collision avoidance. Theta* algorithm are using to global path planning and ORCA algorithm are using for local collision avoidance with agents and static obstacles. Also direct moving to goal without global planning is available.
 
 **Theta*** is a version of A* algorithm for any-angle path planning on grids. Theta* mostly the same as A*, but, unlike A*, Theta* allows parent of current vertex may be any other vertex, which are visible from current [[1](https://arxiv.org/pdf/1401.3843.pdf)].
@@ -14,13 +16,16 @@ The agent is a disk of radius _r_ centered at _p_ with their start and global go
 
 Block scheme of the algorithm is shown in the figures below. 
 
-![Block scheme](./images/ORCA*-scheme.png)
 
 
+### Deadlock Avoidance
 
-The implementation is self-contained. Code is written in C++ and is meant to be cross-platform. Implementation relies only on C++11 standard and STL. Open-source library to work with XML (tinyXML) is included at the source level (i.e. .h and .cpp files are part of the project).
+**TODO**
+
+![Ag](./images/Alg.png)
 
 ## Getting Started
+The implementation is self-contained. Code is written in C++ and is meant to be cross-platform. Implementation relies only on C++11 standard and STL. Open-source library to work with XML (tinyXML) is included at the source level (i.e. .h and .cpp files are part of the project).
 
 To build and run the project you can use CMake, CMakeLists file is available in the repo. Please note that the code relies on C++11 standart. Make sure that your compiler supports it. 
 

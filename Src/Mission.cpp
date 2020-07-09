@@ -152,7 +152,7 @@ Summary Mission::StartMission()
         UpdateSate();
 
     }
-    while(!IsFinished()); // && stepsCount < stepsTreshhold);
+    while(!IsFinished() && stepsCount < stepsTreshhold);
 
     auto endpnt = std::chrono::high_resolution_clock::now();
     long long int res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
