@@ -35,6 +35,8 @@ class TestMap : public ::testing::Test
 };
 
 
+
+
 TEST_F(TestMap, GridTest)
 {
     EXPECT_EQ(underTest->GetHeight(), grid.size());

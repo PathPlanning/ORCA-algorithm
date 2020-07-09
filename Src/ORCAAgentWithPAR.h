@@ -7,6 +7,7 @@
 #include "PARActor.h"
 #include "PushAndRotate.h"
 #include "AStar.h"
+#include "PARInstancesLogger.h"
 
 #ifndef ORCA_ORCAAGENTWITHPAR_H
 #define ORCA_ORCAAGENTWITHPAR_H
@@ -35,6 +36,7 @@ class ORCAAgentWithPAR : public Agent
         bool operator == (const ORCAAgentWithPAR &another) const;
         bool operator != (const ORCAAgentWithPAR &another) const;
         ORCAAgentWithPAR &operator = (const ORCAAgentWithPAR &obj);
+        void SetPARInstanceLoggerRef(PARInstancesLogger *log);
 
     private:
         std::vector <std::pair<float, Agent*>>& GetNeighbours();
@@ -68,6 +70,7 @@ class ORCAAgentWithPAR : public Agent
         int PARActorId;
         Point PARcommon;
         std::vector<Point> buffPar;
+        PARInstancesLogger *PARLog;
 
 
 };

@@ -34,17 +34,17 @@ Point::Point(const Point &obj)
 }
 
 
-std::pair<float, float> Point::GetPair()
-{
-    return {x, y};
-}
-
-std::string Point::ToString() const
-{
-    return "x: " + std::to_string(x) + "\ty: "
-           + std::to_string(y) + "\n";
-
-}
+//std::pair<float, float> Point::GetPair()
+//{
+//    return {x, y};
+//}
+//
+//std::string Point::ToString() const
+//{
+//    return "x: " + std::to_string(x) + "\ty: "
+//           + std::to_string(y) + "\n";
+//
+//}
 
 bool Vertex::IsConvex() const
 {

@@ -54,6 +54,10 @@ int PARActorSet::getActorId(int i, int j) const
 
 void PARActorSet::moveActor(Node &from, Node &to, std::vector<ActorMove>& result)
 {
+    if(from.i == to.i && from.j == to.j)
+    {
+        std::cout << "AAAA\n";
+    }
     int id = occupiedNodes.at(std::make_pair(from.i, from.j));
     occupiedNodes[std::make_pair(to.i, to.j)] = id;
     occupiedNodes.erase(std::make_pair(from.i, from.j));

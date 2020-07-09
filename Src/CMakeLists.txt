@@ -23,7 +23,8 @@ SET(ORCAStar_HEADERS    Agent.h
                     ISearch.h
                     AStar.h
                     Constraints.h
-                    ConflictAvoidanceTable.h)
+                    ConflictAvoidanceTable.h
+                    PARInstancesLogger.h)
 
 SET(ORCAStar_SOURCES    Agent.cpp
                     XMLLogger.cpp
@@ -44,6 +45,7 @@ SET(ORCAStar_SOURCES    Agent.cpp
                     ISearch.cpp
                     AStar.cpp
                     Constraints.cpp
-                    ConflictAvoidanceTable.cpp)
+                    ConflictAvoidanceTable.cpp
+                    PARInstancesLogger.cpp)
 
 add_library(ORCAStar ${ORCAStar_HEADERS} ${ORCAStar_SOURCES})

@@ -2,7 +2,7 @@
 #include <utility>
 #include <unordered_set>
 #include <unordered_map>
-
+#include <iostream>
 #ifndef ORCA_SUBMAP_H
 #define ORCA_SUBMAP_H
 
@@ -32,6 +32,20 @@ class SubMap
         Node FindAvailableNode(Node start, std::unordered_map<int, Node> occupied);
 
         SubMap & operator = (const SubMap &obj);
+
+
+//        void printSubMap()
+//        {
+//            std::cout<<"\n";
+//            for(int i = 0; i < size.first; i++)
+//            {
+//                for(int j = 0; j < size.second; j++)
+//                {
+//                    std::cout<<CellIsObstacle(i, j);
+//                }
+//                std::cout<<"\n";
+//            }
+//        }
 
     private:
         float cellSize;

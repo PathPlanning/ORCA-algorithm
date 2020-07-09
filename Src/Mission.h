@@ -13,6 +13,7 @@
 #include "Summary.h"
 #include "XMLReader.h"
 #include "XMLLogger.h"
+#include "PARInstancesLogger.h"
 
 using namespace tinyxml2;
 
@@ -44,6 +45,7 @@ class Mission
         EnvironmentOptions *options;
         Summary missionResult;
         std::unordered_map<int, std::pair<bool, int>> resultsLog;
+        PARInstancesLogger PARLog;
 
         unsigned int stepsCount;
         unsigned int stepsTreshhold;
