@@ -178,16 +178,16 @@ Node SubMap::FindAvailableNode(Node start, std::unordered_map<int, Node> occupie
     {
         return start;
     }
-    std::vector<Node> open = std::vector<Node>();
+    std::list<Node> open = std::list<Node>();
     std::unordered_map<int, Node> close = std::unordered_map<int, Node>();
 
     open.push_back(start);
 
     while(!open.empty())
     {
-        Node curr = open.back();
+        Node curr = open.front();
         close.insert({curr.i * GetWidth() + curr.j, curr});
-        open.pop_back();
+        open.pop_front();
 
         if(CellIsTraversable(curr.i, curr.j) && occupied.find(curr.i * GetWidth() + curr.j) == occupied.end())
         {

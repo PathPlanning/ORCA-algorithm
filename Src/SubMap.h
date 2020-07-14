@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <iostream>
 #include <algorithm>
+#include <list>
+
 #ifndef ORCA_SUBMAP_H
 #define ORCA_SUBMAP_H
 

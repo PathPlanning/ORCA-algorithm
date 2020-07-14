@@ -358,7 +358,7 @@ void PushAndRotate::getActorPaths(PARActorSet &actorSet)
 
 void PushAndRotate::getParallelPaths(PARActorSet &actorSet)
 {
-    int actorCount = actorSet.getActorCount();
+   /* int actorCount = actorSet.getActorCount();
     std::vector<std::vector<Node>> actorsPositions(actorCount);
     std::vector<int> actorInd(actorCount, 0);
     std::unordered_map<Node, std::vector<int>> nodesOccupations;
@@ -483,6 +483,106 @@ void PushAndRotate::getParallelPaths(PARActorSet &actorSet)
             return x;
         }))
         {
+            break;
+        }
+    }*/
+
+    int actorCount = actorSet.getActorCount();
+    std::vector<std::vector<Node>> actorsPositions(actorCount);
+    std::vector<int> actorInd(actorCount, 0);
+    std::unordered_map<Node, std::vector<int>, Utils::NodeHash> nodesOccupations;
+    std::unordered_map<Node, int, Utils::NodeHash> nodeInd;
+
+    actorsPaths.resize(actorSet.getActorCount());
+    for (int i = 0; i < actorSet.getActorCount(); ++i) {
+        Node startPosition = actorSet.getActor(i).getStartPosition();
+        actorsPositions[i].push_back(startPosition);
+        actorsPaths[i].push_back(startPosition);
+        if (nodesOccupations.find(startPosition) == nodesOccupations.end()) {
+            nodesOccupations[startPosition] = {};
+            nodeInd[startPosition] = 0;
+        }
+        nodesOccupations[startPosition].push_back(i);
+    }
+
+    for (auto move : actorsMoves) {
+        Node cur = actorsPositions[move.id].back();
+        cur.i += move.di;
+        cur.j += move.dj;
+        if (nodesOccupations.find(cur) == nodesOccupations.end()) {
+            nodesOccupations[cur] = {};
+            nodeInd[cur] = 0;
+        }
+        if (!nodesOccupations[cur].empty() && nodesOccupations[cur].back() == move.id) {
+            while(actorsPositions[move.id].back() != cur) {
+                Node curBack = actorsPositions[move.id].back();
+                int lastInd;
+                for (lastInd = nodesOccupations[curBack].size() - 1;
+                     lastInd >= 0 && nodesOccupations[curBack][lastInd] != move.id; --lastInd);
+                nodesOccupations[curBack].erase(nodesOccupations[curBack].begin() + lastInd);
+                actorsPositions[move.id].pop_back();
+            }
+        } else {
+            actorsPositions[move.id].push_back(cur);
+            nodesOccupations[cur].push_back(move.id);
+        }
+    }
+
+    std::vector<bool> finished(actorCount, false);
+    while (true) {
+        std::vector<bool> hasMoved(actorCount, false);
+        for (int i = 0; i < actorCount; ++i) {
+            if (hasMoved[i] || finished[i]) {
+                continue;
+            }
+            if (actorsPositions[i].size() == 1) {
+                actorsPaths[i].push_back(actorsPositions[i][0]);
+                finished[i] = true;
+                continue;
+            }
+
+            std::vector<int> path;
+            int curActor = i;
+            bool canMove = true;
+            while (true) {
+                path.push_back(curActor);
+                Node nextNode = actorsPositions[curActor][actorInd[curActor] + 1];
+                int lastInd = nodeInd[nextNode];
+                if (nodesOccupations[nextNode][lastInd] == curActor) {
+                    break;
+                } else if (nodesOccupations[nextNode][lastInd + 1] == curActor) {
+                    int nextActor = nodesOccupations[nextNode][lastInd];
+                    if (finished[nextActor] || hasMoved[nextActor] || nextActor < curActor ||
+                        actorsPositions[nextActor][actorInd[nextActor]] != nextNode) {
+                        canMove = false;
+                        break;
+                    }
+                    curActor = nextActor;
+                    if (curActor == i) {
+                        break;
+                    }
+                } else {
+                    canMove = false;
+                    break;
+                }
+            }
+
+            if (canMove) {
+                for (int actorId : path) {
+                    hasMoved[actorId] = true;
+                    ++nodeInd[actorsPositions[actorId][actorInd[actorId]]];
+                    ++actorInd[actorId];
+                    actorsPaths[actorId].push_back(actorsPositions[actorId][actorInd[actorId]]);
+                    if (actorInd[actorId] == actorsPositions[actorId].size() - 1) {
+                        finished[actorId] = true;
+                    }
+                }
+            } else {
+                actorsPaths[i].push_back(actorsPositions[i][actorInd[i]]);
+            }
+        }
+
+        if (!std::any_of(hasMoved.begin(), hasMoved.end(), [](const bool x) {return x;})) {
             break;
         }
     }
@@ -1031,17 +1131,17 @@ void PushAndRotate::getPaths(PARActorSet &actorSet)
 
 
     actorsPaths.resize(actorSet.getActorCount());
-    std::vector<Node> agentPositions;
+    std::vector<Node> actorPositions;
     for (int i = 0; i < actorSet.getActorCount(); ++i) {
         Node startPosition = actorSet.getActor(i).getStartPosition();
-        agentPositions.push_back(startPosition);
+        actorPositions.push_back(startPosition);
         actorsPaths[i].push_back(startPosition);
     }
     for (int i = 0; i < actorsMoves.size(); ++i) {
-        agentPositions[actorsMoves[i].id].i += actorsMoves[i].di;
-        agentPositions[actorsMoves[i].id].j += actorsMoves[i].dj;
+        actorPositions[actorsMoves[i].id].i += actorsMoves[i].di;
+        actorPositions[actorsMoves[i].id].j += actorsMoves[i].dj;
         for (int j = 0; j < actorSet.getActorCount(); ++j) {
-            actorsPaths[j].push_back(agentPositions[j]);
+            actorsPaths[j].push_back(actorPositions[j]);
         }
     }
 }
