@@ -318,6 +318,5 @@ Mission &Mission::operator = (const Mission &obj)
 #endif
 
     }
-
     return *this;
 }

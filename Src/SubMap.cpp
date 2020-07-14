@@ -215,3 +215,70 @@ Node SubMap::FindAvailableNode(Node start, std::unordered_map<int, Node> occupie
     }
     return Node(-1,-1);
 }
+
+Node SubMap::FindCloseToPointAvailableNode(Point pos, std::unordered_map<int, Node> occupied)
+{
+    auto start = this->GetClosestNode(pos);
+
+
+    if(occupied.find(start.i * GetWidth() + start.j) == occupied.end() && CellIsTraversable(start.i, start.j))
+    {
+        return start;
+    }
+
+    start.H = (this->GetPoint(start) - pos).SquaredEuclideanNorm();
+
+    auto cmp = [](Node left, Node right) { return (left.H > right.H); };
+
+    std::priority_queue<Node, std::vector<Node>, decltype(cmp)> open(cmp);
+
+    std::unordered_map<int, Node> openDupl = std::unordered_map<int, Node>();
+
+    std::unordered_map<int, Node> close = std::unordered_map<int, Node>();
+
+    open.push(start);
+    openDupl.insert({start.i * GetWidth() + start.j, start});
+
+    while(!open.empty())
+    {
+        Node curr = open.top();
+        close.insert({curr.i * GetWidth() + curr.j, curr});
+        open.pop();
+        openDupl.erase(curr.i * GetWidth() + curr.j);
+
+        if(CellIsTraversable(curr.i, curr.j) && occupied.find(curr.i * GetWidth() + curr.j) == occupied.end())
+        {
+            return curr;
+        }
+
+        std::vector<Node> successors = {Node(curr.i + 1, curr.j), Node(curr.i - 1, curr.j), Node(curr.i, curr.j + 1), Node(curr.i, curr.j - 1)};
+
+
+//            while(!open.empty())
+//            {
+//                std::cout << open.top().H << " ";
+//                open.pop();
+//            }
+//            std::cout << '\n';
+
+
+        for(auto &s : successors)
+        {
+            if(CellOnGrid(s.i,s.j))
+            {
+                if(CellIsObstacle(curr.i,curr.j) || CellIsTraversable(s.i,s.j))
+                {
+                    if(close.find(s.i * GetWidth() + s.j) == close.end() && openDupl.find(s.i * GetWidth() + s.j) == openDupl.end())
+                    {
+                        s.H = (this->GetPoint(s) - pos).SquaredEuclideanNorm();
+                        open.push(s);
+                        openDupl.insert({s.i * GetWidth() + s.j, s});
+                    }
+                }
+
+            }
+        }
+
+    }
+    return Node(-1,-1);
+}

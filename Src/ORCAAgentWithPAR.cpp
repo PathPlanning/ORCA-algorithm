@@ -875,8 +875,8 @@ bool ORCAAgentWithPAR::ComputePAREnv(Point common, std::vector<std::pair<Point, 
         {
             ag->buffPar.clear();
             tmpGoalPoint = ag->PullOutIntermediateGoal(common);
-            tmpGoal = PARMap.GetClosestNode(tmpGoalPoint);
-            tmpGoal = PARMap.FindAvailableNode(tmpGoal, goals);
+            //tmpGoal = PARMap.GetClosestNode(tmpGoalPoint);
+            tmpGoal = PARMap.FindCloseToPointAvailableNode(tmpGoalPoint, goals);
 
 
             if(tmpGoal.i < 0)
@@ -909,8 +909,8 @@ bool ORCAAgentWithPAR::ComputePAREnv(Point common, std::vector<std::pair<Point, 
 
         if(ag->PARStart.X() < 0)
         {
-            tmpStart = PARMap.GetClosestNode(ag->GetPosition());
-            tmpStart = PARMap.FindAvailableNode(tmpStart, starts);
+            //tmpStart = PARMap.GetClosestNode(ag->GetPosition());
+            tmpStart = PARMap.FindCloseToPointAvailableNode(ag->GetPosition(), starts);
 
             if(tmpStart.i < 0)
             {

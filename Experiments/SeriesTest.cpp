@@ -4,9 +4,10 @@
 
 #include "Mission.h"
 
-#define RESULT_FILE         "resultPAR.txt"
+#define RESULT_FILE         "result.txt"
 #define INPUT_FILE_PART     "_task.xml"
-#define STEP_MAX            12800
+#define STEP_MAX            100000
+
 
 
 int main(int argc, char* argv[])

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <algorithm>
 #include <list>
+#include <queue>
 
 #ifndef ORCA_SUBMAP_H
 #define ORCA_SUBMAP_H
@@ -33,6 +34,7 @@ class SubMap
         Node GetClosestNode(const Point &point) const;
         Point GetPoint(const Node &node) const;
         Node FindAvailableNode(Node start, std::unordered_map<int, Node> occupied);
+        Node FindCloseToPointAvailableNode(Point pos, std::unordered_map<int, Node> occupied);
 
         SubMap & operator = (const SubMap &obj);
 
