@@ -47,7 +47,12 @@ class Point
         float EuclideanNorm() const;
         float SquaredEuclideanNorm() const;
         float Det(Point another) const;
-        std::string ToString() const;
+        std::string ToString() const
+        {
+            std::string res = std::to_string(x) + " " + std::to_string(y);
+            return res;
+        }
+
         Point operator - (const Point &another) const;
         Point operator + (const Point &another) const;
         bool operator == (const Point &another) const;

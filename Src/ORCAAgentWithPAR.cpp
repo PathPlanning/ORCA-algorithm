@@ -549,7 +549,7 @@ bool ORCAAgentWithPAR::UpdatePrefVelocity()
             else
             {
                 prefV = Point();
-                nextForLog = position;
+                nextForLog = PARGoal;
                 return true;
             }
         }
@@ -621,7 +621,7 @@ bool ORCAAgentWithPAR::UpdatePrefVelocity()
         }
         if(planner->GetNext(position, next))
         {
-            nextForLog = position;
+            nextForLog = next;
             Vector goalVector = next - position;
             float dist = goalVector.EuclideanNorm();
             if(Neighbours.size() >= param.PARNum && dist < param.sightRadius)
@@ -867,6 +867,11 @@ bool ORCAAgentWithPAR::ComputePAREnv(Point common, std::vector<std::pair<Point, 
         else
         {
             og.second->PARGoal = Point(-1,-1);
+            while(!og.second->buffPar.empty())
+            {
+                og.second->planner->AddPointToPath(og.second->buffPar.back());
+                og.second->buffPar.pop_back();
+            }
         }
 
     }
@@ -907,10 +912,13 @@ bool ORCAAgentWithPAR::ComputePAREnv(Point common, std::vector<std::pair<Point, 
             }
 
             ag->PARGoal = PARMap.GetPoint(tmpGoal);
+
         }
         else
         {
             tmpGoal = PARMap.GetClosestNode(ag->PARGoal);
+            ag->PARGoal = PARMap.GetPoint(tmpGoal);
+           // std::cout << ag->id << " goal1: " << ag->PARGoal.ToString() << " goal2: " << PARMap.GetPoint(tmpGoal).ToString() << "\n";
         }
 
 
