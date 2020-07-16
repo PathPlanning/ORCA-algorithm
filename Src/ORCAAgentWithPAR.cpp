@@ -493,6 +493,7 @@ bool ORCAAgentWithPAR::UpdatePrefVelocity()
         {
             UnitePAR();
             prefV = Point();
+            nextForLog = position;
             return true;
         }
 
@@ -500,11 +501,13 @@ bool ORCAAgentWithPAR::UpdatePrefVelocity()
         {
             UpdatePAR();
             prefV = Point();
+            nextForLog = position;
             return true;
         }
 
         if(PARExec)
         {
+            nextForLog = PARGoal;
             bool allOnPos = true;
             bool allFin = true;
 
@@ -540,17 +543,20 @@ bool ORCAAgentWithPAR::UpdatePrefVelocity()
                 PARStart = Point(-1,-1);
                 PARGoal = Point(-1,-1);
                 prefV = Point();
+                nextForLog = position;
                 return true;
             }
             else
             {
                 prefV = Point();
+                nextForLog = position;
                 return true;
             }
         }
 
         if(moveToPARPos)
         {
+            nextForLog = PARStart;
             float distSq = (position-PARStart).SquaredEuclideanNorm();
             if(distSq < options->delta * options->delta)
             {
@@ -615,7 +621,7 @@ bool ORCAAgentWithPAR::UpdatePrefVelocity()
         }
         if(planner->GetNext(position, next))
         {
-            nextForLog = next;
+            nextForLog = position;
             Vector goalVector = next - position;
             float dist = goalVector.EuclideanNorm();
             if(Neighbours.size() >= param.PARNum && dist < param.sightRadius)
@@ -679,6 +685,7 @@ void ORCAAgentWithPAR::AddNeighbour(Agent &neighbour, float distSq)
     {
         PARVis = true;
 
+
         if(inPARMode)
         {
             if( !tmpAgentPAR->PARUnion && PARAgents.find(tmpAgentPAR) == PARAgents.end())
@@ -693,10 +700,10 @@ void ORCAAgentWithPAR::AddNeighbour(Agent &neighbour, float distSq)
     }
     else if(inPARMode)
     {
-        if(distSq < (param.radius + tmpAgentPAR->param.radius + 0.25) * (param.radius + tmpAgentPAR->param.radius + 0.25))
-        {
+  //      if(distSq < (param.radius + tmpAgentPAR->param.radius + 0.25) * (param.radius + tmpAgentPAR->param.radius + 0.25))
+   //     {
             notPARVis = true;
-        }
+    //    }
 
     }
 
