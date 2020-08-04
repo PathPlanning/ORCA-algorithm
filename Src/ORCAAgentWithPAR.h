@@ -31,6 +31,12 @@ class ORCAAgentWithPAR : public Agent
         void AddNeighbour(Agent &neighbour, float distSq) override;
 
         bool isPARMember() const;
+        void printPARState() const
+        {
+//            std::cout << "ID: " << id << " PAR: " << inPARMode << " move: " << moveToPARPos << " vis: " << PARVis
+//                        << " notvis: " << notPARVis <<" union: " << PARUnion << " exec: " <<PARExec << " dist: " << (PARGoal-position).EuclideanNorm();
+                std::cout << "ID: " << id <<  " " << position.ToString()<< " " <<PARStart.ToString() << " " << PARGoal.ToString() << " dist: " << (PARGoal-position).EuclideanNorm();
+        }
 
 
         bool operator == (const ORCAAgentWithPAR &another) const;

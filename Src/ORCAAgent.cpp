@@ -18,7 +18,6 @@ void ORCAAgent::ComputeNewVelocity()
 {
     ORCALines.clear();
 
-
     // Получение ORCA-линий препятсвий
     for (int i = 0; i < NeighboursObst.size(); i++)
     {
@@ -346,8 +345,10 @@ bool ORCAAgent::UpdatePrefVelocity()
         }
 
         prefV = goalVector;
+        nextForLog = next;
         return true;
     }
+    nextForLog = Point();
     prefV = Point();
     return false;
 }

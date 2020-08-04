@@ -146,7 +146,9 @@ Summary Mission::StartMission()
 
         for(auto &agent : agents)
         {
+
             agent->ComputeNewVelocity();
+
         }
 
         UpdateSate();
