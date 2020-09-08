@@ -661,10 +661,10 @@ bool XMLReader::ReadAgents()
             std::cout <<CNS_TAG_ATTR_REPS <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_REPS<<"\n";
 #endif
         }
-        if(tmpElement->QueryIntAttribute(CNS_TAG_ATTR_PARACTNUM, &defaultParam.PARNum) != XMLError::XML_SUCCESS)
+        if(tmpElement->QueryIntAttribute(CNS_TAG_ATTR_PARACTNUM, &defaultParam.MAPFNum) != XMLError::XML_SUCCESS)
         {
 #if FULL_OUTPUT
-            std::cout <<CNS_TAG_ATTR_PARACTNUM <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_PARACTNUM<<"\n";
+            std::cout <<CNS_TAG_ATTR_PARACTNUM <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_MAPF_ACTNUM<<"\n";
 #endif
         }
     }
@@ -763,12 +763,12 @@ bool XMLReader::ReadAgents()
 #endif
             param.rEps = defaultParam.rEps;
         }
-        if(tmpElement->QueryIntAttribute(CNS_TAG_ATTR_PARACTNUM, &param.PARNum) != XMLError::XML_SUCCESS)
+        if(tmpElement->QueryIntAttribute(CNS_TAG_ATTR_PARACTNUM, &param.MAPFNum) != XMLError::XML_SUCCESS)
         {
 #if FULL_OUTPUT
-            std::cout <<CNS_TAG_ATTR_PARACTNUM <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_PARACTNUM<<"\n";
+            std::cout <<CNS_TAG_ATTR_PARACTNUM <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_MAPF_ACTNUM<<"\n";
 #endif
-            param.PARNum = defaultParam.PARNum;
+            param.MAPFNum = defaultParam.MAPFNum;
         }
 
 
@@ -831,6 +831,10 @@ bool XMLReader::ReadAgents()
         else if (agTypeStr == CNS_AT_ST_ORCAPAR)
         {
             a = new ORCAAgentWithPAR(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
+        }
+        else if(agTypeStr == CNS_AT_ST_ORCAECBS)
+        {
+            a = new ORCAAgentWithECBS(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
         }
         else
         {

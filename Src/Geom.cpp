@@ -1,5 +1,10 @@
 #include "Geom.h"
 
+int Node::convolution(int width, int height, bool withTime) const
+{
+    int res = withTime ? width * height * g : 0;
+    return res + i * width + j;
+}
 
 Point::Point()
 {
@@ -261,32 +266,8 @@ void Utils::linearProgram3(const std::vector<Line> &lines, size_t numObstLines, 
 
 bool Node::operator < (const Node &other) const
 {
-    if (F == other.F)
-    {
-        if (conflictsCount != other.conflictsCount)
-        {
-            return conflictsCount < other.conflictsCount;
-        }
-        else
-        {
-            if (g == other.g)
-            {
-                return std::tuple<int, int, int>(i, j, depth) < std::tuple<int, int, int>(other.i, other.j, other.depth);
-            }
-            else
-            {
-                if (breakingties)
-                {
-                    return g > other.g;
-                }
-                else
-                {
-                    return g < other.g;
-                }
-            }
-        }
-    }
-    return F < other.F;
+    return std::tuple<int, int, int, int>(F, -g, i, j) <
+           std::tuple<int, int, int, int>(other.F, -other.g, other.i, other.j);
 }
 
 

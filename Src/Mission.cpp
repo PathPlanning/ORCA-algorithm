@@ -1,12 +1,14 @@
 #include "Mission.h"
 
 
-Mission::Mission(std::string fileName, unsigned int agentsNum, unsigned int stepsTh)
+Mission::Mission(std::string fileName, unsigned int agentsNum, unsigned int stepsTh, bool time, size_t timeTh)
 {
     taskReader = new XMLReader(fileName);
     agents = vector<Agent*>();
     this->agentsNum = agentsNum;
     stepsTreshhold = stepsTh;
+    isTimeBounded = time;
+    timeTreshhold = timeTh;
 
     map = nullptr;
     options = nullptr;
@@ -132,9 +134,9 @@ Summary Mission::StartMission()
         stepsLog[agent->GetID()].push_back({agent->GetPosition()});
         goalsLog[agent->GetID()].push_back(agent->GetPosition());
 #endif
-//        agent->UpdatePrefVelocity();
-    }
 
+    }
+    bool needToStop;
     do
     {
         AssignNeighbours();
@@ -152,12 +154,14 @@ Summary Mission::StartMission()
         }
 
         UpdateSate();
-
+        auto checkpnt = std::chrono::high_resolution_clock::now();
+        size_t nowtime = std::chrono::duration_cast<std::chrono::milliseconds>(checkpnt - startpnt).count();
+        needToStop = (isTimeBounded) ? nowtime >= timeTreshhold : stepsCount >= stepsTreshhold;
     }
-    while(!IsFinished() && stepsCount < stepsTreshhold);
+    while(!IsFinished() && !needToStop);
 
     auto endpnt = std::chrono::high_resolution_clock::now();
-    long long int res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
+    size_t res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
 
     float stepsSum = 0;
     float rate = 0;
@@ -178,6 +182,7 @@ Summary Mission::StartMission()
     {
         collisionsCount += agent->GetCollision().first;
         collisionsObstCount += agent->GetCollision().second;
+       // std::cout << dynamic_cast<ORCAAgentWithPAR*> (agent)->GetID() << " " << dynamic_cast<ORCAAgentWithPAR*> (agent)->isPARMember() << " " << dynamic_cast<ORCAAgentWithPAR*> (agent)->isMovingToPARSTart() << "\n";
     }
 
     missionResult.successRate = rate * 100 / agentsNum;

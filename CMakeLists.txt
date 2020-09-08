@@ -25,7 +25,7 @@ else(PAREnvLog)
     add_compile_definitions(PAR_LOG=false)
 endif(PAREnvLog)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -O0" )
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -w -O0" )
 
 
 add_subdirectory(tinyxml)

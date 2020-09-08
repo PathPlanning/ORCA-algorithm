@@ -1,14 +1,14 @@
-#include "PARInstancesLogger.h"
+#include "MAPFInstancesLogger.h"
 
 
-PARInstancesLogger::PARInstancesLogger(std::string pathTempl)
+MAPFInstancesLogger::MAPFInstancesLogger(std::string pathTempl)
 {
     fileID = 0;
     pathTemplate = pathTempl;
 }
 
 
-bool PARInstancesLogger::SaveInstance(PARActorSet &agents, SubMap &map)
+bool MAPFInstancesLogger::SaveInstance(MAPFActorSet &agents, SubMap &map)
 {
 //    std::cout<<agents.getActorCount()<<"\n";
 //    std::cout<< map.GetHeight()<<"x"<<map.GetWidth()<<"\n";

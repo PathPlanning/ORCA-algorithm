@@ -7,9 +7,11 @@
 
 
 #define CN_EPS 0.00001f
+#define CN_INFINITY    1000000000
 #define CN_PI_CONSTANT 3.14159265359
 #define CN_SQRT_TWO    1.41421356237
-#define CN_PARMAXTIME 200
+
+
 
 
 //XML tags
@@ -79,6 +81,7 @@
 #define CNS_AT_ST_ORCA      "orca"
 #define CNS_AT_ST_ORCADD    "orca-dd"
 #define CNS_AT_ST_ORCAPAR   "orca-par"
+#define CNS_AT_ST_ORCAECBS  "orca-ecbs"
 
 #define CNS_SP_MT_DIAG      "diagonal"
 #define CNS_SP_MT_MANH      "manhattan"
@@ -111,7 +114,8 @@
 #define CN_DEFAULT_TIME_STEP 0.25
 #define CN_DEFAULT_DELTA 0.1
 #define CN_DEFAULT_REPS 0.19
-#define CN_DEFAULT_PARACTNUM 3
+#define CN_DEFAULT_MAPF_ACTNUM 3
+#define CN_DEFAULT_MAPF_MAXTIME 200
 
 
 

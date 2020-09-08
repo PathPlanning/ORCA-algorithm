@@ -3,11 +3,11 @@
 
 #include "Agent.h"
 #include "SubMap.h"
-#include "PARActorSet.h"
-#include "PARActor.h"
-#include "PushAndRotate.h"
-#include "AStar.h"
-#include "PARInstancesLogger.h"
+#include "MAPF/MAPFActorSet.h"
+#include "MAPF/MAPFActor.h"
+#include "MAPF/PAR/PushAndRotate.h"
+#include "MAPF/AStar.h"
+#include "MAPFInstancesLogger.h"
 
 #ifndef ORCA_ORCAAGENTWITHPAR_H
 #define ORCA_ORCAAGENTWITHPAR_H
@@ -59,8 +59,8 @@ class ORCAAgentWithPAR : public Agent
 
 
         SubMap PARMap;
-        PARActorSet PARSet;
-        PARConfig conf;
+        MAPFActorSet PARSet;
+        MAPFConfig conf;
         std::set<ORCAAgentWithPAR *> PARAgents;
         float fakeRadius;
         bool inPARMode;
@@ -71,9 +71,9 @@ class ORCAAgentWithPAR : public Agent
         bool PARExec;
         Point PARStart;
         Point PARGoal;
-        Astar PARsearch;
+        Astar<> PARsearch;
         PushAndRotate PARSolver;
-        PARSearchResult PARres;
+        MAPFSearchResult PARres;
         int currPARPos;
         int PARActorId;
         Point PARcommon;

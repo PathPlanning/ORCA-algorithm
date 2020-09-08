@@ -10,6 +10,7 @@
 #include "ThetaStar.h"
 #include "DirectPlanner.h"
 #include "ORCAAgentWithPAR.h"
+#include "ORCAAgentWithECBS.h"
 
 
 

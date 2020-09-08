@@ -16,15 +16,25 @@ SET(ORCAStar_HEADERS    Agent.h
                     ORCAAgent.h
                     ORCADDAgent.h
                     ORCAAgentWithPAR.h
-                    PushAndRotate.h
                     SubMap.h
-                    PARActorSet.h
-                    PARActor.h
-                    ISearch.h
-                    AStar.h
-                    Constraints.h
-                    ConflictAvoidanceTable.h
-                    PARInstancesLogger.h)
+                    MAPFInstancesLogger.h
+                    ORCAAgentWithECBS.h
+                    MAPF/PAR/PushAndRotate.h
+                    MAPF/MAPFActorSet.h
+                    MAPF/MAPFActor.h
+                    MAPF/ISearch.h
+                    MAPF/AStar.h
+                    MAPF/MAPFSearchResult.h
+                    MAPF/MAPFSearchInterface.h
+                    MAPF/MAPFConfig.h
+                    MAPF/SearchQueue.h
+                    MAPF/ECBS/Constraints.h
+                    MAPF/ECBS/ConflictAvoidanceTable.h
+                    MAPF/ECBS/Conflict.h
+                    MAPF/ECBS/CBSNode.h
+                    MAPF/ECBS/ConflictBasedSearch.h
+                    MAPF/ECBS/ConflictSet.h
+                    MAPF/ECBS/MDD.h )
 
 SET(ORCAStar_SOURCES    Agent.cpp
                     XMLLogger.cpp
@@ -38,14 +48,19 @@ SET(ORCAStar_SOURCES    Agent.cpp
                     ORCAAgent.cpp
                     ORCADDAgent.cpp
                     ORCAAgentWithPAR.cpp
-                    PushAndRotate.cpp
                     SubMap.cpp
-                    PARActorSet.cpp
-                    PARActor.cpp
-                    ISearch.cpp
-                    AStar.cpp
-                    Constraints.cpp
-                    ConflictAvoidanceTable.cpp
-                    PARInstancesLogger.cpp)
+                    MAPFInstancesLogger.cpp
+                    ORCAAgentWithECBS.cpp
+                    MAPF/PAR/PushAndRotate.cpp
+                    MAPF/MAPFActorSet.cpp
+                    MAPF/MAPFActor.cpp
+                    MAPF/ISearch.cpp
+                    MAPF/AStar.cpp
+                    MAPF/SearchQueue.cpp
+                    MAPF/ECBS/Constraints.cpp
+                    MAPF/ECBS/ConflictAvoidanceTable.cpp
+                    MAPF/ECBS/ConflictBasedSearch.cpp
+                    MAPF/ECBS/ConflictSet.cpp
+                    MAPF/ECBS/MDD.cpp )
 
 add_library(ORCAStar ${ORCAStar_HEADERS} ${ORCAStar_SOURCES})

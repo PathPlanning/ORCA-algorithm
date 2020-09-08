@@ -1,5 +1,5 @@
 
-#include "PARActor.h"
+#include "MAPFActor.h"
 
 #include <vector>
 #include <map>
@@ -12,7 +12,7 @@
 
 
 
-class PARActorSet
+class MAPFActorSet
 {
     private:
         int                                     width;
@@ -22,7 +22,7 @@ class PARActorSet
         std::vector<int>                        componentSizes;
         std::multimap<std::pair<int, int>, int> subgraphNodes;
         std::set<std::pair<int, int>>           subgraphPriorities;
-        std::vector<PARActor>                   actors;
+        std::vector<MAPFActor>                   actors;
 
     public:
         void clear();
@@ -37,7 +37,7 @@ class PARActorSet
         void removeSubgraphs(int i, int j);
 
         int getActorCount() const;
-        PARActor getActor(int id) const;
+        MAPFActor getActor(int id) const;
         int getActorId(int i, int j) const;
         bool isOccupied(int i, int j) const;
         bool hasPriority(int first, int second) const;

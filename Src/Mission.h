@@ -13,7 +13,7 @@
 #include "Summary.h"
 #include "XMLReader.h"
 #include "XMLLogger.h"
-#include "PARInstancesLogger.h"
+#include "MAPFInstancesLogger.h"
 
 using namespace tinyxml2;
 
@@ -21,7 +21,7 @@ class Mission
 {
     public:
         Mission() = delete;
-        Mission(std::string fileName, unsigned int agentsNum, unsigned int stepsTh);
+        Mission(std::string fileName, unsigned int agentsNum, unsigned int stepsTh, bool time, size_t timeTh);
         Mission (const Mission &obj);
         ~Mission();
 
@@ -45,7 +45,10 @@ class Mission
         EnvironmentOptions *options;
         Summary missionResult;
         std::unordered_map<int, std::pair<bool, int>> resultsLog;
-        PARInstancesLogger PARLog;
+        MAPFInstancesLogger PARLog;
+
+        bool isTimeBounded;
+        size_t timeTreshhold;
 
         unsigned int stepsCount;
         unsigned int stepsTreshhold;

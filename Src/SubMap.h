@@ -24,7 +24,7 @@ class SubMap
         bool CellIsObstacle(int i, int j) const;
         bool CellOnGrid(int i, int j) const;
         bool CellIsTraversable(int i, int j) const;
-        bool CellIsTraversable(int i, int j, const std::unordered_set<Node> &occupiedNodes) const;
+        bool CellIsTraversable(int i, int j, const std::unordered_set<Node, NodeHash> &occupiedNodes) const;
         int GetHeight() const;
         int GetWidth() const;
         int GetEmptyCellCount() const;

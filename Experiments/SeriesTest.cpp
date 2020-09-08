@@ -6,7 +6,9 @@
 
 #define RESULT_FILE         "result.txt"
 #define INPUT_FILE_PART     "_task.xml"
-#define STEP_MAX            100000
+#define STEP_MAX            12800
+#define IS_TIME_BOUNDED     true
+#define TIME_MAX            1000 * 60 * 1
 
 
 
@@ -68,7 +70,7 @@ int main(int argc, char* argv[])
         {
             string taskfile = path + "/" +std::to_string(i) + INPUT_FILE_PART;
             cout<<"File: "<<taskfile<<"\n";
-            Mission *task = new Mission(taskfile, num, STEP_MAX);
+            Mission *task = new Mission(taskfile, num, STEP_MAX, IS_TIME_BOUNDED, TIME_MAX);
 
             if(task->ReadTask())
             {

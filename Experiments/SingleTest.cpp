@@ -3,7 +3,9 @@
 
 #include "Mission.h"
 
-#define STEP_MAX 100000
+#define STEP_MAX            12800
+#define IS_TIME_BOUNDED     true
+#define TIME_MAX            1000 * 60 * 15
 
 int main(int argc, char* argv[])
 {
@@ -32,7 +34,7 @@ int main(int argc, char* argv[])
     }
 
 
-    Mission task = Mission(taskfile, num, STEP_MAX);
+    Mission task = Mission(taskfile, num, STEP_MAX, IS_TIME_BOUNDED, TIME_MAX);
     if(task.ReadTask())
     {
         std::string result = task.StartMission().ToString();

@@ -1,13 +1,13 @@
-#include "Geom.h"
+#include "../Geom.h"
 
 #ifndef ORCA_PARACTOR_H
 #define ORCA_PARACTOR_H
 
-class PARActor
+class MAPFActor
 {
     public:
 
-        PARActor(int _start_i = 0, int _start_j = 0, int _goal_i = 0, int _goal_j = 0, int _id = 0)
+        MAPFActor(int _start_i = 0, int _start_j = 0, int _goal_i = 0, int _goal_j = 0, int _id = 0)
         {
             start_i = _start_i;
             start_j = _start_j;
