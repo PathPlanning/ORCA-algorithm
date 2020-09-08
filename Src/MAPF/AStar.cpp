@@ -54,4 +54,7 @@ void Astar<NodeType>::getPerfectHeuristic(const SubMap &map, const MAPFActorSet 
 }
 
 template class Astar<Node>;
+template class Astar<FSNode>;
+template class Astar<SIPPNode>;
+template class Astar<SCIPPNode>;
 

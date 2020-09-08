@@ -10,6 +10,8 @@
 #include "ECBS/Constraints.h"
 #include "ECBS/ConflictAvoidanceTable.h"
 #include "SearchQueue.h"
+#include "FSNode.h"
+#include "SCIPPNode.h"
 
 #ifndef ORCA_ISEARCH_H
 #define ORCA_ISEARCH_H

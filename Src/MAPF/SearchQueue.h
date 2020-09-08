@@ -2,7 +2,8 @@
 #include "../SubMap.h"
 #include <set>
 #include <unordered_map>
-
+#include "FSNode.h"
+#include "SCIPPNode.h"
 
 #ifndef ORCASTAR_SEARCHQUEUE_H
 #define ORCASTAR_SEARCHQUEUE_H

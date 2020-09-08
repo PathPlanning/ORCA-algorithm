@@ -72,4 +72,7 @@ void SearchQueue<NodeType>::clear() {
 }
 
 template class SearchQueue<Node>;
+template class SearchQueue<FSNode>;
+template class SearchQueue<SIPPNode>;
+template class SearchQueue<SCIPPNode>;
 

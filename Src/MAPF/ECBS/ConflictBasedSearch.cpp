@@ -399,3 +399,5 @@ MAPFSearchResult ConflictBasedSearch<SearchType>::startSearch(const SubMap &map,
 }
 
 template class ConflictBasedSearch<Astar<>>;
+template class ConflictBasedSearch<FocalSearch<>>;
+template class ConflictBasedSearch<SCIPP<>>;

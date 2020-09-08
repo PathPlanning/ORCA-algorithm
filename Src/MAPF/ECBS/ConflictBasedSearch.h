@@ -3,6 +3,8 @@
 #include "../MAPFSearchResult.h"
 #include "../MAPFSearchInterface.h"
 #include "../MAPFConfig.h"
+#include "../FocalSearch.h"
+#include "../SCIPP.h"
 #include "ConflictAvoidanceTable.h"
 #include "MDD.h"
 #include "ConflictSet.h"

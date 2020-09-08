@@ -231,3 +231,6 @@ void ISearch<NodeType>::makeSecondaryPath(const SubMap &map)
 }
 
 template class ISearch<Node>;
+template class ISearch<FSNode>;
+template class ISearch<SIPPNode>;
+template class ISearch<SCIPPNode>;

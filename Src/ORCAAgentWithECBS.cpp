@@ -31,8 +31,8 @@ ORCAAgentWithECBS::ORCAAgentWithECBS() : Agent()
     MAPFUnion = false;
     notMAPFVis = false;
     MAPFcommon = Point(-1,-1);
-    MAPFsearch = Astar<>();
-    ECBSSolver = ConflictBasedSearch<Astar<>>();
+    MAPFsearch = SCIPP<>(conf.focalW);
+    ECBSSolver = ConflictBasedSearch<SCIPP<>>(&MAPFsearch);
 }
 
 
@@ -55,12 +55,12 @@ ORCAAgentWithECBS::ORCAAgentWithECBS(const int &id, const Point &start, const Po
     conf.withMatchingHeuristic = false;
     conf.storeConflicts = true;
     conf.withDisjointSplitting = false;
-    conf.focalW = 3;
+    conf.focalW = 10;
 
     MAPFStart = Point(-1,-1);
     MAPFGoal = Point(-1,-1);
-    MAPFsearch = Astar<>(true);
-    ECBSSolver = ConflictBasedSearch<Astar<>>(&MAPFsearch);
+    MAPFsearch = SCIPP<>(conf.focalW);
+    ECBSSolver = ConflictBasedSearch<SCIPP<>>(&MAPFsearch);
     buffMAPF = std::vector<Point>();
     MAPFUnion = false;
     notMAPFVis = false;
@@ -761,7 +761,7 @@ void ORCAAgentWithECBS::SetAgentsForCentralizedPlanning(std::set<ORCAAgentWithEC
 
 void ORCAAgentWithECBS::PrepareMAPFExecution(Point common)
 {
-    std::cout << "\n";
+    //std::cout << "\n";
     MAPFAgents.clear();
     MAPFAgents.insert(this);
     for (auto &el : Neighbours)
@@ -1020,7 +1020,7 @@ bool ORCAAgentWithECBS::ComputeMAPF()
 
 bool ORCAAgentWithECBS::UniteMAPF()
 {
-    std::cout << "\n";
+    //std::cout << "\n";
     // std::cout << "Unite\n";
     std::vector<std::pair<Point, ORCAAgentWithECBS*>> goals;
     MAPFUnion = false;
@@ -1108,7 +1108,7 @@ bool ORCAAgentWithECBS::UniteMAPF()
 
 bool ORCAAgentWithECBS::UpdateMAPF()
 {
-    std::cout << "\n";
+   // std::cout << "\n";
     std::vector<std::pair<Point, ORCAAgentWithECBS*>> goals;
     //std::cout << "Update\n";
     for(auto &ag : MAPFAgents)

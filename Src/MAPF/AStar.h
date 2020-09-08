@@ -1,5 +1,6 @@
 #include "ISearch.h"
 
+
 #ifndef ORCA_ASTAR_H
 #define ORCA_ASTAR_H
 

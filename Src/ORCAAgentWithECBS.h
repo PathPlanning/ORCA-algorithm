@@ -7,6 +7,8 @@
 #include "MAPF/MAPFActor.h"
 #include "MAPF/ECBS/ConflictBasedSearch.h"
 #include "MAPF/AStar.h"
+#include "MAPF/FocalSearch.h"
+#include "MAPF/SCIPP.h"
 #include "MAPFInstancesLogger.h"
 
 #ifndef ORCASTAR_ORCAAGENTWITHECBS_H
@@ -66,8 +68,8 @@ class ORCAAgentWithECBS : public Agent
         bool MAPFExec;
         Point MAPFStart;
         Point MAPFGoal;
-        Astar<> MAPFsearch;
-        ConflictBasedSearch<Astar<>> ECBSSolver;
+        SCIPP<> MAPFsearch;
+        ConflictBasedSearch<SCIPP<>> ECBSSolver;
         MAPFSearchResult MAPFres;
         int currMAPFPos;
         int MAPFActorId;
