@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.2)
 project(ORCAStar)
 
 set(FullOutput OFF)
-set(FullLog OFF)
-set(PAREnvLog OFF)
+set(FullLog ON)
+set(MAPFEnvLog OFF)
 
 
 if(FullOutput)
@@ -19,11 +19,11 @@ else(FullLog)
     add_compile_definitions(FULL_LOG=false)
 endif(FullLog)
 
-if(PAREnvLog)
+if(MAPFEnvLog)
     add_compile_definitions(PAR_LOG=true)
-else(PAREnvLog)
+else(MAPFEnvLog)
     add_compile_definitions(PAR_LOG=false)
-endif(PAREnvLog)
+endif(MAPFEnvLog)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -w -O0" )
 

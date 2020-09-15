@@ -31,7 +31,7 @@ Mission::Mission(std::string fileName, unsigned int agentsNum, unsigned int step
 
 #if PAR_LOG
     string tmpPAR = fileName.erase(fileName.find_last_of("."));
-    PARLog = PARInstancesLogger(tmpPAR);
+    PARLog = MAPFInstancesLogger(tmpPAR);
 #endif
 
 }
@@ -118,7 +118,7 @@ Summary Mission::StartMission()
     for(auto agent : agents)
     {
 #if PAR_LOG
-        dynamic_cast<ORCAAgentWithPAR*>(agent)->SetPARInstanceLoggerRef(&PARLog);
+        dynamic_cast<ORCAAgentWithECBS*>(agent)->SetMAPFInstanceLoggerRef(&PARLog);
 #endif
         bool found = agent->InitPath();
 #if FULL_OUTPUT
@@ -156,7 +156,12 @@ Summary Mission::StartMission()
         UpdateSate();
         auto checkpnt = std::chrono::high_resolution_clock::now();
         size_t nowtime = std::chrono::duration_cast<std::chrono::milliseconds>(checkpnt - startpnt).count();
+//        std::cout << "Mission step: " <<stepsCount << "\n";
         needToStop = (isTimeBounded) ? nowtime >= timeTreshhold : stepsCount >= stepsTreshhold;
+        if(!(stepsCount % 100))
+        {
+            std::cout << "Step: " << stepsCount << "; Time: " << nowtime << "\n";
+        }
     }
     while(!IsFinished() && !needToStop);
 

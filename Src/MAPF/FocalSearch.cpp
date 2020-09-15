@@ -17,8 +17,8 @@ bool FocalSearch<NodeType>::checkOpenEmpty() {
     return this->open.empty() && focal.empty();
 }
 
-/*template<typename NodeType>
-NodeType FocalSearch<NodeType>::getCur(const Map& map) {
+template<typename NodeType>
+NodeType FocalSearch<NodeType>::getCur(const SubMap& map) {
     if (!this->open.empty()) {
         double minF = this->open.getFront().F;
         if (!focalF.empty()) {
@@ -31,12 +31,14 @@ NodeType FocalSearch<NodeType>::getCur(const Map& map) {
     focal.erase(map, cur, this->withTime);
     focalF.erase(focalF.find(cur.F));
     return cur;
-}*/
+}
 
 template<typename NodeType>
 bool FocalSearch<NodeType>::updateFocal(const NodeType& neigh, const SubMap& map) {
+
     NodeType old = focal.getByIndex(map, neigh, this->withTime);
     if (old.i != -1) {
+
         if (focal.insert(map, neigh, this->withTime, true, old)) {
             focalF.erase(focalF.find(old.F));
             focalF.insert(neigh.F);

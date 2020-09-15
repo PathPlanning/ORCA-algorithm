@@ -68,8 +68,8 @@ class ORCAAgentWithECBS : public Agent
         bool MAPFExec;
         Point MAPFStart;
         Point MAPFGoal;
-        SCIPP<> MAPFsearch;
-        ConflictBasedSearch<SCIPP<>> ECBSSolver;
+        FocalSearch<> MAPFsearch;
+        ConflictBasedSearch<FocalSearch<>> ECBSSolver;
         MAPFSearchResult MAPFres;
         int currMAPFPos;
         int MAPFActorId;

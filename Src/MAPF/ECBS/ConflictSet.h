@@ -5,7 +5,7 @@
 
 #include "Conflict.h"
 #include "../../Geom.h"
-
+#include <iostream>
 
 #ifndef ORCASTAR_CONFLICTSET_H
 #define ORCASTAR_CONFLICTSET_H
@@ -25,6 +25,13 @@ class ConflictSet
         std::vector<Conflict> getCardinalConflicts();
         int getMatchingHeuristic();
         int getConflictingPairsCount();
+        void PrintConflicts()
+        {
+            for (int i = 0; i < nonCardinal.size(); i++)
+            {
+                std::cout << nonCardinal[i].id1 << " " << nonCardinal[i].id2 << " " <<nonCardinal[i].time <<"\n";
+            }
+        }
     private:
         std::vector<Conflict> cardinal, semiCardinal, nonCardinal;
 };

@@ -18,8 +18,8 @@ class FocalSearch : virtual public Astar<NodeType>
     protected:
         bool checkOpenEmpty() override;
 
-        //NodeType getCur(const Map& map);
-        bool updateFocal(const NodeType& neigh, const SubMap& map);
+        NodeType getCur(const SubMap& map) override;
+        bool updateFocal(const NodeType& neigh, const SubMap& map) override;
         double getMinFocalF() override;
         void clearLists() override;
         virtual void setHC(NodeType &neigh, const NodeType &cur,

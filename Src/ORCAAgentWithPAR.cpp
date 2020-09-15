@@ -1172,7 +1172,7 @@ bool ORCAAgentWithPAR::isPARMember() const
 }
 
 #if PAR_LOG
-void ORCAAgentWithPAR::SetPARInstanceLoggerRef(PARInstancesLogger *log)
+void ORCAAgentWithPAR::SetMAPFInstanceLoggerRef(MAPFInstancesLogger *log)
 {
     PARLog = log;
 }

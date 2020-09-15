@@ -31,6 +31,7 @@ bool MAPFInstancesLogger::SaveInstance(MAPFActorSet &agents, SubMap &map)
 //    std::cout<<tmp<<"\n";
 
     std::string mainFile = tmp1 + ".xml";
+    std::cout << mainFile << "\n";
     std::string agentFile = tmp2  + "-" + std::to_string(1) + ".xml";
 
     /* MAIN ROOT */

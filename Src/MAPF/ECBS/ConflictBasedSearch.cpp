@@ -217,6 +217,7 @@ MAPFSearchResult ConflictBasedSearch<SearchType>::startSearch(const SubMap &map,
         }
         root.cost += searchResult.pathlength;
         root.paths[i] = *searchResult.lppath;
+       // std::cout<<i << " " << root.paths[i].size() << "\n";
 
         if (config.withCardinalConflicts) {
             root.mdds[i] = MDD(map, agentSet, search, i, searchResult.pathlength);
@@ -246,15 +247,18 @@ MAPFSearchResult ConflictBasedSearch<SearchType>::startSearch(const SubMap &map,
     std::vector<int> LLExpansions, LLNodes;
 
     int t = 0;
-    while (!open.empty() || !focal.empty()) {
+    while (!open.empty() || !focal.empty())
+    {
         ++t;
         std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
         if (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() > config.maxTime) {
             result.pathfound = false;
+            result.time = std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count();
             break;
         }
 
         CBSNode cur;
+
         if (config.withFocalSearch) {
             double threshold = *sumLb.begin() * config.focalW;
             auto it = open.begin();
@@ -286,7 +290,7 @@ MAPFSearchResult ConflictBasedSearch<SearchType>::startSearch(const SubMap &map,
                     costs[it->first] = it->second.size() - 1;
                     agentFound[it->first] = true;
 
-                    if (config.withCAT || config.withFocalSearch == true) {
+                    if (config.withCAT || config.withFocalSearch ) {
                         CAT.addAgentPath(starts[it->first], ends[it->first]);
                     }
                     if (config.withCardinalConflicts) {
@@ -305,6 +309,7 @@ MAPFSearchResult ConflictBasedSearch<SearchType>::startSearch(const SubMap &map,
             }
         }
 
+
         ConflictSet conflictSet;
         if (!config.storeConflicts) {
             conflictSet = findConflict<std::list<Node>::iterator>(starts, ends, -1, false,
@@ -312,6 +317,8 @@ MAPFSearchResult ConflictBasedSearch<SearchType>::startSearch(const SubMap &map,
         } else {
             conflictSet = cur.conflictSet;
         }
+       // conflictSet.PrintConflicts();
+
         if (conflictSet.empty()) {
             agentsPaths.resize(agentCount);
             for (int i = 0; i < agentCount; ++i) {
@@ -392,6 +399,8 @@ MAPFSearchResult ConflictBasedSearch<SearchType>::startSearch(const SubMap &map,
                 }
             }
         }
+
+//        std::cout << t << "\n";
     }
     //std::cout << close.size() + open.size() << std::endl;
     //std::cout << ISearch<>::T << std::endl;

@@ -43,7 +43,7 @@ class ORCAAgentWithPAR : public Agent
         bool operator != (const ORCAAgentWithPAR &another) const;
         ORCAAgentWithPAR &operator = (const ORCAAgentWithPAR &obj);
 #if PAR_LOG
-        void SetPARInstanceLoggerRef(PARInstancesLogger *log);
+        void SetMAPFInstanceLoggerRef(MAPFInstancesLogger *log);
 #endif
 
     private:
@@ -79,7 +79,7 @@ class ORCAAgentWithPAR : public Agent
         Point PARcommon;
         std::vector<Point> buffPar;
 #if PAR_LOG
-        PARInstancesLogger *PARLog;
+        MAPFInstancesLogger *PARLog;
 #endif
 
 

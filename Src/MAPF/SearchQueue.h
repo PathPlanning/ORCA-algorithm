@@ -18,8 +18,8 @@ class SearchQueue
         bool insert(const SubMap& map, NodeType node, bool withTime,
                     bool withOld = false, NodeType old = NodeType(-1, -1));
         void erase(const SubMap& map, NodeType node, bool withTime);
-       // void moveByThreshold(SearchQueue<NodeType>& other, double threshold, const SubMap& map, std::multiset<double>& otherF,
-         //                    bool withTime = false);
+        void moveByThreshold(SearchQueue<NodeType>& other, double threshold, const SubMap& map, std::multiset<double>& otherF,
+                bool withTime = false);
         NodeType getByIndex(const SubMap& map, NodeType node, bool withTime);
         NodeType getFront() const;
         bool empty() const;
