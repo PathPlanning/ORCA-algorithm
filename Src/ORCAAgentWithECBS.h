@@ -35,7 +35,6 @@ class ORCAAgentWithECBS : public Agent
         bool isMAPFMember() const;
 
 
-
         bool operator == (const ORCAAgentWithECBS &another) const;
         bool operator != (const ORCAAgentWithECBS &another) const;
         ORCAAgentWithECBS &operator = (const ORCAAgentWithECBS &obj);

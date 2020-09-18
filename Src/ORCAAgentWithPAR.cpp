@@ -9,9 +9,22 @@ ORCAAgentWithPAR::ORCAAgentWithPAR() : Agent()
     moveToPARPos = false;
     PARExec = false;
     PARMap = SubMap();
-    conf.maxTime = CN_DEFAULT_MAPF_MAXTIME;
+
     conf.parallelizePaths1 = true;
     conf.parallelizePaths2 = true;
+    conf.maxTime = CN_DEFAULT_MAPF_MAXTIME;
+    conf.withFocalSearch = true;
+    conf.withCAT = false;
+    conf.withPerfectHeuristic = false;
+    conf.withCardinalConflicts = false;
+    conf.withBypassing = false;
+    conf.withMatchingHeuristic = false;
+    conf.storeConflicts = true;
+    conf.withDisjointSplitting = false;
+    conf.focalW = 1;
+    conf.planner = "push_and_rotate";
+    conf.lowLevel = "astar";
+
     PARVis = false;
     PARExec = false;
     PARStart = Point(-1,-1);
@@ -33,7 +46,22 @@ ORCAAgentWithPAR::ORCAAgentWithPAR(const int &id, const Point &start, const Poin
     PARVis = false;
     PARExec = false;
     PARMap = SubMap();
+
+    conf.parallelizePaths1 = true;
+    conf.parallelizePaths2 = true;
     conf.maxTime = CN_DEFAULT_MAPF_MAXTIME;
+    conf.withFocalSearch = true;
+    conf.withCAT = false;
+    conf.withPerfectHeuristic = false;
+    conf.withCardinalConflicts = false;
+    conf.withBypassing = false;
+    conf.withMatchingHeuristic = false;
+    conf.storeConflicts = true;
+    conf.withDisjointSplitting = false;
+    conf.focalW = 1;
+    conf.planner = "push_and_rotate";
+    conf.lowLevel = "astar";
+
     PARStart = Point(-1,-1);
     PARGoal = Point(-1,-1);
     PARsearch = Astar<>(false);
@@ -804,7 +832,7 @@ void ORCAAgentWithPAR::PreparePARExecution(Point common)
 
 #if PAR_LOG
     // Save here
-    PARLog->SaveInstance(PARSet, PARMap);
+    PARLog->SaveInstance(PARSet, PARMap, conf);
 #endif
 
     for(auto &ag : PARAgents)
@@ -988,9 +1016,7 @@ bool ORCAAgentWithPAR::ComputePAR()
 {
     PARSolver.clear();
     conf.maxTime = CN_DEFAULT_MAPF_MAXTIME;
-//    PARMap.printSubMap();
     PARres = PARSolver.startSearch(PARMap, conf,PARSet);
-std::cout << PARres.pathfound << "\n";
     return PARres.pathfound;
 }
 
@@ -1166,13 +1192,9 @@ bool ORCAAgentWithPAR::UpdatePAR()
 }
 
 
-bool ORCAAgentWithPAR::isPARMember() const
-{
-    return inPARMode;
-}
 
 #if PAR_LOG
-void ORCAAgentWithPAR::SetMAPFInstanceLoggerRef(MAPFInstancesLogger *log)
+void ORCAAgentWithPAR::SetPARInstanceLoggerRef(MAPFInstancesLogger *log)
 {
     PARLog = log;
 }

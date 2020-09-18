@@ -158,10 +158,10 @@ Summary Mission::StartMission()
         size_t nowtime = std::chrono::duration_cast<std::chrono::milliseconds>(checkpnt - startpnt).count();
 //        std::cout << "Mission step: " <<stepsCount << "\n";
         needToStop = (isTimeBounded) ? nowtime >= timeTreshhold : stepsCount >= stepsTreshhold;
-        if(!(stepsCount % 100))
-        {
-            std::cout << "Step: " << stepsCount << "; Time: " << nowtime << "\n";
-        }
+//        if(!(stepsCount % 100))
+//        {
+//            std::cout << "Step: " << stepsCount << "; Time: " << nowtime << "\n";
+//        }
     }
     while(!IsFinished() && !needToStop);
 

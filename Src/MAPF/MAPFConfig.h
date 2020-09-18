@@ -3,17 +3,13 @@
 #ifndef ORCASTAR_MAPFCONFIG_H
 #define ORCASTAR_MAPFCONFIG_H
 
-class MAPFConfig
+struct MAPFConfig
 {
     public:
-        MAPFConfig()
-        {
-        }
+        MAPFConfig() = default;
         MAPFConfig(const MAPFConfig& orig) = default;
-        ~MAPFConfig()
-        {
+        ~MAPFConfig() = default;
 
-        }
 
         int             maxTime = 1000;
         bool            withCAT = false;
@@ -27,6 +23,8 @@ class MAPFConfig
         bool            withDisjointSplitting;
         bool            withFocalSearch = false;
         double          focalW = 1.0;
+        std::string     planner = "push_and_rotate";
+        std::string     lowLevel = "astar";
 
 };
 

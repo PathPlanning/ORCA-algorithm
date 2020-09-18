@@ -3,7 +3,7 @@
 #include <list>
 #include "../../Geom.h"
 #include "Constraints.h"
-#include "mdd.h"
+#include "MDD.h"
 #include "ConflictSet.h"
 
 #ifndef ORCASTAR_CBSNODE_H

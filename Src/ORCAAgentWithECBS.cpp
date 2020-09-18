@@ -21,6 +21,8 @@ ORCAAgentWithECBS::ORCAAgentWithECBS() : Agent()
     conf.storeConflicts = true;
     conf.withDisjointSplitting = true;
     conf.focalW = 10.0;
+    conf.planner = "ecbs";
+    conf.lowLevel = "focal_search";
 
 
     MAPFVis = false;
@@ -56,6 +58,8 @@ ORCAAgentWithECBS::ORCAAgentWithECBS(const int &id, const Point &start, const Po
     conf.storeConflicts = true;
     conf.withDisjointSplitting = false;
     conf.focalW = 10;
+    conf.planner = "ecbs";
+    conf.lowLevel = "focal_search";
 
     MAPFStart = Point(-1,-1);
     MAPFGoal = Point(-1,-1);
@@ -761,7 +765,6 @@ void ORCAAgentWithECBS::SetAgentsForCentralizedPlanning(std::set<ORCAAgentWithEC
 
 void ORCAAgentWithECBS::PrepareMAPFExecution(Point common)
 {
-    //std::cout << "\n";
     MAPFAgents.clear();
     MAPFAgents.insert(this);
     for (auto &el : Neighbours)
@@ -805,11 +808,22 @@ void ORCAAgentWithECBS::PrepareMAPFExecution(Point common)
         }
     }
 
-//    std::cout << "Start MAPF computing\n";
+#if PAR_LOG
+    // Save here
+    MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
+#endif
+
+
     for(auto &ag : MAPFAgents)
     {
         if(!ag->ComputeMAPF())
         {
+            #if PAR_LOG
+                        // Save results here
+                        MAPFLog->AddResults(MAPFres);
+                        //MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
+            #endif
+
             for(auto &ag1 : MAPFAgents)
             {
                 while(!ag1->buffMAPF.empty())
@@ -821,15 +835,16 @@ void ORCAAgentWithECBS::PrepareMAPFExecution(Point common)
                 ag1->MAPFStart = Point(-1,-1);
                 ag1->MAPFGoal = Point(-1,-1);
             }
+
+
             return;
         }
     }
 
-
-
 #if PAR_LOG
-    // Save here
-    MAPFLog->SaveInstance(MAPFSet, MAPFMap);
+    // Save results here
+    MAPFLog->AddResults(MAPFres);
+    //MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
 #endif
 
     for(auto &ag : MAPFAgents)
@@ -1015,15 +1030,14 @@ bool ORCAAgentWithECBS::ComputeMAPF()
     conf.maxTime = CN_DEFAULT_MAPF_MAXTIME;
 
     MAPFres = ECBSSolver.startSearch(MAPFMap, conf,MAPFSet);
-    //std::cout << MAPFres.pathfound << "\n";
+
     return MAPFres.pathfound;
 }
 
 
 bool ORCAAgentWithECBS::UniteMAPF()
 {
-    //std::cout << "\n";
-    // std::cout << "Unite\n";
+
     std::vector<std::pair<Point, ORCAAgentWithECBS*>> goals;
     MAPFUnion = false;
     for(auto &ag : MAPFAgents)
@@ -1070,13 +1084,25 @@ bool ORCAAgentWithECBS::UniteMAPF()
         }
     }
 
-//    std::cout << "Start MAPF computing Un\n";
-//    int i = 0;
+
+    #if PAR_LOG
+        // Save here
+        MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
+    #endif
+
+
     for(auto &ag : MAPFAgents)
     {
-//        std::cout<< i << " ";
+
         if(!ag->ComputeMAPF())
         {
+
+#if PAR_LOG
+            // Save results here
+            MAPFLog->AddResults(MAPFres);
+            //MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
+#endif
+
             for(auto &ag1 : MAPFAgents)
             {
                 while(!ag1->buffMAPF.empty())
@@ -1094,8 +1120,15 @@ bool ORCAAgentWithECBS::UniteMAPF()
             }
             return false;
         }
-//        i++;
+
     }
+
+
+#if PAR_LOG
+    // Save results here
+    MAPFLog->AddResults(MAPFres);
+    //MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
+#endif
 
     for(auto &ag : MAPFAgents)
     {
@@ -1106,7 +1139,7 @@ bool ORCAAgentWithECBS::UniteMAPF()
         ag->MAPFcommon = MAPFcommon;
         ag->currMAPFPos = 0;
     }
-    //  std::cout<<"Agent No "<< id <<". End unite MAPF\n";
+
     return true;
 
 }
@@ -1160,21 +1193,21 @@ bool ORCAAgentWithECBS::UpdateMAPF()
         }
     }
 
-//    std::cout << "Start MAPF computing Up\n";
 
-//    int i = 0;
-
-
-#if PAR_LOG
-    // Save here
-    MAPFLog->SaveInstance(MAPFSet, MAPFMap);
-#endif
+    #if PAR_LOG
+        // Save here
+        MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
+    #endif
 
     for(auto &ag : MAPFAgents)
     {
-//        std::cout<< i << "\n";
         if(!ag->ComputeMAPF())
         {
+        #if PAR_LOG
+                    // Save results here
+                    MAPFLog->AddResults(MAPFres);
+                    //MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
+        #endif
             for(auto &ag1 : MAPFAgents)
             {
                 while(!ag1->buffMAPF.empty())
@@ -1192,8 +1225,13 @@ bool ORCAAgentWithECBS::UpdateMAPF()
             }
             return false;
         }
-//        i++;
     }
+
+    #if PAR_LOG
+        // Save results here
+        MAPFLog->AddResults(MAPFres);
+        //MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
+    #endif
 
     for(auto &ag : MAPFAgents)
     {

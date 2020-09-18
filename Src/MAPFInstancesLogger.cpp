@@ -1,14 +1,30 @@
 #include "MAPFInstancesLogger.h"
 
 
-MAPFInstancesLogger::MAPFInstancesLogger(std::string pathTempl)
+MAPFInstancesLogger::MAPFInstancesLogger(std::string pathTempl) : pre_log(std::ofstream())
 {
+    pre_log = std::ofstream();
     fileID = 0;
     pathTemplate = pathTempl;
+
+    std::string tmp1 = pathTemplate;
+    size_t found = tmp1.find_last_of("/");
+    std::string piece = "/RESULT_" + std::to_string(fileID) + "_";
+    tmp1.erase(found, 1);
+    tmp1.insert(found, piece);
+    resPath = tmp1 + ".txt";
+
+    pre_log.open(resPath);
+    if(!(pre_log))
+    {
+        std::cout<<"Error! Сannot open or create file "<< resPath <<std::endl;
+        return;
+    }
+    pre_log << "Success\tRuntime\tMakespan\tFlowtime\n";
 }
 
 
-bool MAPFInstancesLogger::SaveInstance(MAPFActorSet &agents, SubMap &map)
+bool MAPFInstancesLogger::SaveInstance(MAPFActorSet &agents, SubMap &map, MAPFConfig &conf)
 {
 //    std::cout<<agents.getActorCount()<<"\n";
 //    std::cout<< map.GetHeight()<<"x"<<map.GetWidth()<<"\n";
@@ -31,8 +47,9 @@ bool MAPFInstancesLogger::SaveInstance(MAPFActorSet &agents, SubMap &map)
 //    std::cout<<tmp<<"\n";
 
     std::string mainFile = tmp1 + ".xml";
-    std::cout << mainFile << "\n";
-    std::string agentFile = tmp2  + "-" + std::to_string(1) + ".xml";
+    pre_log << mainFile << "\t";
+    //std::cout << mainFile << "\n";
+    std::string agentFile = tmp2  + "-1.xml";
 
     /* MAIN ROOT */
     docMainXML = new XMLDocument();
@@ -41,15 +58,11 @@ bool MAPFInstancesLogger::SaveInstance(MAPFActorSet &agents, SubMap &map)
 
     /* MAP */
     auto mapXML = docMainXML->NewElement(CNS_TAG_MAP);
-    auto widthXML = docMainXML->NewElement(CNS_TAG_WIDTH);
-    auto heightXML = docMainXML->NewElement(CNS_TAG_HEIGHT);
-    widthXML->SetText(map.GetWidth());
-    heightXML->SetText(map.GetHeight());
-
-    mapXML->InsertFirstChild(widthXML);
-    mapXML->InsertFirstChild(heightXML);
-
     auto gridXML = docMainXML->NewElement(CNS_TAG_GRID);
+
+
+    gridXML->SetAttribute(CNS_TAG_WIDTH, map.GetWidth());
+    gridXML->SetAttribute(CNS_TAG_HEIGHT, map.GetHeight());
 
     for(size_t i = 0; i < map.GetHeight(); i++)
     {
@@ -78,60 +91,84 @@ bool MAPFInstancesLogger::SaveInstance(MAPFActorSet &agents, SubMap &map)
     }
     mapXML->InsertEndChild(gridXML);
     rootXML->InsertFirstChild(mapXML);
+    /* ALGORITHM */
+    auto algorithmXML = docMainXML->NewElement(CNS_TAG_ALG);
+
+    auto boolToString = [](bool arg)
+    {
+        return (arg) ? "true" : "false";
+    };
+
+    std::string algTagName[] =
+            {
+                "planner",
+                "low_level",
+                "with_cat",
+                "with_perfect_h",
+                "with_card_conf",
+                "with_bypassing",
+                "with_matching_h",
+                "with_disjoint_splitting",
+                "focal_w",
+                "pp_order",
+                "parallelize_paths_1",
+                "parallelize_paths_2"
+            };
+    vector<string> algTagText =
+            {
+                conf.planner,
+                conf.lowLevel,
+                boolToString(conf.withCAT),
+                boolToString(conf.withPerfectHeuristic),
+                boolToString(conf.withCardinalConflicts),
+                boolToString(conf.withBypassing),
+                boolToString(conf.withMatchingHeuristic),
+                boolToString(conf.withDisjointSplitting),
+                std::to_string(conf.focalW),
+                "0",
+                boolToString(conf.parallelizePaths1),
+                boolToString(conf.parallelizePaths2),
+
+            };
+
+    for(size_t tag = 0; tag < 12; tag++)
+    {
+        auto algTagXML = docMainXML->NewElement(algTagName[tag].c_str());
+        algTagXML->SetText(algTagText[tag].c_str());
+        algorithmXML->InsertEndChild(algTagXML);
+    }
+
+    rootXML->InsertEndChild(algorithmXML);
 
     /* OPTIONS */
     auto optionsXML = docMainXML->NewElement(CNS_TAG_OPT);
 //    auto algorithmXML = docMainXML->NewElement(CNS_TAG_ALG);
 //    auto agentsXML = docMainXML->NewElement("agents_file");
 
-    std::string tagNames[16] = {
-            "algorithm",
-            "low_level",
+    std::string optTagNames[] = {
+
             "agents_file",
             "tasks_count",
             "maxtime",
-            "with_cat",
-            "with_perfect_h",
-            "with_card_conf",
-            "with_bypassing",
-            "with_matching_h",
-            "with_disjoint_splitting",
-            "focal_w",
-            "pp_order",
-            "parallelize_paths_1",
-            "parallelize_paths_2",
             "single_execution"
     };
 
-    std::string tagText[16] = {
-            "push_and_rotate",
-            "astar",
+    std::string optTagText[] = {
             "",
             "1",
-            "1000",
-            "true",
-            "false",
-            "true",
-            "true",
-            "true",
-            "true",
-            "1.5",
-            "2",
-            "true",
-            "true",
+            "",
             "false"
     };
 
-    tagText[2] = tmp2;
+    optTagText[0] = tmp2;
+    optTagText[2] = std::to_string(conf.maxTime);
 
-    for(size_t tag = 0; tag < 16; tag++)
+    for(size_t tag = 0; tag < 4; tag++)
     {
-        auto optTagXML = docMainXML->NewElement(tagNames[tag].c_str());
-        optTagXML->SetText(tagText[tag].c_str());
+        auto optTagXML = docMainXML->NewElement(optTagNames[tag].c_str());
+        optTagXML->SetText(optTagText[tag].c_str());
         optionsXML->InsertEndChild(optTagXML);
     }
-
-
 
     auto rangeXML = docMainXML->NewElement("agents_range");
     rangeXML->SetAttribute("min", agents.getActorCount());
@@ -143,13 +180,11 @@ bool MAPFInstancesLogger::SaveInstance(MAPFActorSet &agents, SubMap &map)
     auto logfilenameXML = docMainXML->NewElement("logfilename");
     optionsXML->InsertEndChild(logpathXML);
     optionsXML->InsertEndChild(logfilenameXML);
-
-
     rootXML->InsertEndChild(optionsXML);
+
+
     /* SAVE MAIN*/
     bool resMain = (docMainXML->SaveFile(mainFile.c_str()) == XMLError::XML_SUCCESS);
-
-
     docAgentsXML = new XMLDocument();
     rootXML = docAgentsXML->NewElement(CNS_TAG_ROOT);
     docAgentsXML->InsertFirstChild(rootXML);
@@ -171,4 +206,48 @@ bool MAPFInstancesLogger::SaveInstance(MAPFActorSet &agents, SubMap &map)
     fileID++;
     return resMain && resAgents;
 
+}
+
+void MAPFInstancesLogger::AddResults(const MAPFSearchResult &result)
+{
+
+    size_t makespan = 0, timeflow = 0;
+    if(result.pathfound)
+        for (int i = 0; i < result.agentsPaths->size(); i++)
+        {
+            makespan = std::max(makespan, result.agentsPaths->at(i).size() - 1);
+            int lastMove;
+            for (lastMove = result.agentsPaths->at(i).size() - 1; lastMove > 1 && result.agentsPaths->at(i)[lastMove] == result.agentsPaths->at(i)[lastMove - 1]; --lastMove);
+            timeflow += lastMove;
+        }
+    pre_log << result.pathfound << "\t" << result.time << "\t" << makespan << "\t" << timeflow <<"\n";
+
+    return ;
+}
+
+MAPFInstancesLogger::~MAPFInstancesLogger()
+{
+    pre_log.close();
+}
+
+MAPFInstancesLogger::MAPFInstancesLogger(const MAPFInstancesLogger &obj)
+{
+    this->fileID = obj.fileID;
+    this->pathTemplate = obj.pathTemplate;
+    this->resPath = obj.resPath;
+    this->pre_log.close();
+    this->pre_log.open(this->resPath);
+}
+
+MAPFInstancesLogger &MAPFInstancesLogger::operator=(const MAPFInstancesLogger &obj)
+{
+    if(this != &obj)
+    {
+        this->fileID = obj.fileID;
+        this->pathTemplate = obj.pathTemplate;
+        this->resPath = obj.resPath;
+        this->pre_log.close();
+        this->pre_log.open(this->resPath);
+    }
+    return *this;
 }
