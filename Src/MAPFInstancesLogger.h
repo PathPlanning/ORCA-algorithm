@@ -35,7 +35,7 @@ public:
 
     bool SaveInstance(MAPFActorSet &agents, SubMap &map, MAPFConfig &conf);
     void AddResults(const MAPFSearchResult &result);
-
+    size_t GetFileID() const;
 
 
 

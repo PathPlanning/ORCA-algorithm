@@ -1,11 +1,11 @@
-#include "ORCAAgentWithECBS.h"
+#include "ORCAAgenWithPARAndECBS.h"
 
 
 
-ORCAAgentWithECBS::ORCAAgentWithECBS() : Agent()
+ORCAAgenWithPARAndECBS::ORCAAgenWithPARAndECBS() : Agent()
 {
     fakeRadius = 0;
-    MAPFAgents = std::set<ORCAAgentWithECBS *>();
+    MAPFAgents = std::set<ORCAAgenWithPARAndECBS *>();
     inMAPFMode = false;
     moveToMAPFPos = false;
     MAPFExec = false;
@@ -21,9 +21,10 @@ ORCAAgentWithECBS::ORCAAgentWithECBS() : Agent()
     conf.storeConflicts = true;
     conf.withDisjointSplitting = true;
     conf.focalW = 10.0;
-    conf.planner = "ecbs";
-    conf.lowLevel = "focal_search";
-
+    conf.parallelizePaths1 = true;
+    conf.parallelizePaths2 = true;
+    conf.planner = "push_and_rotate";
+    conf.lowLevel = "astar";
 
     MAPFVis = false;
     MAPFExec = false;
@@ -33,16 +34,16 @@ ORCAAgentWithECBS::ORCAAgentWithECBS() : Agent()
     MAPFUnion = false;
     notMAPFVis = false;
     MAPFcommon = Point(-1,-1);
-    MAPFsearch = FocalSearch<>(true, conf.focalW);
-    ECBSSolver = ConflictBasedSearch<FocalSearch<>>(&MAPFsearch);
+    ECBSLLsearch = FocalSearch<>(true, conf.focalW);
+    ECBSSolver = ConflictBasedSearch<FocalSearch<>>(&ECBSLLsearch);
 }
 
 
-ORCAAgentWithECBS::ORCAAgentWithECBS(const int &id, const Point &start, const Point &goal, const Map &map,
-                                   const EnvironmentOptions &options, AgentParam param) : Agent(id, start, goal, map, options, param)
+ORCAAgenWithPARAndECBS::ORCAAgenWithPARAndECBS(const int &id, const Point &start, const Point &goal, const Map &map,
+                                     const EnvironmentOptions &options, AgentParam param) : Agent(id, start, goal, map, options, param)
 {
     fakeRadius = param.rEps + param.radius;
-    MAPFAgents = std::set<ORCAAgentWithECBS *>();
+    MAPFAgents = std::set<ORCAAgenWithPARAndECBS *>();
     inMAPFMode = false;
     moveToMAPFPos = false;
     MAPFVis = false;
@@ -58,13 +59,17 @@ ORCAAgentWithECBS::ORCAAgentWithECBS(const int &id, const Point &start, const Po
     conf.storeConflicts = true;
     conf.withDisjointSplitting = false;
     conf.focalW = 10;
-    conf.planner = "ecbs";
-    conf.lowLevel = "focal_search";
+    conf.parallelizePaths1 = true;
+    conf.parallelizePaths2 = true;
+    conf.planner = "push_and_rotate";
+    conf.lowLevel = "astar";
 
     MAPFStart = Point(-1,-1);
     MAPFGoal = Point(-1,-1);
-    MAPFsearch = FocalSearch<>(true, conf.focalW);
-    ECBSSolver = ConflictBasedSearch<FocalSearch<>>(&MAPFsearch);
+    ECBSLLsearch = FocalSearch<>(true, conf.focalW);
+    ECBSSolver = ConflictBasedSearch<FocalSearch<>>(&ECBSLLsearch);
+    PARLLsearch = Astar<>(false);
+    PARSolver = PushAndRotate(&PARLLsearch);
     buffMAPF = std::vector<Point>();
     MAPFUnion = false;
     notMAPFVis = false;
@@ -72,7 +77,7 @@ ORCAAgentWithECBS::ORCAAgentWithECBS(const int &id, const Point &start, const Po
 }
 
 
-ORCAAgentWithECBS::ORCAAgentWithECBS(const ORCAAgentWithECBS &obj) : Agent(obj)
+ORCAAgenWithPARAndECBS::ORCAAgenWithPARAndECBS(const ORCAAgenWithPARAndECBS &obj) : Agent(obj)
 {
     fakeRadius = obj.fakeRadius;
     MAPFAgents = obj.MAPFAgents;
@@ -85,8 +90,10 @@ ORCAAgentWithECBS::ORCAAgentWithECBS(const ORCAAgentWithECBS &obj) : Agent(obj)
     MAPFExec = obj.MAPFExec;
     MAPFStart = obj.MAPFStart;
     MAPFGoal = obj.MAPFGoal;
-    MAPFsearch = obj.MAPFsearch;
+    ECBSLLsearch = obj.ECBSLLsearch;
     ECBSSolver = obj.ECBSSolver;
+    PARLLsearch = obj.PARLLsearch;
+    PARSolver = obj.PARSolver;
     buffMAPF = obj.buffMAPF;
     MAPFUnion = obj.MAPFUnion;
     notMAPFVis = obj.notMAPFVis;
@@ -96,11 +103,10 @@ ORCAAgentWithECBS::ORCAAgentWithECBS(const ORCAAgentWithECBS &obj) : Agent(obj)
 }
 
 
-ORCAAgentWithECBS::~ORCAAgentWithECBS() = default;
+ORCAAgenWithPARAndECBS::~ORCAAgenWithPARAndECBS() = default;
 
 
-
-ORCAAgentWithECBS& ORCAAgentWithECBS::operator = (const ORCAAgentWithECBS &obj)
+ORCAAgenWithPARAndECBS& ORCAAgenWithPARAndECBS::operator = (const ORCAAgenWithPARAndECBS &obj)
 {
 
     if(this != &obj)
@@ -117,8 +123,10 @@ ORCAAgentWithECBS& ORCAAgentWithECBS::operator = (const ORCAAgentWithECBS &obj)
         MAPFExec = obj.MAPFExec;
         MAPFStart = obj.MAPFStart;
         MAPFGoal = obj.MAPFGoal;
-        MAPFsearch = obj.MAPFsearch;
+        ECBSLLsearch = obj.ECBSLLsearch;
         ECBSSolver = obj.ECBSSolver;
+        PARLLsearch = obj.PARLLsearch;
+        PARSolver = obj.PARSolver;
         buffMAPF = obj.buffMAPF;
         MAPFUnion = obj.MAPFUnion;
         notMAPFVis = obj.notMAPFVis;
@@ -129,7 +137,7 @@ ORCAAgentWithECBS& ORCAAgentWithECBS::operator = (const ORCAAgentWithECBS &obj)
 }
 
 
-void ORCAAgentWithECBS::ComputeNewVelocity()
+void ORCAAgenWithPARAndECBS::ComputeNewVelocity()
 {
     if(MAPFExec)
     {
@@ -139,7 +147,7 @@ void ORCAAgentWithECBS::ComputeNewVelocity()
 
         for(unsigned long i = 0; i < minMaxNum; i++)
         {
-            auto curragent = dynamic_cast<ORCAAgentWithECBS *>(Neighbours[i].second);
+            auto curragent = dynamic_cast<ORCAAgenWithPARAndECBS *>(Neighbours[i].second);
             if((curragent->position - position).SquaredEuclideanNorm() <
                (param.radius + curragent->param.radius) * (param.radius + curragent->param.radius))
             {
@@ -419,7 +427,7 @@ void ORCAAgentWithECBS::ComputeNewVelocity()
     //std::sort(Neighbours.begin(),Neighbours.end(), Compare);
 
     Line currline;
-    ORCAAgentWithECBS *curragent;
+    ORCAAgenWithPARAndECBS *curragent;
     Vector u, w;
 
     unsigned long minMaxNum = (param.agentsMaxNum < Neighbours.size()) ? param.agentsMaxNum : Neighbours.size();
@@ -427,7 +435,7 @@ void ORCAAgentWithECBS::ComputeNewVelocity()
     for(unsigned long i = 0; i < minMaxNum; i++)
     {
         auto Neighbour = Neighbours[i];
-        curragent = dynamic_cast<ORCAAgentWithECBS *>(Neighbour.second);
+        curragent = dynamic_cast<ORCAAgenWithPARAndECBS *>(Neighbour.second);
         auto circlecenter = curragent->position - this->position; //(P_b - P_a)
         auto relvelocity = this->currV - curragent->currV; //(V_a - V_b)
 
@@ -504,16 +512,38 @@ void ORCAAgentWithECBS::ComputeNewVelocity()
 }
 
 
-void ORCAAgentWithECBS::ApplyNewVelocity()
+void ORCAAgenWithPARAndECBS::ApplyNewVelocity()
 {
     MAPFVis = false;
     notMAPFVis = false;
     MAPFUnion = false;
     currV = newV;
+    
+    speedSaveBuffer.pop_front();
+    if(inMAPFMode)
+    {
+        speedSaveBuffer.push_back(1.0f);
+    }
+    else
+    {
+        speedSaveBuffer.push_back(currV.EuclideanNorm());
+    }
+    
+    
+    float mean = 0.0f;
+    
+    
+    for(auto speed : speedSaveBuffer)
+    {
+        mean += speed;
+    }
+    
+    mean /= speedSaveBuffer.size();
+    meanSavedSpeed = mean;
 }
 
 
-bool ORCAAgentWithECBS::UpdatePrefVelocity()
+bool ORCAAgenWithPARAndECBS::UpdatePrefVelocity()
 {
     Point next;
     if(inMAPFMode)
@@ -653,7 +683,9 @@ bool ORCAAgentWithECBS::UpdatePrefVelocity()
             nextForLog = next;
             Vector goalVector = next - position;
             float dist = goalVector.EuclideanNorm();
-            if(Neighbours.size() >= param.MAPFNum && dist < param.sightRadius)
+            //if(Neighbours.size() >= param.MAPFNum && dist < param.sightRadius)
+            //if(MeanSpeedMAPFTrigger())
+            if(MeanSavedSpeedMAPFTrigger())
             {
                 PrepareMAPFExecution(next);
                 prefV = Point();
@@ -683,25 +715,25 @@ bool ORCAAgentWithECBS::UpdatePrefVelocity()
 }
 
 
-bool ORCAAgentWithECBS::operator == (const ORCAAgentWithECBS &another) const
+bool ORCAAgenWithPARAndECBS::operator == (const ORCAAgenWithPARAndECBS &another) const
 {
     return this->id == another.id;
 }
 
 
-bool ORCAAgentWithECBS::operator != (const ORCAAgentWithECBS &another) const
+bool ORCAAgenWithPARAndECBS::operator != (const ORCAAgenWithPARAndECBS &another) const
 {
     return this->id != another.id;
 }
 
 
-ORCAAgentWithECBS* ORCAAgentWithECBS::Clone() const
+ORCAAgenWithPARAndECBS* ORCAAgenWithPARAndECBS::Clone() const
 {
-    return new ORCAAgentWithECBS(*this);
+    return new ORCAAgenWithPARAndECBS(*this);
 }
 
 
-void ORCAAgentWithECBS::AddNeighbour(Agent &neighbour, float distSq)
+void ORCAAgenWithPARAndECBS::AddNeighbour(Agent &neighbour, float distSq)
 {
     float sightSq = param.sightRadius * param.sightRadius;
 
@@ -709,7 +741,7 @@ void ORCAAgentWithECBS::AddNeighbour(Agent &neighbour, float distSq)
     {
         return;
     }
-    auto tmpAgentMAPF = dynamic_cast<ORCAAgentWithECBS*>(&neighbour);
+    auto tmpAgentMAPF = dynamic_cast<ORCAAgenWithPARAndECBS*>(&neighbour);
     if(tmpAgentMAPF->inMAPFMode)
     {
         MAPFVis = true;
@@ -751,31 +783,32 @@ void ORCAAgentWithECBS::AddNeighbour(Agent &neighbour, float distSq)
 }
 
 
-std::set<ORCAAgentWithECBS *> ORCAAgentWithECBS::GetAgentsForCentralizedPlanning()
+std::set<ORCAAgenWithPARAndECBS *> ORCAAgenWithPARAndECBS::GetAgentsForCentralizedPlanning()
 {
     return MAPFAgents;
 }
 
 
-void ORCAAgentWithECBS::SetAgentsForCentralizedPlanning(std::set<ORCAAgentWithECBS *> agents)
+void ORCAAgenWithPARAndECBS::SetAgentsForCentralizedPlanning(std::set<ORCAAgenWithPARAndECBS *> agents)
 {
     MAPFAgents = agents;
 }
 
 
-void ORCAAgentWithECBS::PrepareMAPFExecution(Point common)
+void ORCAAgenWithPARAndECBS::PrepareMAPFExecution(Point common)
 {
+    //std::cout << "Prep" << std::endl;
     MAPFAgents.clear();
     MAPFAgents.insert(this);
     for (auto &el : Neighbours)
     {
-        ORCAAgentWithECBS * neighbour = dynamic_cast<ORCAAgentWithECBS *>(el.second);
+        ORCAAgenWithPARAndECBS * neighbour = dynamic_cast<ORCAAgenWithPARAndECBS *>(el.second);
         if(!neighbour->inMAPFMode && !neighbour->MAPFVis)
         {
             MAPFAgents.insert(neighbour);
             for(auto &el2 : neighbour->GetNeighbours())
             {
-                auto agent = dynamic_cast<ORCAAgentWithECBS *>(el2.second);
+                auto agent = dynamic_cast<ORCAAgenWithPARAndECBS *>(el2.second);
                 if(!agent->inMAPFMode && !agent->MAPFVis)
                 {
                     MAPFAgents.insert(agent);
@@ -809,21 +842,20 @@ void ORCAAgentWithECBS::PrepareMAPFExecution(Point common)
     }
 
 #if PAR_LOG
-    // Save here
     MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
 #endif
 
-
+    int algToUse = PAR_AND_ECBS;
+    int algUsed;
     for(auto &ag : MAPFAgents)
     {
-        if(!ag->ComputeMAPF())
+        algUsed = ag->ComputeMAPF(algToUse);
+        //std::cout<<algUsed<<"\n";
+        if(!algUsed)
         {
-            #if PAR_LOG
-                        // Save results here
-                        MAPFLog->AddResults(ag->MAPFres);
-                        //MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
-            #endif
-
+#if PAR_LOG
+            MAPFLog->AddResults(ag->MAPFres);
+#endif
             for(auto &ag1 : MAPFAgents)
             {
                 while(!ag1->buffMAPF.empty())
@@ -835,16 +867,21 @@ void ORCAAgentWithECBS::PrepareMAPFExecution(Point common)
                 ag1->MAPFStart = Point(-1,-1);
                 ag1->MAPFGoal = Point(-1,-1);
             }
-
-
             return;
         }
+        
+        if((algToUse = algUsed) == ONLY_PAR)
+        {
+            for(auto ag1 = MAPFAgents.begin(); *ag1 != ag; ag1++)
+            {
+                (*ag1)->MAPFres = (*ag1)->fallbackMAPFRes;
+            }
+        }
+        
     }
 
 #if PAR_LOG
-    // Save results here
     MAPFLog->AddResults(MAPFres);
-    //MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
 #endif
 
     for(auto &ag : MAPFAgents)
@@ -858,13 +895,13 @@ void ORCAAgentWithECBS::PrepareMAPFExecution(Point common)
 }
 
 
-std::vector<std::pair<float, Agent *>>& ORCAAgentWithECBS::GetNeighbours()
+std::vector<std::pair<float, Agent *>>& ORCAAgenWithPARAndECBS::GetNeighbours()
 {
     return Neighbours;
 }
 
 
-bool ORCAAgentWithECBS::ComputeMAPFEnv(Point common, std::vector<std::pair<Point, ORCAAgentWithECBS*>> oldGoals)
+bool ORCAAgenWithPARAndECBS::ComputeMAPFEnv(Point common, std::vector<std::pair<Point, ORCAAgenWithPARAndECBS*>> oldGoals)
 {
 
     float minX = map->GetWidth() * map->GetCellSize(), minY = map->GetHeight() * map->GetCellSize(), maxX = 0, maxY = 0;
@@ -1009,7 +1046,7 @@ bool ORCAAgentWithECBS::ComputeMAPFEnv(Point common, std::vector<std::pair<Point
 }
 
 
-Point ORCAAgentWithECBS::PullOutIntermediateGoal(Point common)
+Point ORCAAgenWithPARAndECBS::PullOutIntermediateGoal(Point common)
 {
     Point nextPoint = planner->PullOutNext();
     buffMAPF.push_back(nextPoint);
@@ -1024,21 +1061,36 @@ Point ORCAAgentWithECBS::PullOutIntermediateGoal(Point common)
 }
 
 
-bool ORCAAgentWithECBS::ComputeMAPF()
+int ORCAAgenWithPARAndECBS::ComputeMAPF(int algToUse)
 {
-    ECBSSolver.clear();
+    PARSolver.clear();
     conf.maxTime = CN_DEFAULT_MAPF_MAXTIME;
 
-    MAPFres = ECBSSolver.startSearch(MAPFMap, conf,MAPFSet);
+    auto PARSet = MAPFSet;
+    fallbackMAPFRes = PARSolver.startSearch(MAPFMap, conf, PARSet);
 
-    return MAPFres.pathfound;
+    if(fallbackMAPFRes.pathfound && algToUse != ONLY_PAR)
+    {
+        ECBSSolver.clear();
+        conf.maxTime = CN_DEFAULT_MAPF_MAXTIME - static_cast<int>(ceil(fallbackMAPFRes.time));
+
+        auto ECBSRes = ECBSSolver.startSearch(MAPFMap, conf, MAPFSet);
+        if (ECBSRes.pathfound)
+        {
+            MAPFres = ECBSRes;
+            return PAR_AND_ECBS;
+        }
+    }
+
+    MAPFres = fallbackMAPFRes;
+    return (MAPFres.pathfound) ? ONLY_PAR : FAIL;
 }
 
 
-bool ORCAAgentWithECBS::UniteMAPF()
+bool ORCAAgenWithPARAndECBS::UniteMAPF()
 {
-
-    std::vector<std::pair<Point, ORCAAgentWithECBS*>> goals;
+    //std::cout << "Uni" << std::endl;
+    std::vector<std::pair<Point, ORCAAgenWithPARAndECBS*>> goals;
     MAPFUnion = false;
     for(auto &ag : MAPFAgents)
     {
@@ -1051,7 +1103,7 @@ bool ORCAAgentWithECBS::UniteMAPF()
 
     for(auto &el : Neighbours)
     {
-        ORCAAgentWithECBS * neighbour = dynamic_cast<ORCAAgentWithECBS *>(el.second);
+        ORCAAgenWithPARAndECBS * neighbour = dynamic_cast<ORCAAgenWithPARAndECBS *>(el.second);
         if(neighbour->inMAPFMode && MAPFAgents.find(neighbour) == MAPFAgents.end())
         {
             for(auto& nn : neighbour->MAPFAgents)
@@ -1085,24 +1137,21 @@ bool ORCAAgentWithECBS::UniteMAPF()
     }
 
 
-    #if PAR_LOG
-        // Save here
-        MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
-    #endif
-
-
+#if PAR_LOG
+    MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
+#endif
+    
+    int algToUse = PAR_AND_ECBS;
+    int algUsed;
     for(auto &ag : MAPFAgents)
     {
-
-        if(!ag->ComputeMAPF())
+        algUsed = ag->ComputeMAPF(algToUse);
+        //std::cout<<algUsed<<"\n";
+        if(!algUsed)
         {
-
 #if PAR_LOG
-            // Save results here
             MAPFLog->AddResults(ag->MAPFres);
-            //MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
 #endif
-
             for(auto &ag1 : MAPFAgents)
             {
                 while(!ag1->buffMAPF.empty())
@@ -1110,7 +1159,7 @@ bool ORCAAgentWithECBS::UniteMAPF()
                     ag1->planner->AddPointToPath(ag1->buffMAPF.back());
                     ag1->buffMAPF.pop_back();
                 }
-
+        
                 ag1->MAPFStart = Point(-1,-1);
                 ag1->MAPFGoal = Point(-1,-1);
                 ag1->inMAPFMode = false;
@@ -1120,14 +1169,19 @@ bool ORCAAgentWithECBS::UniteMAPF()
             }
             return false;
         }
-
+        
+        if((algToUse = algUsed) == ONLY_PAR)
+        {
+            for(auto ag1 = MAPFAgents.begin(); *ag1 != ag; ag1++)
+            {
+                (*ag1)->MAPFres = (*ag1)->fallbackMAPFRes;
+            }
+        }
+        
     }
 
-
 #if PAR_LOG
-    // Save results here
     MAPFLog->AddResults(MAPFres);
-    //MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
 #endif
 
     for(auto &ag : MAPFAgents)
@@ -1145,11 +1199,11 @@ bool ORCAAgentWithECBS::UniteMAPF()
 }
 
 
-bool ORCAAgentWithECBS::UpdateMAPF()
+bool ORCAAgenWithPARAndECBS::UpdateMAPF()
 {
-   // std::cout << "\n";
-    std::vector<std::pair<Point, ORCAAgentWithECBS*>> goals;
-    //std::cout << "Update\n";
+    // std::cout << "\n";
+    std::vector<std::pair<Point, ORCAAgenWithPARAndECBS*>> goals;
+    //std::cout << "Upd" << std::endl;
     for(auto &ag : MAPFAgents)
     {
         ag->MAPFStart = Point(-1,-1);
@@ -1158,7 +1212,7 @@ bool ORCAAgentWithECBS::UpdateMAPF()
 
     }
 
-    std::set<ORCAAgentWithECBS*> tmpAgents;
+    std::set<ORCAAgenWithPARAndECBS*> tmpAgents;
     // std::cout << "Add:\n";
     for(auto &ag : MAPFAgents)
     {
@@ -1166,7 +1220,7 @@ bool ORCAAgentWithECBS::UpdateMAPF()
         auto N = ag->GetNeighbours();
         for(auto &el : N)
         {
-            ORCAAgentWithECBS * neighbour = dynamic_cast<ORCAAgentWithECBS *>(el.second);
+            ORCAAgenWithPARAndECBS * neighbour = dynamic_cast<ORCAAgenWithPARAndECBS *>(el.second);
             if(!neighbour->inMAPFMode)
             {
                 //           std::cout << neighbour->GetID() << "\n";
@@ -1194,20 +1248,22 @@ bool ORCAAgentWithECBS::UpdateMAPF()
     }
 
 
-    #if PAR_LOG
-        // Save here
-        MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
-    #endif
-
+#if PAR_LOG
+    // Save here
+    MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
+#endif
+    
+    int algToUse = PAR_AND_ECBS;
+    int algUsed;
     for(auto &ag : MAPFAgents)
     {
-        if(!ag->ComputeMAPF())
+        algUsed = ag->ComputeMAPF(algToUse);
+        //std::cout<< algUsed << std::endl;
+        if(!algUsed)
         {
-        #if PAR_LOG
-                    // Save results here
-                    MAPFLog->AddResults(ag->MAPFres);
-                    //MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
-        #endif
+#if PAR_LOG
+            MAPFLog->AddResults(ag->MAPFres);
+#endif
             for(auto &ag1 : MAPFAgents)
             {
                 while(!ag1->buffMAPF.empty())
@@ -1215,7 +1271,7 @@ bool ORCAAgentWithECBS::UpdateMAPF()
                     ag1->planner->AddPointToPath(ag1->buffMAPF.back());
                     ag1->buffMAPF.pop_back();
                 }
-
+        
                 ag1->MAPFStart = Point(-1,-1);
                 ag1->MAPFGoal = Point(-1,-1);
                 ag1->inMAPFMode = false;
@@ -1225,13 +1281,21 @@ bool ORCAAgentWithECBS::UpdateMAPF()
             }
             return false;
         }
+        
+        if((algToUse = algUsed) == ONLY_PAR)
+        {
+            for(auto ag1 = MAPFAgents.begin(); *ag1 != ag; ag1++)
+            {
+                (*ag1)->MAPFres = (*ag1)->fallbackMAPFRes;
+            }
+        }
+        
     }
-
-    #if PAR_LOG
-        // Save results here
-        MAPFLog->AddResults(MAPFres);
-        //MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
-    #endif
+#if PAR_LOG
+    // Save results here
+    MAPFLog->AddResults(MAPFres);
+    //MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
+#endif
 
     for(auto &ag : MAPFAgents)
     {
@@ -1247,13 +1311,13 @@ bool ORCAAgentWithECBS::UpdateMAPF()
 }
 
 
-bool ORCAAgentWithECBS::isMAPFMember() const
+bool ORCAAgenWithPARAndECBS::isMAPFMember() const
 {
     return inMAPFMode;
 }
 
 #if PAR_LOG
-void ORCAAgentWithECBS::SetMAPFInstanceLoggerRef(MAPFInstancesLogger *log)
+void ORCAAgenWithPARAndECBS::SetMAPFInstanceLoggerRef(MAPFInstancesLogger *log)
 {
     MAPFLog = log;
 }

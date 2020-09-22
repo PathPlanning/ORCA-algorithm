@@ -78,10 +78,11 @@
 #define CNS_SP_ST_THETA     "thetastar"
 #define CNS_SP_ST_DIR       "direct"
 
-#define CNS_AT_ST_ORCA      "orca"
-#define CNS_AT_ST_ORCADD    "orca-dd"
-#define CNS_AT_ST_ORCAPAR   "orca-par"
-#define CNS_AT_ST_ORCAECBS  "orca-ecbs"
+#define CNS_AT_ST_ORCA          "orca"
+#define CNS_AT_ST_ORCADD        "orca-dd"
+#define CNS_AT_ST_ORCAPAR       "orca-par"
+#define CNS_AT_ST_ORCAECBS      "orca-ecbs"
+#define CNS_AT_ST_ORCAPARECBS   "orca-par-ecbs"
 
 #define CNS_SP_MT_DIAG      "diagonal"
 #define CNS_SP_MT_MANH      "manhattan"
@@ -115,7 +116,7 @@
 #define CN_DEFAULT_DELTA 0.1
 #define CN_DEFAULT_REPS 0.19
 #define CN_DEFAULT_MAPF_ACTNUM 3
-#define CN_DEFAULT_MAPF_MAXTIME 250
+#define CN_DEFAULT_MAPF_MAXTIME 1000
 
 
 

@@ -220,7 +220,7 @@ void MAPFInstancesLogger::AddResults(const MAPFSearchResult &result)
             for (lastMove = result.agentsPaths->at(i).size() - 1; lastMove > 1 && result.agentsPaths->at(i)[lastMove] == result.agentsPaths->at(i)[lastMove - 1]; --lastMove);
             timeflow += lastMove;
         }
-    pre_log << result.pathfound << "\t" << result.time << "\t" << makespan << "\t" << timeflow <<"\n";
+    pre_log << result.pathfound << "\t" << result.time << "\t" << makespan << "\t" << timeflow << "\t" << result.HLExpansions << "\t" <<result.HLNodes << "\n";
 
     return ;
 }
@@ -250,4 +250,10 @@ MAPFInstancesLogger &MAPFInstancesLogger::operator=(const MAPFInstancesLogger &o
         this->pre_log.open(this->resPath);
     }
     return *this;
+}
+
+
+size_t MAPFInstancesLogger::GetFileID() const
+{
+    return fileID;
 }

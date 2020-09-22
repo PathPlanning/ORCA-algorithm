@@ -22,6 +22,8 @@ Agent::Agent()
     collisions = 0;
     collisionsObst = 0;
     maxSqObstDist = 0;
+    speedSaveBuffer = std::list<float>(100, 1.0f);
+    meanSavedSpeed = 1.0f;
 }
 
 
@@ -48,6 +50,8 @@ Agent::Agent(const int &id, const Point &start, const Point &goal, const Map &ma
     collisions = 0;
     collisionsObst = 0;
     maxSqObstDist = std::pow((param.timeBoundaryObst * param.maxSpeed + param.radius), 2.0f);
+    speedSaveBuffer = std::list<float>(500, 1.0f);
+    meanSavedSpeed = 1.0f;
 
 }
 
@@ -78,6 +82,8 @@ Agent::Agent(const Agent &obj)
     collisions = obj.collisions;
     collisionsObst = obj.collisionsObst;
     maxSqObstDist = obj.maxSqObstDist;
+    speedSaveBuffer = obj.speedSaveBuffer;
+    meanSavedSpeed = obj.meanSavedSpeed;
 }
 
 
@@ -223,12 +229,14 @@ Agent &Agent::operator = (const Agent &obj)
         Neighbours = obj.Neighbours;
         options = obj.options;
         map = obj.map;
+        speedSaveBuffer = obj.speedSaveBuffer;
+        meanSavedSpeed = obj.meanSavedSpeed;
         if(planner != nullptr)
         {
             delete planner;
             planner = nullptr;
         }
-        planner = (obj.planner == nullptr) ? nullptr : obj.planner->Clone();;
+        planner = (obj.planner == nullptr) ? nullptr : obj.planner->Clone();
     }
     return *this;
 }
@@ -240,3 +248,40 @@ Point Agent::GetNext() const
 }
 
 
+bool Agent::CommonPointMAPFTrigger(float distToTargetPoint)
+{
+    return (Neighbours.size() >= param.MAPFNum) && (distToTargetPoint < param.sightRadius);
+}
+
+
+bool Agent::MeanSpeedMAPFTrigger()
+{
+    float mean = 0.0f;
+
+    if(param.MAPFNum > Neighbours.size()) return false;
+
+    for(size_t nCount = 0; nCount < param.MAPFNum; nCount++)
+    {
+        mean += Neighbours[nCount].second->GetVelocity().EuclideanNorm();
+    }
+    
+    mean /= param.MAPFNum;
+    //std :: cout << mean << "\n";
+    
+    return mean < 0.1;
+}
+
+bool Agent::MeanSavedSpeedMAPFTrigger()
+{
+    float mean = 0.0f;
+    
+    if(param.MAPFNum > Neighbours.size()) return false;
+    
+    for(size_t nCount = 0; nCount < param.MAPFNum; nCount++)
+    {
+        mean += Neighbours[nCount].second->meanSavedSpeed;
+    }
+    
+    mean /= param.MAPFNum;
+    return mean < 0.1;
+}

@@ -836,6 +836,10 @@ bool XMLReader::ReadAgents()
         {
             a = new ORCAAgentWithECBS(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
         }
+        else if(agTypeStr == CNS_AT_ST_ORCAPARECBS)
+        {
+            a = new ORCAAgenWithPARAndECBS(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
+        }
         else
         {
            a = new ORCAAgent(id, Point(stx, sty), Point(gx, gy), *map, *options, param);

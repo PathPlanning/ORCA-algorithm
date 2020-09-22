@@ -5,7 +5,7 @@
 
 #define STEP_MAX            12800
 #define IS_TIME_BOUNDED     false
-#define TIME_MAX            1000 * 60 * 5
+#define TIME_MAX            1000 * 60 * 4
 
 int main(int argc, char* argv[])
 {

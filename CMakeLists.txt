@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.2)
 project(ORCAStar)
 
 set(FullOutput OFF)
-set(FullLog OFF)
-set(MAPFEnvLog ON)
+set(FullLog ON)
+set(MAPFEnvLog OFF)
 
 
 if(FullOutput)

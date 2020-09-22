@@ -9,6 +9,7 @@
 #include <iostream>
 #include <type_traits>
 #include <cstddef>
+#include <list>
 
 #ifndef ORCA_AGENT_H
 #define ORCA_AGENT_H
@@ -74,7 +75,10 @@ class Agent
 
 
     protected:
-
+        bool CommonPointMAPFTrigger(float dist);
+        bool MeanSpeedMAPFTrigger();
+        bool MeanSavedSpeedMAPFTrigger();
+        
         int id;
         Point start;
         Point goal;
@@ -100,6 +104,9 @@ class Agent
         unsigned int collisionsObst;
 
         Point nextForLog;
+        std::list<float> speedSaveBuffer;
+        float meanSavedSpeed;
+        
 
 };
 

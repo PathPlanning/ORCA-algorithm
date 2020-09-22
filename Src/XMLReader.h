@@ -11,6 +11,7 @@
 #include "DirectPlanner.h"
 #include "ORCAAgentWithPAR.h"
 #include "ORCAAgentWithECBS.h"
+#include "ORCAAgenWithPARAndECBS.h"
 
 
 
