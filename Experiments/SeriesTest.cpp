@@ -7,7 +7,7 @@
 #define RESULT_FILE         "result.txt"
 #define INPUT_FILE_PART     "_task.xml"
 #define STEP_MAX            12800
-#define IS_TIME_BOUNDED     true
+#define IS_TIME_BOUNDED     false
 #define TIME_MAX            1000 * 60 * 1
 
 

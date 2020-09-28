@@ -1,11 +1,14 @@
 #include <iostream>
 #include <string>
+#include <ostream>
 
 #include "Mission.h"
 
 #define STEP_MAX            12800
 #define IS_TIME_BOUNDED     false
 #define TIME_MAX            1000 * 60 * 4
+#define RESULT_FILE         "result.txt"
+
 
 int main(int argc, char* argv[])
 {
@@ -32,15 +35,16 @@ int main(int argc, char* argv[])
         std::cout<<"Error! Invalid number of agents."<<std::endl;
         return -1;
     }
-
-
+    
+    ofstream pre_log(RESULT_FILE, std::ofstream::app);
+    
     Mission task = Mission(taskfile, num, STEP_MAX, IS_TIME_BOUNDED, TIME_MAX);
     if(task.ReadTask())
     {
         std::string result = task.StartMission().ToString();
         std::cout << "\nSuccess\tRuntime\tMakespan\tFlowtime\tCollisions\tCollisionsObst\n";
         std::cout << result;
-
+        pre_log << result;
 #if FULL_LOG
         task.SaveLog();
 #endif
@@ -49,8 +53,9 @@ int main(int argc, char* argv[])
     else
     {
         std::cout<<"Error during task execution\n";
+        pre_log << -1;
         return -1;
     }
-
+    pre_log.close();
     return 0;
 }
