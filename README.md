@@ -1,7 +1,8 @@
 # ORCA* Algorithm + `MAPF
 
 Implementation of ORCA algorithm with global path planner based on Theta* algorithm and 
-local coordinated navigation in case of deadlocks.
+local coordinated navigation in case of deadlocks. In this moment the README file contains a number of flaws. 
+README will be updated.
 
 ## Description
 
