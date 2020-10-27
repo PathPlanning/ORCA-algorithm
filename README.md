@@ -1,57 +1,92 @@
-# ORCA* Algorithm + Push And Rotate
+# ORCA* Algorithm + `MAPF
 
-Implementation of ORCA algorithm with global path planner based on Theta* algorithm and local coordinated navigation in case of deadlocks.
+Implementation of ORCA algorithm with global path planner based on Theta* algorithm and 
+local coordinated navigation in case of deadlocks.
 
 ## Description
 
 ### Decentrilized Navigation
-The algorithm is based on the idea of planning a global path for all agents independently and moving along this path with local collision avoidance. Theta* algorithm are using to global path planning and ORCA algorithm are using for local collision avoidance with agents and static obstacles. Also direct moving to goal without global planning is available.
+The algorithm is based on the idea of planning a global path for all agents independently 
+and moving along this path with local collision avoidance. 
+Theta* algorithm are using to global path planning and ORCA algorithm are using for 
+local collision avoidance with agents and static obstacles. 
+Also direct moving to goal without global planning is available.
 
-**Theta*** is a version of A* algorithm for any-angle path planning on grids. Theta* mostly the same as A*, but, unlike A*, Theta* allows parent of current vertex may be any other vertex, which are visible from current [[1](https://arxiv.org/pdf/1401.3843.pdf)].
+**Theta*** is a version of A* algorithm for any-angle path planning on grids. 
+Theta* mostly the same as A*, but, unlike A*, 
+Theta* allows parent of current vertex may be any other vertex, 
+which are visible from current [[1](https://arxiv.org/pdf/1401.3843.pdf)].
 
-The **ORCA** algorithm is a decentralized collision avoidance algorithm in a multi-agent environment. The main idea of ​​the algorithm is iterative selection of new agent speed, close to a certain preferred velocity. Selection of the new speed is based on ORCA principle. **Optimal Reciprocal Collision Avoidance (ORCA)** — the principle, which provides a sufficient condition for multiple robots to avoid collisions among one another, and thus can guarantee collision-free navigation [[2](http://gamma.cs.unc.edu/ORCA/publications/ORCA.pdf)]. 
-The principle is based on the concept of velocity obstacles, which are used to search for a new  speed of agent so that during the time **_t_** there is no collision with other agents. In the process of searching for a new velocity, algorithm creates a set of n-1 linear constraints(where n is the number of agents that the current one takes into account). A new velocity (Vnew) that satisfies these constraints and is close to the preferred velocity, are searched using an linear programming. The preferred velocity is selected so that the agent makes a move to the target point. More information about ORCA algorithm you can find at ORCA creators web page [[3](http://gamma.cs.unc.edu/ORCA/)].
+The **ORCA** algorithm is a decentralized collision avoidance algorithm in a 
+multi-agent environment. The main idea of ​​the algorithm is iterative selection 
+of new agent speed, close to a certain preferred velocity. Selection of 
+the new speed is based on ORCA principle. 
+**Optimal Reciprocal Collision Avoidance (ORCA)** — the principle, 
+which provides a sufficient condition for multiple robots to avoid 
+collisions among one another, and thus can guarantee collision-free 
+navigation [[2](http://gamma.cs.unc.edu/ORCA/publications/ORCA.pdf)]. 
+The principle is based on the concept of velocity obstacles, which are 
+used to search for a new  speed of agent so that during the time **_t_** there 
+is no collision with other agents. In the process of searching for a new velocity, 
+algorithm creates a set of n-1 linear constraints(where n is the number of agents 
+that the current one takes into account). A new velocity (Vnew) that satisfies these 
+constraints and is close to the preferred velocity, are searched using an linear programming. 
+The preferred velocity is selected so that the agent makes a move to the target point. 
+More information about ORCA algorithm you can find at 
+ORCA creators web page [[3](http://gamma.cs.unc.edu/ORCA/)].
 
-The agent is a disk of radius _r_ centered at _p_ with their start and global goal positions. For each neighboring agent (located at a distance _R_ or less), their position and current speed are known. At the beginning of task execution every agent tries to find a path to their global goal, using Theta* algorithm. After getting of global path (which is a sequence of points in space, where the first point is the global goal), agent begin moving. First target point is the last element in path sequence. At each simulation step, for each agent, a new velocity _Vnew_ are searched, using ORCA algorithm. After that global simulation time is changed to _dt_, the position of all agents is changed to _dt_ * _Vnew_ (own for each agent) and every agent compute new target point. If the agent has reached the last point in the sequence, then the next point in the sequence becomes the target, and the previous one is deleted. Otherwise, a visibility check is made between the agent’s position and the last point. If visibility is confirmed, then the last becomes the target point, otherwise the path from the agent's position to the last point is searched. 
 
-Block scheme of the algorithm is shown in the figures below. 
-
-
+The agent is a disk of radius _r_ centered at _p_ with their start and 
+global goal positions. For each neighboring agent (located at a distance _R_ or less), 
+their position and current speed are known. At the beginning of task execution every 
+agent tries to find a path to their global goal, using Theta* algorithm. 
+After getting of global path (which is a sequence of points in space, where the 
+first point is the global goal), agent begin moving. First target point is the 
+last element in path sequence. At each simulation step, for each agent, a new 
+velocity _Vnew_ are searched, using ORCA algorithm. 
+After that global simulation time is changed to _dt_, the position of all agents 
+is changed to _dt_ * _Vnew_ (own for each agent) and every agent compute new target point. 
+If the agent has reached the last point in the sequence, then the next point in the 
+sequence becomes the target, and the previous one is deleted. Otherwise, a 
+visibility check is made between the agent’s position and the last point. If 
+visibility is confirmed, then the last becomes the target point, otherwise the path 
+from the agent's position to the last point is searched. 
 
 ### Deadlock Avoidance
 
-**TODO**
+***___Coming soon...___***
 
-![Alg](./images/Alg.png)
+![Alg](Images/Alg.png)
 
 ## Getting Started
-The implementation is self-contained. Code is written in C++ and is meant to be cross-platform. Implementation relies only on C++11 standard and STL. Open-source library to work with XML (tinyXML) is included at the source level (i.e. .h and .cpp files are part of the project).
+The implementation is self-contained. Code is written in C++ and is meant to be cross-platform. 
+Implementation relies only on C++11 standard and STL. 
+Open-source library to work with XML (tinyXML) is included at the source level 
+(i.e. .h and .cpp files are part of the project).
 
-To build and run the project you can use CMake, CMakeLists file is available in the repo. Please note that the code relies on C++11 standart. Make sure that your compiler supports it. 
+To build and run the project you can use CMake, CMakeLists file is available in the repo. 
+Please note that the code relies on C++14 standart. Make sure that your compiler supports it. 
 
 ### Installing
 
 Download current repository to your local machine. Use
 ```bash
-git clone -b ORCAStar https://github.com/PathPlanning/ORCA-algorithm.git
+git clone https://github.com/PathPlanning/ORCA-algorithm.git
 ```
 or direct downloading.
 
-### Build 
-[![Build Status](https://travis-ci.com/PathPlanning/ORCA-algorithm.svg?branch=ORCAStar)](https://travis-ci.com/PathPlanning/ORCA-algorithm)
+##### Release
 
-There are two options to build this project. If you only need a summary of the results, then use the following commands to build:
-##### MacOS and Linux
+**_MacOS and Linux_**
 ```bash
 cd ORCA-algorithm
 mkdir Release
 cd Release
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make
-cd Tests
 ```
-If you need a full log about every task, then use the following commands to build (performance may decrease):
-##### MacOS and Linux
+##### Debug
+**_MacOS and Linux_**
 ```bash
 cd ORCA-algorithm
 mkdir Debug
@@ -64,8 +99,9 @@ cd Tests
 ## Launch
 There are two options to test the algorithm: single test on one task and series of tasks.
 Use the following command to launch single test:
-##### MacOS and Linux
+
 ```bash
+cd Experiments
 ./Single {filename num}
 ```
 where 
@@ -89,6 +125,7 @@ empty_task_10_log.xml
 
 Use the following command to launch series test:
 ```bash
+cd Experiments
 ./Series {Nmin Nstep Nmax Ntasks Path}
 ```
 where 
@@ -135,6 +172,7 @@ Input file should contain:
 
 * Mandatory tag `<agents>`. It describes the parameters of the agents.
     * `number` — mandatory attribute that define the number of agents;
+    * `type` — attribute that define the type of agents. Possible values: `orca`, `orca-par`, `orca-par-ecbs`;
     * `<default_parameters>` — mandatory tags that defines default parameters of agents and agent's perception.
       * `agentsmaxnum` — mandatory attribute that defines a number of neighbors, that the agent takes into account;
       * `movespeed` — mandatory attribute that defines maximum speed of agent;
@@ -172,10 +210,11 @@ Input file should contain:
   * `<searchtype>` — tag that defines the type of planning. Possible values - "thetastar" (use Theta* for planning), "direct" (turn off global planning and always use direction to global goal). Default value is "thetastar" (global planning parameter);
   * `<breakingties>` — tag that defines the priority in OPEN list for nodes with equal f-values. Possible values - "0" (break ties in favor of the node with smaller g-value), "1" (break ties in favor of the node with greater g-value). Default value is "0" (Theta* parameter);
   * `<cutcorners>` — boolean tag that defines the possibilty to make diagonal moves when one adjacent cell is untraversable. The tag is ignored if diagonal moves are not allowed. Default value is "false" (Theta* parameter);
-  *  `<allowsqueeze>` — boolean tag that defines the possibility to make diagonal moves when both adjacent cells are untraversable. The tag is ignored if cutting corners is not allowed. Default value is "false" (Theta* parameter);
-  *  `<hweight` — defines the weight of the heuristic function. Should be real number greater or equal 1. Default value is "1" (Theta* parameter);
+  * `<allowsqueeze>` — boolean tag that defines the possibility to make diagonal moves when both adjacent cells are untraversable. The tag is ignored if cutting corners is not allowed. Default value is "false" (Theta* parameter);
+  * `<hweight` — defines the weight of the heuristic function. Should be real number greater or equal 1. Default value is "1" (Theta* parameter);
+  * `<trigger>` – defines the switching to the coordinated mode trigger. Possible values: `speed-buffer`, `common-point`.
 
-![Map scheme](./images/map.png)
+![Map scheme](Images/map.png)
 
 Examples locates in directory [TaskExamples](https://github.com/PathPlanning/ORCA-alorithm/tree/ORCAStar/TaskExamples).
 ### Output files
@@ -199,6 +238,15 @@ There are 6 columns:
 
 Contains the full information about the execution of each task. 
 Includes same tags as input file, summary and information about steps of each agent.
+
+To create a full logs of tests it is necessary to change a line in `CMakeLists.txt` in root project directory from: 
+```
+set(FullLog OFF)
+```
+to:
+```
+set(FullLog ON)
+```
 
 Summary example:
 ```xml
