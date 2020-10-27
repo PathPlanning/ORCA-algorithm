@@ -29,8 +29,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -w -O0" )
 
 
 add_subdirectory(tinyxml)
-#add_subdirectory(googletest)
 add_subdirectory(Src)
-#add_subdirectory(Tests)
 add_subdirectory(Experiments)
 
