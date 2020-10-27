@@ -75,6 +75,8 @@ git clone https://github.com/PathPlanning/ORCA-algorithm.git
 ```
 or direct downloading.
 
+There are two options to build this project. Use the following commands to build:
+
 ##### Release
 
 **_MacOS and Linux_**
