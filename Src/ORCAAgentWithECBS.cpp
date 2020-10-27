@@ -193,6 +193,7 @@ void ORCAAgentWithECBS::ComputeNewVelocity()
             newV = Point();
         }
 
+        Neighbours.clear();
         return;
     }
 
@@ -653,7 +654,8 @@ bool ORCAAgentWithECBS::UpdatePrefVelocity()
             nextForLog = next;
             Vector goalVector = next - position;
             float dist = goalVector.EuclideanNorm();
-            if(Neighbours.size() >= param.MAPFNum && dist < param.sightRadius)
+            if((options->trigger == MAPFTriggers::COMMON_POINT && CommonPointMAPFTrigger(dist)) ||
+               (options->trigger == MAPFTriggers::SPEED_BUFFER && GroupMeanSavedSpeedMAPFTrigger()))
             {
                 PrepareMAPFExecution(next);
                 prefV = Point();
@@ -704,11 +706,11 @@ ORCAAgentWithECBS* ORCAAgentWithECBS::Clone() const
 void ORCAAgentWithECBS::AddNeighbour(Agent &neighbour, float distSq)
 {
     float sightSq = param.sightRadius * param.sightRadius;
-
-    if(distSq >= sightSq)
+    if(!(distSq < sightSq))
     {
         return;
     }
+
     auto tmpAgentMAPF = dynamic_cast<ORCAAgentWithECBS*>(&neighbour);
     if(tmpAgentMAPF->inMAPFMode)
     {

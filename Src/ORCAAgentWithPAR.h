@@ -1,5 +1,6 @@
 #include <set>
 #include <algorithm>
+#include <chrono>
 
 #include "Agent.h"
 #include "SubMap.h"
@@ -29,9 +30,9 @@ class ORCAAgentWithPAR : public Agent
         void ApplyNewVelocity() override;
         bool UpdatePrefVelocity() override;
         void AddNeighbour(Agent &neighbour, float distSq) override;
-
         bool isPARMember() const;
 
+        unordered_map<std::string, float> GetMAPFStatistics() const;
 
 
         bool operator == (const ORCAAgentWithPAR &another) const;
@@ -64,6 +65,8 @@ class ORCAAgentWithPAR : public Agent
         bool notPARVis;
         bool PARUnion;
         bool PARExec;
+        bool waitForStart;
+        bool waitForFinish;
         Point PARStart;
         Point PARGoal;
         Astar<> PARsearch;
@@ -73,6 +76,12 @@ class ORCAAgentWithPAR : public Agent
         int PARActorId;
         Point PARcommon;
         std::vector<Point> buffPar;
+
+        int initCount;
+        int updCount;
+        int uniCount;
+        float timeMAPF;
+
 #if PAR_LOG
         MAPFInstancesLogger *PARLog;
 #endif

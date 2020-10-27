@@ -156,12 +156,10 @@ Summary Mission::StartMission()
         UpdateSate();
         auto checkpnt = std::chrono::high_resolution_clock::now();
         size_t nowtime = std::chrono::duration_cast<std::chrono::milliseconds>(checkpnt - startpnt).count();
-//        std::cout << "Mission step: " <<stepsCount << "\n";
+
         needToStop = (isTimeBounded) ? nowtime >= timeTreshhold : stepsCount >= stepsTreshhold;
-//        if(!(stepsCount % 100))
-//        {
-//            std::cout << "Step: " << stepsCount << "; Time: " << nowtime << "\n";
-//        }
+
+        //std::cout << std::endl;
     }
     while(!IsFinished() && !needToStop);
 
@@ -170,6 +168,9 @@ Summary Mission::StartMission()
 
     float stepsSum = 0;
     float rate = 0;
+    float meanMAPFTime = 0.0;
+    int initCount = 0, uniCount = 0, updCount = 0, ECBSCount = 0, PARCount = 0;
+
     for(auto &node : resultsLog)
     {
 
@@ -187,15 +188,47 @@ Summary Mission::StartMission()
     {
         collisionsCount += agent->GetCollision().first;
         collisionsObstCount += agent->GetCollision().second;
-       // std::cout << dynamic_cast<ORCAAgentWithPAR*> (agent)->GetID() << " " << dynamic_cast<ORCAAgentWithPAR*> (agent)->isPARMember() << " " << dynamic_cast<ORCAAgentWithPAR*> (agent)->isMovingToPARSTart() << "\n";
+        auto tmpPARAgent = dynamic_cast<ORCAAgentWithPAR*> (agent);
+        if(tmpPARAgent != nullptr)
+        {
+            auto statMAPF = tmpPARAgent->GetMAPFStatistics();
+            meanMAPFTime += statMAPF[CNS_MAPF_COMMON_TIME];
+            initCount += static_cast<int>(statMAPF[CNS_MAPF_INIT_COUNT]);
+            uniCount += static_cast<int>(statMAPF[CNS_MAPF_UNITE_COUNT]);
+            updCount += static_cast<int>(statMAPF[CNS_MAPF_UPDATE_COUNT]);
+        }
+        else
+        {
+            auto tmpPARnECBSAgent = dynamic_cast<ORCAAgentWithPARAndECBS*> (agent);
+            if(tmpPARnECBSAgent != nullptr)
+            {
+                auto statMAPF = tmpPARnECBSAgent->GetMAPFStatistics();
+                meanMAPFTime += statMAPF[CNS_MAPF_COMMON_TIME];
+                initCount += static_cast<int>(statMAPF[CNS_MAPF_INIT_COUNT]);
+                uniCount += static_cast<int>(statMAPF[CNS_MAPF_UNITE_COUNT]);
+                updCount += static_cast<int>(statMAPF[CNS_MAPF_UPDATE_COUNT]);
+                ECBSCount += static_cast<int>(statMAPF[CNS_MAPF_ECBS_COUNT]);
+                PARCount += static_cast<int>(statMAPF[CNS_MAPF_PAR_COUNT]);
+            }
+        }
     }
 
-    missionResult.successRate = rate * 100 / agentsNum;
-    missionResult.runTime = ((float) res) / 1000;
-    missionResult.collisions = collisionsCount / 2;
-    missionResult.flowTime = stepsSum * options->timestep;
-    missionResult.makeSpan = stepsCount * options->timestep;
-    missionResult.collisionsObst = collisionsObstCount;
+    meanMAPFTime = (initCount + uniCount + updCount == 0) ? 0.0 : meanMAPFTime / (initCount + uniCount + updCount);
+
+    missionResult[CNS_SUM_SUCCESS_RATE] = std::to_string(rate * 100 / agentsNum);
+    missionResult[CNS_SUM_RUN_TIME] = std::to_string(((float) res) / 1000);
+    missionResult[CNS_SUM_COLLISIONS] = std::to_string(collisionsCount / 2);
+    missionResult[CNS_SUM_FLOW_TIME] = std::to_string(stepsSum * options->timestep);
+    missionResult[CNS_SUM_MAKESPAN] = std::to_string(stepsCount * options->timestep);
+    missionResult[CNS_SUM_COLLISIONS_OBS] = std::to_string(collisionsObstCount);
+
+    missionResult[CNS_SUM_MAPF_MEAN_TIME] = std::to_string(meanMAPFTime);
+    missionResult[CNS_SUM_MAPF_INIT_COUNT] = std::to_string(initCount);
+    missionResult[CNS_SUM_MAPF_UNITE_COUNT] = std::to_string(uniCount);
+    missionResult[CNS_SUM_MAPF_UPDATE_COUNT] = std::to_string(updCount);
+
+    missionResult[CNS_SUM_MAPF_ECBS_COUNT] = std::to_string(ECBSCount);
+    missionResult[CNS_SUM_MAPF_PAR_COUNT] = std::to_string(PARCount);
 #if FULL_OUTPUT
     std::cout<<"End\n";
 #endif

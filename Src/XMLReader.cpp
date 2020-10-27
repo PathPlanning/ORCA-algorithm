@@ -158,7 +158,7 @@ bool XMLReader::ReadData()
         return false;
     }
 
-    // Чтение XML-файла с заданием / Reading task from XML-file //
+    /* Reading task from XML-file */
 
     if(doc->LoadFile(fileName.c_str()) != XMLError::XML_SUCCESS)
     {
@@ -472,15 +472,16 @@ bool XMLReader::ReadMap()
     return true;
 }
 
+
+// TODO Refactor tag reading as loop and refactor constants
 bool XMLReader::ReadAlgorithmOptions()
 {
     XMLElement *tmpElement;
     bool tagFlag;
 
-    // Чтение информации о параметрах окружения и алгоритма// Reading options of the environment and algorithm //
-
+    /* Reading options of the environment and algorithm */
     options = new EnvironmentOptions(CN_DEFAULT_METRIC_TYPE, CN_DEFAULT_BREAKINGTIES, CN_DEFAULT_ALLOWSQUEEZE, CN_DEFAULT_CUTCORNERS,
-                                     CN_DEFAULT_HWEIGHT, CN_DEFAULT_TIME_STEP, CN_DEFAULT_DELTA);
+                                     CN_DEFAULT_HWEIGHT, CN_DEFAULT_TIME_STEP, CN_DEFAULT_DELTA, CN_DEFAULT_MAPF_TRIGGER, CN_DEFAULT_MAPFNUM);
 
     XMLElement *alg = root->FirstChildElement(CNS_TAG_ALG);
     if(!alg)
@@ -489,14 +490,7 @@ bool XMLReader::ReadAlgorithmOptions()
         return false;
     }
 
-    // Нет необходимости в считывании типа эвристики / Metric type not necessary //
-
-//    tagFlag = (tmpElement = alg->FirstChildElement(CNS_TAG_MT)) && (tmpElement->QueryIntText(&(options->metrictype)) == XMLError::XML_SUCCESS);
-//    if(!tagFlag)
-//    {
-//        std::cout <<CNS_TAG_MT <<" element not found in XML file. It was defined to "<< CN_DEFAULT_METRIC_TYPE<<"\n";
-//    }
-
+    /* Planner type */
     plannertype = CN_DEFAULT_ST;
     tagFlag = (tmpElement = alg->FirstChildElement(CNS_TAG_ST)) && tmpElement->GetText();
     if(!tagFlag)
@@ -522,6 +516,7 @@ bool XMLReader::ReadAlgorithmOptions()
         }
     }
 
+    /* BREAKINGTIES */
     tagFlag = (tmpElement = alg->FirstChildElement(CNS_TAG_BT)) && (tmpElement->QueryBoolText(&(options->breakingties)) == XMLError::XML_SUCCESS);
     if(!tagFlag)
     {
@@ -530,6 +525,7 @@ bool XMLReader::ReadAlgorithmOptions()
 #endif
     }
 
+    /* ALLOWSQUEEZE */
     tagFlag = (tmpElement = alg->FirstChildElement(CNS_TAG_AS)) && (tmpElement->QueryBoolText(&(options->allowsqueeze)) == XMLError::XML_SUCCESS);
     if(!tagFlag)
     {
@@ -538,6 +534,7 @@ bool XMLReader::ReadAlgorithmOptions()
 #endif
     }
 
+    /* CUTCORNERS */
     tagFlag = (tmpElement = alg->FirstChildElement(CNS_TAG_CC)) && (tmpElement->QueryBoolText(&(options->cutcorners)) == XMLError::XML_SUCCESS);
     if(!tagFlag)
     {
@@ -546,6 +543,7 @@ bool XMLReader::ReadAlgorithmOptions()
 #endif
     }
 
+    /* HWEIGHT */
     tagFlag = (tmpElement = alg->FirstChildElement(CNS_TAG_HW)) && (tmpElement->QueryFloatText(&(options->hweight)) == XMLError::XML_SUCCESS);
     if(!tagFlag)
     {
@@ -554,6 +552,7 @@ bool XMLReader::ReadAlgorithmOptions()
 #endif
     }
 
+    /* TIME_STEP */
     tagFlag = (tmpElement = alg->FirstChildElement(CNS_TAG_TS)) && (tmpElement->QueryFloatText(&(options->timestep)) == XMLError::XML_SUCCESS);
     if(!tagFlag)
     {
@@ -562,6 +561,7 @@ bool XMLReader::ReadAlgorithmOptions()
 #endif
     }
 
+    /* DELTA */
     tagFlag = (tmpElement = alg->FirstChildElement(CNS_TAG_DEL)) && (tmpElement->QueryFloatText(&(options->delta)) == XMLError::XML_SUCCESS);
     if(!tagFlag)
     {
@@ -569,6 +569,43 @@ bool XMLReader::ReadAlgorithmOptions()
         std::cout <<CNS_TAG_DEL <<" element not found in XML file. It was defined to "<< CN_DEFAULT_DELTA<<"\n";
 #endif
     }
+
+    /* MAPF_TRIGGER */
+    std::string MAPFTrigStr = CNS_DEFAULT_MAPF_TRIGGER;
+    tagFlag = (tmpElement = alg->FirstChildElement(CNS_TAG_TR)) && tmpElement->GetText();
+    if(!tagFlag)
+    {
+#if FULL_OUTPUT
+        std::cout <<CNS_TAG_TR <<" element not found in XML file. It was defined to "<< CNS_DEFAULT_MAPF_TRIGGER<<"\n";
+#endif
+    }
+    else
+    {
+        MAPFTrigStr = std::string(tmpElement->GetText());
+        if (MAPFTrigStr == CNS_AT_ST_COMMONPOINT)
+        {
+            options->trigger = COMMON_POINT;
+        }
+        else if(MAPFTrigStr == CNS_AT_ST_SPEEDBUFFER)
+        {
+            options->trigger = SPEED_BUFFER;
+        }
+        else
+        {
+            std::cout <<CNS_TAG_TR <<" element are incorrect. It was defined to "<< CNS_DEFAULT_MAPF_TRIGGER <<"\n";
+        }
+    }
+
+    /* MAPFNUM */
+    tagFlag = (tmpElement = alg->FirstChildElement(CNS_TAG_MN)) && (tmpElement->QueryIntText(&(options->MAPFNum)) == XMLError::XML_SUCCESS);
+    if(!tagFlag && (options->MAPFNum >= 0))
+    {
+#if FULL_OUTPUT
+        std::cout <<CNS_TAG_MN <<" element not found in XML file. It was defined to "<< CN_DEFAULT_MAPFNUM<<"\n";
+#endif
+        options->MAPFNum = CN_DEFAULT_MAPFNUM;
+    }
+
     return true;
 }
 
@@ -581,6 +618,7 @@ bool XMLReader::ReadAgents()
     AgentParam defaultParam = AgentParam();
     int  agentsNumber;
     const char* agType = CNS_DEFAULT_AGENT_TYPE;
+    const char* agTrigCStr = CNS_DEFAULT_MAPF_TRIGGER;
 
     XMLElement *agents = root->FirstChildElement(CNS_TAG_AGENTS);
     if(!agents)
@@ -589,19 +627,23 @@ bool XMLReader::ReadAgents()
         return false;
     }
 
+    /* Agent number */
     if(agents->QueryIntAttribute(CNS_TAG_ATTR_NUM, &agentsNumber) != XMLError::XML_SUCCESS)
     {
         std::cout <<CNS_TAG_ATTR_NUM <<" element not found at " << CNS_TAG_AGENTS << " tag in XML file\n";
         return false;
     }
+
+    /* Agents type */
     if(agents->QueryStringAttribute(CNS_TAG_ATTR_TYPE, &agType) != XMLError::XML_SUCCESS)
     {
 #if FULL_OUTPUT
         std::cout <<CNS_TAG_ATTR_TYPE <<" element not found at " << CNS_TAG_AGENTS << " tag in XML file. It was defined to "<< CNS_DEFAULT_AGENT_TYPE<<"\n";
 #endif
     }
+    std::string agTypeStr = std::string(agType);
 
-
+    /* Default parameters */
     tmpElement = agents->FirstChildElement(CNS_TAG_DEF_PARAMS);
     if (!tmpElement)
     {
@@ -654,17 +696,10 @@ bool XMLReader::ReadAgents()
             std::cout <<CNS_TAG_ATTR_TIMEBOUNDARYOBST <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_OBS_TIME_BOUNDARY<<"\n";
 #endif
         }
-
         if(tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_REPS, &defaultParam.rEps) != XMLError::XML_SUCCESS)
         {
 #if FULL_OUTPUT
             std::cout <<CNS_TAG_ATTR_REPS <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_REPS<<"\n";
-#endif
-        }
-        if(tmpElement->QueryIntAttribute(CNS_TAG_ATTR_PARACTNUM, &defaultParam.MAPFNum) != XMLError::XML_SUCCESS)
-        {
-#if FULL_OUTPUT
-            std::cout <<CNS_TAG_ATTR_PARACTNUM <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_MAPF_ACTNUM<<"\n";
 #endif
         }
     }
@@ -673,18 +708,19 @@ bool XMLReader::ReadAgents()
     int id;
     float stx = 0, sty = 0, gx = 0, gy = 0;
 
+    /* Each individual agent */
     for(count = 0; tmpElement; tmpElement = tmpElement->NextSiblingElement(CNS_TAG_AGENT), count++)
     {
         AgentParam param = AgentParam(defaultParam);
 
         bool correct = true;
 
+        /* Agent's ID */
         if (tmpElement->QueryIntAttribute(CNS_TAG_ATTR_ID, &id) != XMLError::XML_SUCCESS)
         {
             std::cout <<CNS_TAG_ATTR_ID <<" element not found in XML file at agent №"<<count<<"\n";
             return false;
         }
-
         for(auto agent : *allAgents)
         {
             if(id == agent->GetID())
@@ -694,6 +730,7 @@ bool XMLReader::ReadAgents()
             }
         }
 
+        /* Agent's params */
         if (tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_STX, &stx) != XMLError::XML_SUCCESS)
         {
             std::cout <<CNS_TAG_ATTR_STX <<" element not found in XML file at agent №"<<count<<"\n";
@@ -763,16 +800,8 @@ bool XMLReader::ReadAgents()
 #endif
             param.rEps = defaultParam.rEps;
         }
-        if(tmpElement->QueryIntAttribute(CNS_TAG_ATTR_PARACTNUM, &param.MAPFNum) != XMLError::XML_SUCCESS)
-        {
-#if FULL_OUTPUT
-            std::cout <<CNS_TAG_ATTR_PARACTNUM <<" element not found at "<< CNS_TAG_DEF_PARAMS << " tag. It was defined to "<< CN_DEFAULT_MAPF_ACTNUM<<"\n";
-#endif
-            param.MAPFNum = defaultParam.MAPFNum;
-        }
 
-
-
+        /* Checking params */
         if(stx <= param.radius || sty <= param.radius ||
            gx <= param.radius || gy <= param.radius  ||
            stx >= (map->GetWidth() * map->GetCellSize()) - param.radius  ||
@@ -783,7 +812,6 @@ bool XMLReader::ReadAgents()
             std::cout <<"Start or goal position of agent "<<id<<" is out of map or too close to boundaries\n";
             correct = false;
         }
-
 
         for(auto agent : *allAgents)
         {
@@ -796,17 +824,14 @@ bool XMLReader::ReadAgents()
                 break;
             }
         }
-
         Node tmpStNode = map->GetClosestNode(Point(stx, sty));
         Node tmpGlNode = map->GetClosestNode(Point(gx, gy));
         LineOfSight positionChecker(param.radius/ map->GetCellSize());
-
         if(!positionChecker.checkTraversability(tmpStNode.i, tmpStNode.j, *map) || !positionChecker.checkTraversability(tmpGlNode.i, tmpGlNode.j, *map))
         {
             std::cout <<"Position of agent "<<id<<" is too close to some obstacle\n";
             correct = false;
         }
-
         if(!correct)
         {
 #if FULL_OUTPUT
@@ -817,9 +842,9 @@ bool XMLReader::ReadAgents()
 #if FULL_OUTPUT
         std::cout<<"Agent "<<id<< " was added at position "<< Point(stx, sty).ToString()<<"\n";
 #endif
-        Agent *a;
-        std::string agTypeStr = std::string(agType);
 
+        /* Creating of an agent */
+        Agent *a;
         if(agTypeStr == CNS_AT_ST_ORCA)
         {
             a = new ORCAAgent(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
@@ -838,14 +863,15 @@ bool XMLReader::ReadAgents()
         }
         else if(agTypeStr == CNS_AT_ST_ORCAPARECBS)
         {
-            a = new ORCAAgenWithPARAndECBS(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
+            a = new ORCAAgentWithPARAndECBS(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
         }
         else
         {
            a = new ORCAAgent(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
         }
 
-
+        /* Set agent's planner */
+        // TODO Move plannertype from algorithm options to agent's parameters
         switch(plannertype)
         {
             case CN_SP_ST_THETA:

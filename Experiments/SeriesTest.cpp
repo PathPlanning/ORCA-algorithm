@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <ostream>
+#include <sstream>
 
 #include "Mission.h"
 
@@ -61,7 +62,7 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    pre_log<< "Success\tRuntime\tMakespan\tFlowtime\tCollisions\tCollisionsObst\n";
+//    pre_log<< "Success\tRuntime\tMakespan\tFlowtime\tCollisions\tCollisionsObst\n";
 
     for(auto &num : numAg)
     {
@@ -74,9 +75,23 @@ int main(int argc, char* argv[])
 
             if(task->ReadTask())
             {
-                std::string result = task->StartMission().ToString();
-                pre_log << result;
-                std::cout << result;
+                auto summary = task->StartMission();
+                std::stringstream sumStream;
+//                std::cout << "\nSuccess\tRuntime\tMakespan\tFlowtime\tCollisions\tCollisionsObst\tMeanMAPFTime\tInits\tUpdates\tUnites\tECBS\tPnR\n";
+                sumStream << summary[CNS_SUM_SUCCESS_RATE] << "\t";
+                sumStream << summary[CNS_SUM_RUN_TIME] << "\t";
+                sumStream << summary[CNS_SUM_MAKESPAN] << "\t";
+                sumStream << summary[CNS_SUM_FLOW_TIME] << "\t";
+                sumStream << summary[CNS_SUM_COLLISIONS] << "\t";
+                sumStream << summary[CNS_SUM_COLLISIONS_OBS] << "\t";
+                sumStream << summary[CNS_SUM_MAPF_MEAN_TIME] << "\t";
+                sumStream << summary[CNS_SUM_MAPF_INIT_COUNT] << "\t";
+                sumStream << summary[CNS_SUM_MAPF_UPDATE_COUNT] << "\t";
+                sumStream << summary[CNS_SUM_MAPF_UNITE_COUNT] << "\t";
+                sumStream << summary[CNS_SUM_MAPF_ECBS_COUNT] << "\t";
+                sumStream << summary[CNS_SUM_MAPF_PAR_COUNT] << "\n";
+                std::cout << sumStream.str();
+                pre_log << sumStream.str();
 
 #if FULL_LOG
                 task->SaveLog();

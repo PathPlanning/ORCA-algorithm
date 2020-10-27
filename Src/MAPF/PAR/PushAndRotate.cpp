@@ -34,7 +34,7 @@ bool PushAndRotate::clearNode(const SubMap &map, MAPFActorSet &agentSet, Node &n
     if (!searchResult.pathfound) {
         return false;
     }
-    auto path = *searchResult.lppath;
+    auto path = searchResult.lppath;
     for (auto it = std::next(path.rbegin()); it != path.rend(); ++it) {
         if (agentSet.isOccupied(it->i, it->j)) {
             Node from = *it;
@@ -216,7 +216,7 @@ bool PushAndRotate::swap(const SubMap &map, MAPFActorSet &agentSet, Node& first,
     while (searchResult.pathfound) {
         int begSize = agentsMoves.size();
         MAPFActorSet newAgentSet = agentSet;
-        auto path = *searchResult.lppath;
+        auto path = searchResult.lppath;
         Node exchangeNode = path.back();
         if (multipush(map, newAgentSet, first, second, exchangeNode, path)) {
             int exchangeAgentId = newAgentSet.getActorId(exchangeNode.i, exchangeNode.j);
@@ -507,7 +507,7 @@ bool PushAndRotate::solve(const SubMap &map, const MAPFConfig &config, MAPFActor
             return false;
         }
 
-        auto path = *searchResult.lppath;
+        auto path = searchResult.lppath;
         qPath.push_back(*path.begin());
         qPathNodes.insert(*path.begin());
         for (auto it = path.begin(); it != std::prev(path.end()); ++it) {
@@ -703,7 +703,7 @@ void PushAndRotate::getSubgraphs(const SubMap &map, MAPFActorSet &agentSet) {
                 SearchResult searchResult = dijkstraSearch.startSearch(map, agentSet, start.i, start.j, 0, 0,
                                                                        isGoal, true, true, 0, -1, m - 2, components[i]);
                 while (searchResult.pathfound) {
-                    auto path = *searchResult.lppath;
+                    auto path = searchResult.lppath;
                     for (auto it = std::next(path.begin()); std::next(it) != path.end(); ++it) {
                         if (agentSet.getSubgraphs(it->i, it->j).empty()) {
                             agentSet.setNodeSubgraph(it->i, it->j, i);
@@ -776,7 +776,7 @@ void PushAndRotate::assignToSubgraphs(const SubMap &map, MAPFActorSet &agentSet)
                     ISearch<> dijkstraSearch;
                     SearchResult searchResult = dijkstraSearch.startSearch(map, agentSet, neigh.i, neigh.j,
                                                                            0, 0, isGoal, true, true, 0, -1, -1, {pos});
-                    auto path = *searchResult.lppath;
+                    auto path = searchResult.lppath;
                     int agentCount = 0;
                     for (auto node : path) {
                         if (agentSet.isOccupied(node.i, node.j)) {
@@ -827,7 +827,7 @@ void PushAndRotate::getPriorities(const SubMap &map, MAPFActorSet &agentSet) {
                     if (!searchResult.pathfound) {
                         continue;
                     }
-                    auto path = *searchResult.lppath;
+                    auto path = searchResult.lppath;
                     path.push_front(Node(i, j));
                     for (auto node : path) {
                         auto it = goalPositions.find(node);
@@ -881,13 +881,40 @@ MAPFSearchResult PushAndRotate::startSearch(const SubMap &map, const MAPFConfig 
     }
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     int elapsedMilliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
-    if (elapsedMilliseconds > config.maxTime) {
+    if (elapsedMilliseconds > config.maxTime)
+    {
         result.pathfound = false;
     }
-    if (result.pathfound) {
-        result.agentsMoves = &agentsMoves;
-        result.agentsPaths = &agentsPaths;
+    if (result.pathfound)
+    {
+        result.agentsMoves = new std::vector<ActorMove>(agentsMoves);
+        result.agentsPaths = new std::vector<std::vector<Node>>(agentsPaths);
+        result.time = static_cast<double>(elapsedMilliseconds);
+    }
+    else
+    {
+        result.agentsMoves = nullptr;
+        result.agentsPaths = nullptr;
         result.time = static_cast<double>(elapsedMilliseconds);
     }
     return result;
+}
+
+PushAndRotate::PushAndRotate(const PushAndRotate &obj) : MAPFSearchInterface(obj)
+{
+    search = obj.search;
+    agentsMoves = obj.agentsMoves;
+    result = obj.result;
+}
+
+PushAndRotate &PushAndRotate::operator = (const PushAndRotate &obj)
+{
+    if(this != &obj)
+    {
+        MAPFSearchInterface::operator=(obj);
+        search = obj.search;
+        agentsMoves = obj.agentsMoves;
+        result = obj.result;
+    }
+    return *this;
 }

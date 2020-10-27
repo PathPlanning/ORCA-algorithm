@@ -19,38 +19,39 @@
 #define PAR_AND_ECBS 2
 #define FAIL 0
 
-class ORCAAgenWithPARAndECBS : public Agent
+class ORCAAgentWithPARAndECBS : public Agent
 {
     public:
-        ORCAAgenWithPARAndECBS();
-        ORCAAgenWithPARAndECBS(const int &id, const Point &start, const Point &goal, const Map &map, const EnvironmentOptions &options,
-                               AgentParam param);
-        ORCAAgenWithPARAndECBS(const ORCAAgenWithPARAndECBS &obj);
-        ~ORCAAgenWithPARAndECBS();
+        ORCAAgentWithPARAndECBS();
+        ORCAAgentWithPARAndECBS(const int &id, const Point &start, const Point &goal, const Map &map, const EnvironmentOptions &options,
+                                AgentParam param);
+        ORCAAgentWithPARAndECBS(const ORCAAgentWithPARAndECBS &obj);
+        ~ORCAAgentWithPARAndECBS();
 
 
-        ORCAAgenWithPARAndECBS* Clone() const override ;
+        ORCAAgentWithPARAndECBS* Clone() const override ;
         void ComputeNewVelocity() override;
         void ApplyNewVelocity() override;
         bool UpdatePrefVelocity() override;
         void AddNeighbour(Agent &neighbour, float distSq) override;
 
         bool isMAPFMember() const;
+        unordered_map<std::string, float> GetMAPFStatistics() const;
 
 
-        bool operator == (const ORCAAgenWithPARAndECBS &another) const;
-        bool operator != (const ORCAAgenWithPARAndECBS &another) const;
-        ORCAAgenWithPARAndECBS &operator = (const ORCAAgenWithPARAndECBS &obj);
+        bool operator == (const ORCAAgentWithPARAndECBS &another) const;
+        bool operator != (const ORCAAgentWithPARAndECBS &another) const;
+        ORCAAgentWithPARAndECBS &operator = (const ORCAAgentWithPARAndECBS &obj);
     #if PAR_LOG
         void SetMAPFInstanceLoggerRef(MAPFInstancesLogger *log);
     #endif
 
     private:
         std::vector <std::pair<float, Agent*>>& GetNeighbours();
-        std::set<ORCAAgenWithPARAndECBS *> GetAgentsForCentralizedPlanning();
-        void SetAgentsForCentralizedPlanning(std::set<ORCAAgenWithPARAndECBS *> agents);
+        std::set<ORCAAgentWithPARAndECBS *> GetAgentsForCentralizedPlanning();
+        void SetAgentsForCentralizedPlanning(std::set<ORCAAgentWithPARAndECBS *> agents);
         void PrepareMAPFExecution(Point common);
-        bool ComputeMAPFEnv(Point common, std::vector<std::pair<Point, ORCAAgenWithPARAndECBS*>> oldGoals = std::vector<std::pair<Point, ORCAAgenWithPARAndECBS*>>());
+        bool ComputeMAPFEnv(Point common, std::vector<std::pair<Point, ORCAAgentWithPARAndECBS*>> oldGoals = std::vector<std::pair<Point, ORCAAgentWithPARAndECBS*>>());
         Point PullOutIntermediateGoal(Point common);
         int ComputeMAPF(int algToUse);
         bool UniteMAPF();
@@ -60,7 +61,7 @@ class ORCAAgenWithPARAndECBS : public Agent
         SubMap MAPFMap;
         MAPFActorSet MAPFSet;
         MAPFConfig conf;
-        std::set<ORCAAgenWithPARAndECBS *> MAPFAgents;
+        std::set<ORCAAgentWithPARAndECBS *> MAPFAgents;
         float fakeRadius;
         bool inMAPFMode;
         bool moveToMAPFPos;
@@ -80,7 +81,17 @@ class ORCAAgenWithPARAndECBS : public Agent
         int currMAPFPos;
         int MAPFActorId;
         Point MAPFcommon;
+        bool waitForStart;
+        bool waitForFinish;
+
         std::vector<Point> buffMAPF;
+        int initCount;
+        int updCount;
+        int uniCount;
+        float timeMAPF;
+        int ECBSCount;
+        int PARCount;
+
     #if PAR_LOG
         MAPFInstancesLogger *MAPFLog;
     #endif

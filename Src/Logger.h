@@ -13,7 +13,7 @@ class Logger
     public:
         virtual ~Logger() {};
         virtual bool GenerateLog() = 0;
-        virtual void SetSummary(const Summary &res) = 0;
+        virtual void SetSummary(Summary &res) = 0;
         virtual void
         SetResults(const std::unordered_map<int, std::vector<Point>> &stepsLog, const std::unordered_map<int, std::vector<Point>> &goalsLog,
                    const std::unordered_map<int, std::pair<bool, int>> &resultsLog) = 0;

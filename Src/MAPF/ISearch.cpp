@@ -112,8 +112,8 @@ SearchResult ISearch<NodeType>::startSearch(const SubMap &map, const MAPFActorSe
             hppath.clear();
             makePrimaryPath(cur, goalTime == -1 ? -1 : goalTime + 1);
             makeSecondaryPath(map);
-            sresult.hppath = &hppath; //Here is a constant pointer
-            sresult.lppath = &lppath;
+            sresult.hppath = hppath; //Here is a constant pointer
+            sresult.lppath = lppath;
         }
     }
     return sresult;

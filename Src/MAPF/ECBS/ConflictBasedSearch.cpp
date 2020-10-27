@@ -75,9 +75,9 @@ std::list<Node> ConflictBasedSearch<SearchType>::getNewPath(const SubMap &map, c
 
     double newLb = searchResult.minF;
     std::list<Node> res;
-    auto it1 = searchResult.lppath->begin();
+    auto it1 = searchResult.lppath.begin();
     int time = 0;
-    for (auto it2 = pathStart; it2 != pathEnd && (endTime != -1 || it1 != searchResult.lppath->end()); ++it2) {
+    for (auto it2 = pathStart; it2 != pathEnd && (endTime != -1 || it1 != searchResult.lppath.end()); ++it2) {
         if (time < startTime || (endTime != -1 && time > endTime)) {
             res.push_back(*it2);
             ++newLb;
@@ -90,7 +90,7 @@ std::list<Node> ConflictBasedSearch<SearchType>::getNewPath(const SubMap &map, c
     for (; time < startTime; ++time) {
         res.push_back(*std::prev(pathEnd));
     }
-    for (; it1 != searchResult.lppath->end(); ++it1) {
+    for (; it1 != searchResult.lppath.end(); ++it1) {
         res.push_back(*it1);
     }
     lb[agent.getId()] = newLb;
@@ -216,7 +216,7 @@ MAPFSearchResult ConflictBasedSearch<SearchType>::startSearch(const SubMap &map,
             std::cout << "fail" << std::endl;
         }
         root.cost += searchResult.pathlength;
-        root.paths[i] = *searchResult.lppath;
+        root.paths[i] = searchResult.lppath;
        // std::cout<<i << " " << root.paths[i].size() << "\n";
 
         if (config.withCardinalConflicts) {
@@ -326,7 +326,7 @@ MAPFSearchResult ConflictBasedSearch<SearchType>::startSearch(const SubMap &map,
                     agentsPaths[i].push_back(*it);
                 }
             }
-            result.agentsPaths = &agentsPaths;
+            result.agentsPaths = new std::vector<std::vector<Node>>(agentsPaths);
             result.pathfound = true;
             result.HLExpansions = close.size();
             result.HLNodes = open.size() + close.size() + focal.size();
@@ -406,6 +406,12 @@ MAPFSearchResult ConflictBasedSearch<SearchType>::startSearch(const SubMap &map,
     //std::cout << ISearch<>::T << std::endl;
     return result;
 }
+
+//template <typename SearchType> void ConflictBasedSearch<SearchType>::clear()
+//{
+//    MAPFSearchInterface::clear();
+//    SearchType
+//}
 
 template class ConflictBasedSearch<Astar<>>;
 template class ConflictBasedSearch<FocalSearch<>>;

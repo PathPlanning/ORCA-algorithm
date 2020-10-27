@@ -41,17 +41,17 @@ bool XMLLogger::GenerateLog()
 }
 
 
-void XMLLogger::SetSummary(const Summary &res)
+void XMLLogger::SetSummary(Summary &res)
 {
     if(doc != nullptr)
     {
         XMLElement *tmpsum = doc->NewElement(CNS_TAG_SUM);
-        tmpsum->SetAttribute(CNS_TAG_ATTR_SR, res.successRate);
-        tmpsum->SetAttribute(CNS_TAG_ATTR_RUNTIME, res.runTime);
-        tmpsum->SetAttribute(CNS_TAG_ATTR_FLOWTIME, res.flowTime);
-        tmpsum->SetAttribute(CNS_TAG_ATTR_MAKESPAN, res.makeSpan);
-        tmpsum->SetAttribute(CNS_TAG_ATTR_COL_AGNT, res.collisions);
-        tmpsum->SetAttribute(CNS_TAG_ATTR_COL_OBST, res.collisionsObst);
+        tmpsum->SetAttribute(CNS_TAG_ATTR_SR, res[CNS_SUM_SUCCESS_RATE].c_str());
+        tmpsum->SetAttribute(CNS_TAG_ATTR_RUNTIME, res[CNS_SUM_RUN_TIME].c_str());
+        tmpsum->SetAttribute(CNS_TAG_ATTR_FLOWTIME, res[CNS_SUM_FLOW_TIME].c_str());
+        tmpsum->SetAttribute(CNS_TAG_ATTR_MAKESPAN, res[CNS_SUM_MAKESPAN].c_str());
+        tmpsum->SetAttribute(CNS_TAG_ATTR_COL_AGNT, res[CNS_SUM_COLLISIONS].c_str());
+        tmpsum->SetAttribute(CNS_TAG_ATTR_COL_OBST, res[CNS_SUM_COLLISIONS_OBS].c_str());
         log->InsertFirstChild(tmpsum);
     }
 }

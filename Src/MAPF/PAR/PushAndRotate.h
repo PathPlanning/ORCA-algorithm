@@ -24,6 +24,8 @@ class PushAndRotate : public MAPFSearchInterface
         PushAndRotate();
         PushAndRotate(ISearch<>* Search);
         ~PushAndRotate(void);
+        PushAndRotate(const PushAndRotate &obj);
+        PushAndRotate &operator =(const PushAndRotate &obj);
         MAPFSearchResult startSearch(const SubMap &Map, const MAPFConfig &config, MAPFActorSet &AgentSet) override;
         void clear() override;
     private:

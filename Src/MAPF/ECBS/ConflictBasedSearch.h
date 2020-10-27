@@ -21,6 +21,7 @@ class ConflictBasedSearch : public MAPFSearchInterface
         ConflictBasedSearch();
         ConflictBasedSearch(SearchType* Search);
         ~ConflictBasedSearch(void);
+        //void clear() override;
         MAPFSearchResult startSearch(const SubMap &map, const MAPFConfig &config, MAPFActorSet &agentSet) override;
         template<typename Iter>
         static ConflictSet findConflict(const std::vector<Iter> &starts, const std::vector<Iter> &ends,

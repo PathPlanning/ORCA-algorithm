@@ -13,7 +13,8 @@ class MAPFSearchInterface
     public:
         virtual ~MAPFSearchInterface(void) {}
         virtual MAPFSearchResult startSearch(const SubMap &map, const MAPFConfig &config, MAPFActorSet &AgentSet) = 0;
-        virtual void clear() {
+        virtual void clear()
+        {
             agentsPaths.clear();
         }
 

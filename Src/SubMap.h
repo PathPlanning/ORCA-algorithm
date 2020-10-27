@@ -39,18 +39,18 @@ class SubMap
         SubMap & operator = (const SubMap &obj);
 
 
-//        void printSubMap()
-//        {
-//            std::cout<<"\n";
-//            for(int i = 0; i < size.first; i++)
-//            {
-//                for(int j = 0; j < size.second; j++)
-//                {
-//                    std::cout<<CellIsObstacle(i, j);
-//                }
-//                std::cout<<"\n";
-//            }
-//        }
+        void printSubMap()
+        {
+            std::cout<<"\n";
+            for(int i = 0; i < size.first; i++)
+            {
+                for(int j = 0; j < size.second; j++)
+                {
+                    std::cout<<CellIsObstacle(i, j);
+                }
+                std::cout<<"\n";
+            }
+        }
 
     private:
         float cellSize;

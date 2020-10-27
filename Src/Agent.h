@@ -14,13 +14,14 @@
 #ifndef ORCA_AGENT_H
 #define ORCA_AGENT_H
 
+
 class AgentParam
 {
     public:
         AgentParam() : sightRadius(CN_DEFAULT_RADIUS_OF_SIGHT), timeBoundary(CN_DEFAULT_TIME_BOUNDARY), timeBoundaryObst(CN_DEFAULT_OBS_TIME_BOUNDARY),
-                       radius(CN_DEFAULT_SIZE), maxSpeed(CN_DEFAULT_MAX_SPEED), agentsMaxNum(CN_DEFAULT_AGENTS_MAX_NUM), rEps(CN_DEFAULT_REPS), MAPFNum(CN_DEFAULT_MAPF_ACTNUM) {}
-        AgentParam(float sr, float tb, float tbo, float r, float reps, float ms, int amn, int parNum) : sightRadius(sr), timeBoundary(tb), timeBoundaryObst(tbo), radius(r), rEps(reps),
-                                                                                                        maxSpeed(ms), agentsMaxNum(amn), MAPFNum(parNum) {}
+                       radius(CN_DEFAULT_SIZE), maxSpeed(CN_DEFAULT_MAX_SPEED), agentsMaxNum(CN_DEFAULT_AGENTS_MAX_NUM), rEps(CN_DEFAULT_REPS){}
+        AgentParam(float sr, float tb, float tbo, float r, float reps, float ms, int amn, int parNum, MAPFTriggers trig) : sightRadius(sr), timeBoundary(tb), timeBoundaryObst(tbo), radius(r), rEps(reps),
+                                                                                                        maxSpeed(ms), agentsMaxNum(amn) {}
         ~AgentParam() = default;
 
         float sightRadius;
@@ -30,7 +31,6 @@ class AgentParam
         float rEps;
         float maxSpeed;
         int agentsMaxNum;
-        int MAPFNum;
 };
 
 class Agent
@@ -77,6 +77,7 @@ class Agent
     protected:
         bool CommonPointMAPFTrigger(float dist);
         bool MeanSpeedMAPFTrigger();
+        bool GroupMeanSavedSpeedMAPFTrigger();
         bool MeanSavedSpeedMAPFTrigger();
         
         int id;

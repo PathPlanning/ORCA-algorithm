@@ -29,7 +29,6 @@
     #define CNS_TAG_ATTR_SIGHTRADIUS        "sightradius"
     #define CNS_TAG_ATTR_TIMEBOUNDARYOBST   "timeboundaryobst"
     #define CNS_TAG_ATTR_REPS               "reps"
-    #define CNS_TAG_ATTR_PARACTNUM          "triggernum"
 
 #define CNS_TAG_AGENT                   "agent"
     #define CNS_TAG_ATTR_ID             "id"
@@ -39,14 +38,16 @@
     #define CNS_TAG_ATTR_GY             "goal.yr"
 
 #define CNS_TAG_ALG         "algorithm"
-    #define CNS_TAG_ST          "searchtype"
-    #define CNS_TAG_MT          "metrictype"
-    #define CNS_TAG_BT          "breakingties"
-    #define CNS_TAG_AS          "allowsqueeze"
-    #define CNS_TAG_CC          "cutcorners"
-    #define CNS_TAG_HW          "hweight"
-    #define CNS_TAG_TS          "timestep"
-    #define CNS_TAG_DEL         "delta"
+    #define CNS_TAG_ST              "searchtype"
+    #define CNS_TAG_MT              "metrictype"
+    #define CNS_TAG_BT              "breakingties"
+    #define CNS_TAG_AS              "allowsqueeze"
+    #define CNS_TAG_CC              "cutcorners"
+    #define CNS_TAG_HW              "hweight"
+    #define CNS_TAG_TS              "timestep"
+    #define CNS_TAG_DEL             "delta"
+    #define CNS_TAG_TR              "trigger"
+    #define CNS_TAG_MN              "mapfnum"
 
 #define CNS_TAG_MAP         "map"
     #define CNS_TAG_CELLSIZE    "cellsize"
@@ -84,10 +85,37 @@
 #define CNS_AT_ST_ORCAECBS      "orca-ecbs"
 #define CNS_AT_ST_ORCAPARECBS   "orca-par-ecbs"
 
+#define CNS_AT_ST_COMMONPOINT   "common-point"
+#define CNS_AT_ST_SPEEDBUFFER   "speed-buffer"
+
 #define CNS_SP_MT_DIAG      "diagonal"
 #define CNS_SP_MT_MANH      "manhattan"
 #define CNS_SP_MT_EUCL      "euclid"
 #define CNS_SP_MT_CHEB      "chebyshev"
+
+#define CNS_SUM_SUCCESS_RATE        "success_rate"
+#define CNS_SUM_RUN_TIME            "run_time"
+#define CNS_SUM_FLOW_TIME           "flow_time"
+#define CNS_SUM_MAKESPAN            "makespan"
+#define CNS_SUM_COLLISIONS          "collisions"
+#define CNS_SUM_COLLISIONS_OBS      "collisions_obs"
+#define CNS_SUM_MAPF_MEAN_TIME      "mean_time"
+#define CNS_SUM_MAPF_INIT_COUNT     "init_count"
+#define CNS_SUM_MAPF_UNITE_COUNT    "unite_count"
+#define CNS_SUM_MAPF_UPDATE_COUNT   "update_count"
+#define CNS_SUM_MAPF_ECBS_COUNT     "ecbs_count"
+#define CNS_SUM_MAPF_PAR_COUNT      "par_count"
+
+#define CNS_MAPF_COMMON_TIME        "mapf_time"
+#define CNS_MAPF_INIT_COUNT         "init_count"
+#define CNS_MAPF_UNITE_COUNT        "unite_count"
+#define CNS_MAPF_UPDATE_COUNT       "update_count"
+#define CNS_MAPF_ECBS_COUNT         "ecbs_count"
+#define CNS_MAPF_PAR_COUNT          "par_count"
+
+
+
+
 
 #define CN_SP_MT_DIAG   0
 #define CN_SP_MT_MANH   1
@@ -115,14 +143,17 @@
 #define CN_DEFAULT_TIME_STEP 0.25
 #define CN_DEFAULT_DELTA 0.1
 #define CN_DEFAULT_REPS 0.19
-#define CN_DEFAULT_MAPF_ACTNUM 3
+#define CN_DEFAULT_MAPFNUM 3
 #define CN_DEFAULT_MAPF_MAXTIME 1000
+#define CN_DEFAULT_MAPF_TRIGGER COMMON_POINT
 
 
 
-#define CN_DEFAULT_ST CN_SP_ST_THETA
-#define CNS_DEFAULT_ST CNS_SP_ST_THETA
-#define CNS_DEFAULT_AGENT_TYPE CNS_AT_ST_ORCA
+
+#define CN_DEFAULT_ST               CN_SP_ST_THETA
+#define CNS_DEFAULT_ST              CNS_SP_ST_THETA
+#define CNS_DEFAULT_AGENT_TYPE      CNS_AT_ST_ORCA
+#define CNS_DEFAULT_MAPF_TRIGGER    CNS_AT_ST_COMMONPOINT
 
 
 
