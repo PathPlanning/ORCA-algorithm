@@ -84,6 +84,7 @@
 #define CNS_AT_ST_ORCAPAR       "orca-par"
 #define CNS_AT_ST_ORCAECBS      "orca-ecbs"
 #define CNS_AT_ST_ORCAPARECBS   "orca-par-ecbs"
+#define CNS_AT_ST_ORCARETURN    "orca-return"
 
 #define CNS_AT_ST_COMMONPOINT   "common-point"
 #define CNS_AT_ST_SPEEDBUFFER   "speed-buffer"
@@ -93,18 +94,22 @@
 #define CNS_SP_MT_EUCL      "euclid"
 #define CNS_SP_MT_CHEB      "chebyshev"
 
-#define CNS_SUM_SUCCESS_RATE        "success_rate"
-#define CNS_SUM_RUN_TIME            "run_time"
-#define CNS_SUM_FLOW_TIME           "flow_time"
-#define CNS_SUM_MAKESPAN            "makespan"
-#define CNS_SUM_COLLISIONS          "collisions"
-#define CNS_SUM_COLLISIONS_OBS      "collisions_obs"
-#define CNS_SUM_MAPF_MEAN_TIME      "mean_time"
-#define CNS_SUM_MAPF_INIT_COUNT     "init_count"
-#define CNS_SUM_MAPF_UNITE_COUNT    "unite_count"
-#define CNS_SUM_MAPF_UPDATE_COUNT   "update_count"
-#define CNS_SUM_MAPF_ECBS_COUNT     "ecbs_count"
-#define CNS_SUM_MAPF_PAR_COUNT      "par_count"
+#define CNS_SUM_SUCCESS_RATE            "success_rate"
+#define CNS_SUM_RUN_TIME                "run_time"
+#define CNS_SUM_FLOW_TIME               "flow_time"
+#define CNS_SUM_MAKESPAN                "makespan"
+#define CNS_SUM_COLLISIONS              "collisions"
+#define CNS_SUM_COLLISIONS_OBS          "collisions_obs"
+#define CNS_SUM_MAPF_MEAN_TIME          "mapf_runtime"
+#define CNS_SUM_MAPF_INIT_COUNT         "init_count"
+#define CNS_SUM_MAPF_UNITE_COUNT        "unite_count"
+#define CNS_SUM_MAPF_UPDATE_COUNT       "update_count"
+#define CNS_SUM_MAPF_ECBS_COUNT         "ecbs_count"
+#define CNS_SUM_MAPF_PAR_COUNT          "par_count"
+#define CNS_SUM_MAPF_SUCCESS_COUNT      "success_count"
+#define CNS_SUM_MAPF_UNSUCCESS_COUNT    "unsuccess_count"
+#define CNS_SUM_MAPF_FLOWTIME           "mapf_flowtime"
+
 
 #define CNS_MAPF_COMMON_TIME        "mapf_time"
 #define CNS_MAPF_INIT_COUNT         "init_count"
@@ -112,6 +117,9 @@
 #define CNS_MAPF_UPDATE_COUNT       "update_count"
 #define CNS_MAPF_ECBS_COUNT         "ecbs_count"
 #define CNS_MAPF_PAR_COUNT          "par_count"
+#define CNS_MAPF_SUCCESS_COUNT      "success_count"
+#define CNS_MAPF_UNSUCCESS_COUNT    "unsuccess_count"
+#define CNS_MAPF_FLOWTIME           "mapf_flowtime"
 
 
 
@@ -142,7 +150,7 @@
 #define CN_DEFAULT_HWEIGHT 1
 #define CN_DEFAULT_TIME_STEP 0.25
 #define CN_DEFAULT_DELTA 0.1
-#define CN_DEFAULT_REPS 0.19
+#define CN_DEFAULT_REPS 0.15
 #define CN_DEFAULT_MAPFNUM 3
 #define CN_DEFAULT_MAPF_MAXTIME 1000
 #define CN_DEFAULT_MAPF_TRIGGER COMMON_POINT

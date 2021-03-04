@@ -61,6 +61,8 @@ SET(ORCAStar_SOURCES    Agent.cpp
                     MAPF/ECBS/ConflictAvoidanceTable.cpp
                     MAPF/ECBS/ConflictBasedSearch.cpp
                     MAPF/ECBS/ConflictSet.cpp
-                    MAPF/ECBS/MDD.cpp MAPF/FocalSearch.cpp MAPF/FocalSearch.h MAPF/FSNode.h MAPF/SCIPP.cpp MAPF/SCIPP.h MAPF/SIPP.cpp MAPF/SIPP.h ORCAAgentWithPARAndECBS.cpp ORCAAgentWithPARAndECBS.h)
+                    MAPF/ECBS/MDD.cpp
+                    MAPF/FocalSearch.cpp
+                    MAPF/FocalSearch.h MAPF/FSNode.h MAPF/SCIPP.cpp MAPF/SCIPP.h MAPF/SIPP.cpp MAPF/SIPP.h ORCAAgentWithPARAndECBS.cpp ORCAAgentWithPARAndECBS.h ORCAAgentWithReturning.cpp ORCAAgentWithReturning.h)
 
 add_library(ORCAStar ${ORCAStar_HEADERS} ${ORCAStar_SOURCES})

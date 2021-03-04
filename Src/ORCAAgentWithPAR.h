@@ -46,9 +46,9 @@ class ORCAAgentWithPAR : public Agent
         std::vector <std::pair<float, Agent*>>& GetNeighbours();
         std::set<ORCAAgentWithPAR *> GetAgentsForCentralizedPlanning();
         void SetAgentsForCentralizedPlanning(std::set<ORCAAgentWithPAR *> agents);
-        void PreparePARExecution(Point common);
-        bool ComputePAREnv(Point common, std::vector<std::pair<Point, ORCAAgentWithPAR*>> oldGoals = std::vector<std::pair<Point, ORCAAgentWithPAR*>>());
-        Point PullOutIntermediateGoal(Point common);
+        void PreparePARExecution();
+        bool ComputePAREnv();
+        Point GetGoalPointForMAPF(SubMap Area);
         bool ComputePAR();
         bool UnitePAR();
         bool UpdatePAR();
@@ -74,13 +74,16 @@ class ORCAAgentWithPAR : public Agent
         MAPFSearchResult PARres;
         int currPARPos;
         int PARActorId;
-        Point PARcommon;
         std::vector<Point> buffPar;
 
         int initCount;
         int updCount;
         int uniCount;
         float timeMAPF;
+
+        int successCount;
+        int unsuccessCount;
+        int flowtimeCount;
 
 #if PAR_LOG
         MAPFInstancesLogger *PARLog;

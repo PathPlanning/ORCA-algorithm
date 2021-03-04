@@ -857,13 +857,17 @@ bool XMLReader::ReadAgents()
         {
             a = new ORCAAgentWithPAR(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
         }
-        else if(agTypeStr == CNS_AT_ST_ORCAECBS)
+        else if (agTypeStr == CNS_AT_ST_ORCAECBS)
         {
             a = new ORCAAgentWithECBS(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
         }
-        else if(agTypeStr == CNS_AT_ST_ORCAPARECBS)
+        else if (agTypeStr == CNS_AT_ST_ORCAPARECBS)
         {
             a = new ORCAAgentWithPARAndECBS(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
+        }
+        else if (agTypeStr == CNS_AT_ST_ORCARETURN)
+        {
+            a = new ORCAAgentWithReturning(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
         }
         else
         {

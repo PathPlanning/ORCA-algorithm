@@ -213,6 +213,7 @@ MAPFSearchResult ConflictBasedSearch<SearchType>::startSearch(const SubMap &map,
         SearchResult searchResult = astar.startSearch(map, agentSet, agent.getStart_i(), agent.getStart_j(),
                                                       agent.getGoal_i(), agent.getGoal_j());
         if (!searchResult.pathfound) {
+            std::cout << agent.getStart_i() << " " << agent.getStart_j() << " " << agent.getGoal_i() << " " << agent.getGoal_j() << "\n";
             std::cout << "fail" << std::endl;
         }
         root.cost += searchResult.pathlength;

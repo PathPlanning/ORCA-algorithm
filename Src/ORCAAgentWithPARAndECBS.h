@@ -1,5 +1,6 @@
 #include <set>
 #include <algorithm>
+#include <cstdlib>
 
 #include "Agent.h"
 #include "SubMap.h"
@@ -35,7 +36,7 @@ class ORCAAgentWithPARAndECBS : public Agent
         bool UpdatePrefVelocity() override;
         void AddNeighbour(Agent &neighbour, float distSq) override;
 
-        bool isMAPFMember() const;
+        void PrintMAPFMemberStat() const;
         unordered_map<std::string, float> GetMAPFStatistics() const;
 
 
@@ -50,12 +51,14 @@ class ORCAAgentWithPARAndECBS : public Agent
         std::vector <std::pair<float, Agent*>>& GetNeighbours();
         std::set<ORCAAgentWithPARAndECBS *> GetAgentsForCentralizedPlanning();
         void SetAgentsForCentralizedPlanning(std::set<ORCAAgentWithPARAndECBS *> agents);
-        void PrepareMAPFExecution(Point common);
-        bool ComputeMAPFEnv(Point common, std::vector<std::pair<Point, ORCAAgentWithPARAndECBS*>> oldGoals = std::vector<std::pair<Point, ORCAAgentWithPARAndECBS*>>());
-        Point PullOutIntermediateGoal(Point common);
+        void PrepareMAPFExecution();
+        bool ComputeMAPFEnv();
+        Point GetGoalPointForMAPF(SubMap Area);
         int ComputeMAPF(int algToUse);
         bool UniteMAPF();
         bool UpdateMAPF();
+
+
 
 
         SubMap MAPFMap;
@@ -80,7 +83,6 @@ class ORCAAgentWithPARAndECBS : public Agent
         MAPFSearchResult MAPFres;
         int currMAPFPos;
         int MAPFActorId;
-        Point MAPFcommon;
         bool waitForStart;
         bool waitForFinish;
 
@@ -91,6 +93,10 @@ class ORCAAgentWithPARAndECBS : public Agent
         float timeMAPF;
         int ECBSCount;
         int PARCount;
+
+        int successCount;
+        int unsuccessCount;
+        int flowtimeCount;
 
     #if PAR_LOG
         MAPFInstancesLogger *MAPFLog;

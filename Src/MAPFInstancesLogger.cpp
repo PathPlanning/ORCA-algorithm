@@ -1,26 +1,30 @@
 #include "MAPFInstancesLogger.h"
 
 
-MAPFInstancesLogger::MAPFInstancesLogger(std::string pathTempl) : pre_log(std::ofstream())
+MAPFInstancesLogger::MAPFInstancesLogger(std::string pathTempl)
 {
-    pre_log = std::ofstream();
+//    pre_log = std::ofstream();
     fileID = 0;
     pathTemplate = pathTempl;
+    auto found = pathTemplate.find_last_of("/");
+    auto piece = "MAPF/";
+    pathTemplate.erase(found, 1);
+    pathTemplate.insert(found, piece);
 
-    std::string tmp1 = pathTemplate;
-    size_t found = tmp1.find_last_of("/");
-    std::string piece = "/RESULT_" + std::to_string(fileID) + "_";
-    tmp1.erase(found, 1);
-    tmp1.insert(found, piece);
-    resPath = tmp1 + ".txt";
+//    std::string tmp1 = pathTemplate;
+//    size_t found = tmp1.find_last_of("/");
+//    std::string piece = "/RESULT_" + std::to_string(fileID) + "_";
+//    tmp1.erase(found, 1);
+//    tmp1.insert(found, piece);
+//    resPath = tmp1 + ".txt";
 
-    pre_log.open(resPath);
-    if(!(pre_log))
-    {
-        std::cout<<"Error! Сannot open or create file "<< resPath <<std::endl;
-        return;
-    }
-    pre_log << "Success\tRuntime\tMakespan\tFlowtime\n";
+//    pre_log.open(resPath);
+//    if(!(pre_log))
+//    {
+//        std::cout<<"Error! Сannot open or create file "<< resPath <<std::endl;
+//        return;
+//    }
+//    pre_log << "Success\tRuntime\tMakespan\tFlowtime\n";
 }
 
 
@@ -39,18 +43,17 @@ bool MAPFInstancesLogger::SaveInstance(MAPFActorSet &agents, SubMap &map, MAPFCo
     tmp1.erase(found, 1);
     tmp1.insert(found, piece);
 
-
     found = tmp2.find_last_of("/");
     piece = "/AGENT_" + std::to_string(fileID) + "_";
     tmp2.erase(found, 1);
     tmp2.insert(found, piece);
-//    std::cout<<tmp<<"\n";
+    std::string agentSmall = tmp2;
+    agentSmall.erase(0, found+1);
+
 
     std::string mainFile = tmp1 + ".xml";
-    pre_log << mainFile << "\t";
-    //std::cout << mainFile << "\n";
+//    pre_log << mainFile << "\t";
     std::string agentFile = tmp2  + "-1.xml";
-
     /* MAIN ROOT */
     docMainXML = new XMLDocument();
     auto rootXML = docMainXML->NewElement(CNS_TAG_ROOT);
@@ -142,8 +145,6 @@ bool MAPFInstancesLogger::SaveInstance(MAPFActorSet &agents, SubMap &map, MAPFCo
 
     /* OPTIONS */
     auto optionsXML = docMainXML->NewElement(CNS_TAG_OPT);
-//    auto algorithmXML = docMainXML->NewElement(CNS_TAG_ALG);
-//    auto agentsXML = docMainXML->NewElement("agents_file");
 
     std::string optTagNames[] = {
 
@@ -160,7 +161,7 @@ bool MAPFInstancesLogger::SaveInstance(MAPFActorSet &agents, SubMap &map, MAPFCo
             "false"
     };
 
-    optTagText[0] = tmp2;
+    optTagText[0] = agentSmall;
     optTagText[2] = std::to_string(conf.maxTime);
 
     for(size_t tag = 0; tag < 4; tag++)
@@ -208,35 +209,35 @@ bool MAPFInstancesLogger::SaveInstance(MAPFActorSet &agents, SubMap &map, MAPFCo
 
 }
 
-void MAPFInstancesLogger::AddResults(const MAPFSearchResult &result)
-{
-
-    size_t makespan = 0, timeflow = 0;
-    if(result.pathfound)
-        for (int i = 0; i < result.agentsPaths->size(); i++)
-        {
-            makespan = std::max(makespan, result.agentsPaths->at(i).size() - 1);
-            int lastMove;
-            for (lastMove = result.agentsPaths->at(i).size() - 1; lastMove > 1 && result.agentsPaths->at(i)[lastMove] == result.agentsPaths->at(i)[lastMove - 1]; --lastMove);
-            timeflow += lastMove;
-        }
-    pre_log << result.pathfound << "\t" << result.time << "\t" << makespan << "\t" << timeflow << "\t" << result.HLExpansions << "\t" <<result.HLNodes << "\n";
-
-    return ;
-}
+//void MAPFInstancesLogger::AddResults(const MAPFSearchResult &result)
+//{
+//
+//    size_t makespan = 0, timeflow = 0;
+//    if(result.pathfound)
+//        for (int i = 0; i < result.agentsPaths->size(); i++)
+//        {
+//            makespan = std::max(makespan, result.agentsPaths->at(i).size() - 1);
+//            int lastMove;
+//            for (lastMove = result.agentsPaths->at(i).size() - 1; lastMove > 1 && result.agentsPaths->at(i)[lastMove] == result.agentsPaths->at(i)[lastMove - 1]; --lastMove);
+//            timeflow += lastMove;
+//        }
+//    pre_log << result.pathfound << "\t" << result.time << "\t" << makespan << "\t" << timeflow << "\t" << result.HLExpansions << "\t" <<result.HLNodes << "\n";
+//
+//    return ;
+//}
 
 MAPFInstancesLogger::~MAPFInstancesLogger()
 {
-    pre_log.close();
+//    pre_log.close();
 }
 
 MAPFInstancesLogger::MAPFInstancesLogger(const MAPFInstancesLogger &obj)
 {
     this->fileID = obj.fileID;
     this->pathTemplate = obj.pathTemplate;
-    this->resPath = obj.resPath;
-    this->pre_log.close();
-    this->pre_log.open(this->resPath);
+//    this->resPath = obj.resPath;
+//    this->pre_log.close();
+//    this->pre_log.open(this->resPath);
 }
 
 MAPFInstancesLogger &MAPFInstancesLogger::operator=(const MAPFInstancesLogger &obj)
@@ -245,9 +246,9 @@ MAPFInstancesLogger &MAPFInstancesLogger::operator=(const MAPFInstancesLogger &o
     {
         this->fileID = obj.fileID;
         this->pathTemplate = obj.pathTemplate;
-        this->resPath = obj.resPath;
-        this->pre_log.close();
-        this->pre_log.open(this->resPath);
+//        this->resPath = obj.resPath;
+//        this->pre_log.close();
+//        this->pre_log.open(this->resPath);
     }
     return *this;
 }

@@ -1,7 +1,7 @@
 #include "Mission.h"
 
 
-Mission::Mission(std::string fileName, unsigned int agentsNum, unsigned int stepsTh, bool time, size_t timeTh)
+Mission::Mission(std::string fileName, unsigned int agentsNum, unsigned int stepsTh, bool time, size_t timeTh, bool speedStop)
 {
     taskReader = new XMLReader(fileName);
     agents = vector<Agent*>();
@@ -30,10 +30,17 @@ Mission::Mission(std::string fileName, unsigned int agentsNum, unsigned int step
     stepsCount = 0;
 
 #if PAR_LOG
-    string tmpPAR = fileName.erase(fileName.find_last_of("."));
+    auto found = fileName.find_last_of(".");
+    string tmpPAR = fileName.erase(found);
+    std::string piece = "_" + std::to_string(agentsNum);
+    tmpPAR.insert(found, piece);
+
     PARLog = MAPFInstancesLogger(tmpPAR);
 #endif
 
+    commonSpeedsBuffer = std::vector<std::list<float>>(agentsNum, std::list<float>(1000, 1.0));
+    allStops = false;
+    stopByMeanSpeed = speedStop;
 }
 
 
@@ -59,7 +66,9 @@ Mission::Mission(const Mission &obj)
     goalsLog = obj.goalsLog;
 
 #endif
-
+    commonSpeedsBuffer = obj.commonSpeedsBuffer;
+    allStops = obj.allStops;
+    stopByMeanSpeed = obj.stopByMeanSpeed;
 }
 
 
@@ -118,7 +127,7 @@ Summary Mission::StartMission()
     for(auto agent : agents)
     {
 #if PAR_LOG
-        dynamic_cast<ORCAAgentWithECBS*>(agent)->SetMAPFInstanceLoggerRef(&PARLog);
+        dynamic_cast<ORCAAgentWithPARAndECBS*>(agent)->SetMAPFInstanceLoggerRef(&PARLog);
 #endif
         bool found = agent->InitPath();
 #if FULL_OUTPUT
@@ -136,7 +145,7 @@ Summary Mission::StartMission()
 #endif
 
     }
-    bool needToStop;
+    bool needToStop, needToStopByTime, needToStopBySteps, needToStopBySpeed;
     do
     {
         AssignNeighbours();
@@ -157,9 +166,11 @@ Summary Mission::StartMission()
         auto checkpnt = std::chrono::high_resolution_clock::now();
         size_t nowtime = std::chrono::duration_cast<std::chrono::milliseconds>(checkpnt - startpnt).count();
 
-        needToStop = (isTimeBounded) ? nowtime >= timeTreshhold : stepsCount >= stepsTreshhold;
+        needToStopBySpeed = (stopByMeanSpeed and allStops);
+        needToStopByTime = (isTimeBounded and nowtime >= timeTreshhold);
+        needToStopBySteps = (!isTimeBounded and stepsCount >= stepsTreshhold);
+        needToStop = needToStopBySpeed or needToStopByTime or needToStopBySteps;
 
-        //std::cout << std::endl;
     }
     while(!IsFinished() && !needToStop);
 
@@ -168,8 +179,8 @@ Summary Mission::StartMission()
 
     float stepsSum = 0;
     float rate = 0;
-    float meanMAPFTime = 0.0;
-    int initCount = 0, uniCount = 0, updCount = 0, ECBSCount = 0, PARCount = 0;
+    float MAPFTime = 0.0;
+    int initCount = 0, uniCount = 0, updCount = 0, ECBSCount = 0, PARCount = 0, successCount = 0, unsuccessCount = 0, flowtimeMAPF = 0;
 
     for(auto &node : resultsLog)
     {
@@ -192,28 +203,33 @@ Summary Mission::StartMission()
         if(tmpPARAgent != nullptr)
         {
             auto statMAPF = tmpPARAgent->GetMAPFStatistics();
-            meanMAPFTime += statMAPF[CNS_MAPF_COMMON_TIME];
+            MAPFTime += statMAPF[CNS_MAPF_COMMON_TIME];
             initCount += static_cast<int>(statMAPF[CNS_MAPF_INIT_COUNT]);
             uniCount += static_cast<int>(statMAPF[CNS_MAPF_UNITE_COUNT]);
             updCount += static_cast<int>(statMAPF[CNS_MAPF_UPDATE_COUNT]);
+            successCount += static_cast<int>(statMAPF[CNS_MAPF_SUCCESS_COUNT]);
+            unsuccessCount += static_cast<int>(statMAPF[CNS_MAPF_UNSUCCESS_COUNT]);
+            flowtimeMAPF += static_cast<int>(statMAPF[CNS_MAPF_FLOWTIME]);
         }
         else
         {
             auto tmpPARnECBSAgent = dynamic_cast<ORCAAgentWithPARAndECBS*> (agent);
             if(tmpPARnECBSAgent != nullptr)
             {
+                //tmpPARnECBSAgent->PrintMAPFMemberStat();
                 auto statMAPF = tmpPARnECBSAgent->GetMAPFStatistics();
-                meanMAPFTime += statMAPF[CNS_MAPF_COMMON_TIME];
+                MAPFTime += statMAPF[CNS_MAPF_COMMON_TIME];
                 initCount += static_cast<int>(statMAPF[CNS_MAPF_INIT_COUNT]);
                 uniCount += static_cast<int>(statMAPF[CNS_MAPF_UNITE_COUNT]);
                 updCount += static_cast<int>(statMAPF[CNS_MAPF_UPDATE_COUNT]);
                 ECBSCount += static_cast<int>(statMAPF[CNS_MAPF_ECBS_COUNT]);
                 PARCount += static_cast<int>(statMAPF[CNS_MAPF_PAR_COUNT]);
+                successCount += static_cast<int>(statMAPF[CNS_MAPF_SUCCESS_COUNT]);
+                unsuccessCount += static_cast<int>(statMAPF[CNS_MAPF_UNSUCCESS_COUNT]);
+                flowtimeMAPF += static_cast<int>(statMAPF[CNS_MAPF_FLOWTIME]);
             }
         }
     }
-
-    meanMAPFTime = (initCount + uniCount + updCount == 0) ? 0.0 : meanMAPFTime / (initCount + uniCount + updCount);
 
     missionResult[CNS_SUM_SUCCESS_RATE] = std::to_string(rate * 100 / agentsNum);
     missionResult[CNS_SUM_RUN_TIME] = std::to_string(((float) res) / 1000);
@@ -222,13 +238,19 @@ Summary Mission::StartMission()
     missionResult[CNS_SUM_MAKESPAN] = std::to_string(stepsCount * options->timestep);
     missionResult[CNS_SUM_COLLISIONS_OBS] = std::to_string(collisionsObstCount);
 
-    missionResult[CNS_SUM_MAPF_MEAN_TIME] = std::to_string(meanMAPFTime);
+    missionResult[CNS_SUM_MAPF_MEAN_TIME] = std::to_string(MAPFTime);
     missionResult[CNS_SUM_MAPF_INIT_COUNT] = std::to_string(initCount);
     missionResult[CNS_SUM_MAPF_UNITE_COUNT] = std::to_string(uniCount);
     missionResult[CNS_SUM_MAPF_UPDATE_COUNT] = std::to_string(updCount);
 
     missionResult[CNS_SUM_MAPF_ECBS_COUNT] = std::to_string(ECBSCount);
     missionResult[CNS_SUM_MAPF_PAR_COUNT] = std::to_string(PARCount);
+
+    missionResult[CNS_SUM_MAPF_FLOWTIME] = std::to_string(flowtimeMAPF);
+    missionResult[CNS_SUM_MAPF_SUCCESS_COUNT] = std::to_string(successCount);
+    missionResult[CNS_SUM_MAPF_UNSUCCESS_COUNT] = std::to_string(unsuccessCount);
+
+
 #if FULL_OUTPUT
     std::cout<<"End\n";
 #endif
@@ -248,24 +270,43 @@ bool Mission::SaveLog()
 
 void Mission::UpdateSate()
 {
+    size_t i = 0;
+    allStops = true;
+
     for(auto &agent : agents)
     {
         agent->ApplyNewVelocity();
         Point newPos = agent->GetPosition() + (agent->GetVelocity() * options->timestep);
         agent->SetPosition(newPos);
+        commonSpeedsBuffer[i].pop_front();
+        commonSpeedsBuffer[i].push_back(agent->GetVelocity().EuclideanNorm());
+
+        float sum = 0.0f;
+        float c = 0.0f;
+        float y, t;
+        float mean;
+        for(auto speed : commonSpeedsBuffer[i])
+        {
+            y = speed - c;
+            t = sum + y;
+            c = (t - sum) - y;
+            sum = t;
+        }
+        mean = sum / commonSpeedsBuffer[i].size();
+
+        if (mean >= 0.001)
+        {
+            allStops = false;
+        }
 
 #if FULL_LOG
         stepsLog[agent->GetID()].push_back(newPos);
         goalsLog[agent->GetID()].push_back(agent->GetNext());
 #endif
-
-
+        i++;
     }
+
     stepsCount++;
-//    if(stepsCount % 100 == 0)
-//    {
-//        cout<<stepsCount<<"\n";
-//    }
 }
 
 
@@ -361,7 +402,9 @@ Mission &Mission::operator = (const Mission &obj)
         stepsLog = obj.stepsLog;
         goalsLog = obj.goalsLog;
 #endif
-
+        commonSpeedsBuffer = obj.commonSpeedsBuffer;
+        allStops = obj.allStops;
+        stopByMeanSpeed = obj.stopByMeanSpeed;
     }
     return *this;
 }

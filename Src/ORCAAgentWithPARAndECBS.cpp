@@ -4,6 +4,7 @@
 
 ORCAAgentWithPARAndECBS::ORCAAgentWithPARAndECBS() : Agent()
 {
+//    srand (42);
     fakeRadius = 0;
     MAPFAgents = std::set<ORCAAgentWithPARAndECBS *>();
     inMAPFMode = false;
@@ -33,7 +34,6 @@ ORCAAgentWithPARAndECBS::ORCAAgentWithPARAndECBS() : Agent()
     buffMAPF = std::vector<Point>();
     MAPFUnion = false;
     notMAPFVis = false;
-    MAPFcommon = Point(-1,-1);
     currMAPFPos = -1;
     MAPFActorId = -1;
     ECBSLLsearch = FocalSearch<>(true, conf.focalW);
@@ -47,13 +47,17 @@ ORCAAgentWithPARAndECBS::ORCAAgentWithPARAndECBS() : Agent()
     timeMAPF = 0;
     ECBSCount = 0;
     PARCount = 0;
-}
 
+    successCount = 0;
+    unsuccessCount = 0;
+    flowtimeCount = 0;
+}
 
 
 ORCAAgentWithPARAndECBS::ORCAAgentWithPARAndECBS(const int &id, const Point &start, const Point &goal, const Map &map,
                                                  const EnvironmentOptions &options, AgentParam param) : Agent(id, start, goal, map, options, param)
 {
+//    srand (42);
     fakeRadius = param.rEps + param.radius;
     MAPFAgents = std::set<ORCAAgentWithPARAndECBS *>();
     inMAPFMode = false;
@@ -86,7 +90,6 @@ ORCAAgentWithPARAndECBS::ORCAAgentWithPARAndECBS(const int &id, const Point &sta
     buffMAPF = std::vector<Point>();
     MAPFUnion = false;
     notMAPFVis = false;
-    MAPFcommon = Point(-1,-1);
     currMAPFPos = -1;
     MAPFActorId = -1;
     waitForStart = false;
@@ -98,6 +101,10 @@ ORCAAgentWithPARAndECBS::ORCAAgentWithPARAndECBS(const int &id, const Point &sta
     timeMAPF = 0;
     ECBSCount = 0;
     PARCount = 0;
+
+    successCount = 0;
+    unsuccessCount = 0;
+    flowtimeCount = 0;
 }
 
 
@@ -121,7 +128,6 @@ ORCAAgentWithPARAndECBS::ORCAAgentWithPARAndECBS(const ORCAAgentWithPARAndECBS &
     buffMAPF = obj.buffMAPF;
     MAPFUnion = obj.MAPFUnion;
     notMAPFVis = obj.notMAPFVis;
-    MAPFcommon = obj.MAPFcommon;
     currMAPFPos = obj.currMAPFPos;
     MAPFActorId = obj.MAPFActorId;
     waitForStart = obj.waitForStart;
@@ -132,6 +138,10 @@ ORCAAgentWithPARAndECBS::ORCAAgentWithPARAndECBS(const ORCAAgentWithPARAndECBS &
     timeMAPF = obj.timeMAPF;
     ECBSCount = obj.ECBSCount;
     PARCount = obj.PARCount;
+
+    successCount = obj.successCount;
+    unsuccessCount = obj.unsuccessCount;
+    flowtimeCount = obj.flowtimeCount;
 }
 
 
@@ -162,7 +172,6 @@ ORCAAgentWithPARAndECBS& ORCAAgentWithPARAndECBS::operator = (const ORCAAgentWit
         buffMAPF = obj.buffMAPF;
         MAPFUnion = obj.MAPFUnion;
         notMAPFVis = obj.notMAPFVis;
-        MAPFcommon = obj.MAPFcommon;
         currMAPFPos = obj.currMAPFPos;
         MAPFActorId = obj.MAPFActorId;
         waitForStart = obj.waitForStart;
@@ -173,6 +182,9 @@ ORCAAgentWithPARAndECBS& ORCAAgentWithPARAndECBS::operator = (const ORCAAgentWit
         timeMAPF = obj.timeMAPF;
         ECBSCount = obj.ECBSCount;
         PARCount = obj.PARCount;
+        successCount = obj.successCount;
+        unsuccessCount = obj.unsuccessCount;
+        flowtimeCount = obj.flowtimeCount;
     }
     return *this;
 }
@@ -236,6 +248,18 @@ void ORCAAgentWithPARAndECBS::ComputeNewVelocity()
             {
                 newV = Point();
             }
+//            if(dist > 0.1)
+//            {
+//                newV = newV/dist;
+//            }
+//            else if(dist > 0.01)
+//            {
+//                newV = newV;
+//            }
+//            else //if(dist < 0.01)
+//            {
+//                newV = Point();
+//            }
         }
         else
         {
@@ -561,23 +585,29 @@ void ORCAAgentWithPARAndECBS::ApplyNewVelocity()
     speedSaveBuffer.pop_front();
     if(inMAPFMode)
     {
-        speedSaveBuffer.push_back(1.0f);
+        speedSaveBuffer.push_back(param.maxSpeed);
+        if(MAPFExec)
+        {
+            flowtimeCount++;
+        }
     }
     else
     {
         speedSaveBuffer.push_back(currV.EuclideanNorm());
     }
 
-
-    float mean = 0.0f;
-
+    // Kahan summation algorithm
+    float sum = 0.0f;
+    float c = 0.0f;
+    float y, t;
     for(auto speed : speedSaveBuffer)
     {
-        mean += speed;
+        y = speed - c;
+        t = sum + y;
+        c = (t - sum) - y;
+        sum = t;
     }
-
-    mean /= speedSaveBuffer.size();
-    meanSavedSpeed = mean;
+    meanSavedSpeed = sum / speedSaveBuffer.size();
 }
 
 
@@ -586,8 +616,6 @@ bool ORCAAgentWithPARAndECBS::UpdatePrefVelocity()
     Point next;
     if(inMAPFMode)
     {
-        //std::cout<<id << " " << PARActorId << " " << PARExec << " " << PARAgents.size() << " X: " << PARStart.X() << " Y: " << PARStart.Y() << " Xpos: " << position.X() << " Ypos: " << position.Y() << "\n";
-
         if(MAPFUnion)
         {
             UniteMAPF();
@@ -630,11 +658,11 @@ bool ORCAAgentWithPARAndECBS::UpdatePrefVelocity()
                 {
                     allFin = false;
                 }
+
             }
 
             if(allFin)
             {
-//                std::cout<<"Fin\n";
                 waitForFinish = true;
                 inMAPFMode = false;
                 MAPFExec = false;
@@ -647,7 +675,6 @@ bool ORCAAgentWithPARAndECBS::UpdatePrefVelocity()
                 nextForLog = position;
                 MAPFres.Clear();
                 MAPFAgents.clear();
-                MAPFcommon = Point();
                 MAPFSet.clear();
                 buffMAPF.clear();
                 return true;
@@ -720,6 +747,10 @@ bool ORCAAgentWithPARAndECBS::UpdatePrefVelocity()
                     goalVector = (goalVector/dist);
                 }
                 prefV = goalVector;
+//                float angleRand = std::rand() * 2.0f * M_PI / RAND_MAX;
+//                float distRand = std::rand() * 0.0001f / RAND_MAX;
+//                prefV = prefV;// + Point(std::cos(angleRand), std::sin(angleRand)) * distRand;
+
                 return true;
             }
         }
@@ -734,12 +765,13 @@ bool ORCAAgentWithPARAndECBS::UpdatePrefVelocity()
         if(planner->GetNext(position, next))
         {
             nextForLog = next;
+
             Vector goalVector = next - position;
             float dist = goalVector.EuclideanNorm();
             if((options->trigger == MAPFTriggers::COMMON_POINT && CommonPointMAPFTrigger(dist)) ||
-               (options->trigger == MAPFTriggers::SPEED_BUFFER && MeanSavedSpeedMAPFTrigger()))
+               (options->trigger == MAPFTriggers::SPEED_BUFFER && SingleNeighbourMeanSpeedMAPFTrigger()))
             {
-                PrepareMAPFExecution(next);
+                PrepareMAPFExecution();
                 prefV = Point();
 
                 return true;
@@ -758,6 +790,10 @@ bool ORCAAgentWithPARAndECBS::UpdatePrefVelocity()
                 }
 
                 prefV = goalVector;
+//                float angleRand = std::rand() * 2.0f * M_PI / RAND_MAX;
+//                float distRand = std::rand() * 0.0001f / RAND_MAX;
+//                prefV = prefV + Point(std::cos(angleRand), std::sin(angleRand)) * distRand;
+
                 return true;
             }
         }
@@ -849,10 +885,9 @@ std::vector<std::pair<float, Agent *>>& ORCAAgentWithPARAndECBS::GetNeighbours()
 }
 
 
-bool ORCAAgentWithPARAndECBS::ComputeMAPFEnv(Point common, std::vector<std::pair<Point, ORCAAgentWithPARAndECBS*>> oldGoals)
+bool ORCAAgentWithPARAndECBS::ComputeMAPFEnv()
 {
-
-    float minX = map->GetWidth() * map->GetCellSize(), minY = map->GetHeight() * map->GetCellSize(), maxX = 0, maxY = 0;
+    float minX = static_cast<float>(map->GetWidth() * map->GetCellSize()), minY = static_cast<float>(map->GetHeight() * map->GetCellSize()), maxX = 0.0f, maxY = 0.0f;
 
     for(auto &ag : MAPFAgents)
     {
@@ -881,42 +916,52 @@ bool ORCAAgentWithPARAndECBS::ComputeMAPFEnv(Point common, std::vector<std::pair
     int height = nodeRightBottom.i - nodeLeftTop.i + 1;
     MAPFMap = SubMap(map, nodeLeftTop, {height,width}, 1);
 
-    // Starts and goals
     std::unordered_map<int, Node> starts;
     std::unordered_map<int, Node> goals;
-    for(auto &og : oldGoals)
-    {
-        Node tmpOldGoal = MAPFMap.GetClosestNode(og.first);
-        if(goals.find(tmpOldGoal.i * MAPFMap.GetWidth() + tmpOldGoal.j) == goals.end())
-        {
-            goals.insert({tmpOldGoal.i * MAPFMap.GetWidth() + tmpOldGoal.j, tmpOldGoal});
-        }
-        else
-        {
-            og.second->MAPFGoal = Point(-1,-1);
-            while(!og.second->buffMAPF.empty())
-            {
-                og.second->planner->AddPointToPath(og.second->buffMAPF.back());
-                og.second->buffMAPF.pop_back();
-            }
-        }
-
-    }
+    std::unordered_map<int, Node> finalGoals;
 
     MAPFSet = MAPFActorSet();
     MAPFSet.clear();
     Point tmpGoalPoint;
+
     for(auto &ag : MAPFAgents)
     {
         Node tmpStart, tmpGoal;
 
+        if(ag->MAPFStart.X() < 0)
+        {
+            tmpStart = MAPFMap.FindCloseToPointAvailableNode(ag->GetPosition(), starts);
+
+            if(tmpStart.i < 0)
+            {
+                for(auto &ag1 : MAPFAgents)
+                {
+                    while(!ag1->buffMAPF.empty())
+                    {
+                        ag1->planner->AddPointToPath(ag1->buffMAPF.back());
+                        ag1->buffMAPF.pop_back();
+                    }
+                    ag1->MAPFStart = Point(-1, -1);
+                    ag1->MAPFGoal = Point(-1, -1);
+                    ag1->inMAPFMode = false;
+                    ag1->moveToMAPFPos = false;
+                    ag1->MAPFVis = false;
+                    ag1->MAPFExec = false;
+                }
+                return false;
+            }
+            ag->MAPFStart = MAPFMap.GetPoint(tmpStart);
+        }
+        else
+        {
+            tmpStart = MAPFMap.GetClosestNode(ag->MAPFStart);
+        }
+
         if(ag->MAPFGoal.X() < 0)
         {
             ag->buffMAPF.clear();
-            tmpGoalPoint = ag->PullOutIntermediateGoal(common);
-            tmpGoal = MAPFMap.GetClosestNode(tmpGoalPoint);
-            tmpGoal = MAPFMap.FindAvailableNode(tmpGoal, goals);
-
+            tmpGoalPoint = ag->GetGoalPointForMAPF(MAPFMap);
+            tmpGoal = MAPFMap.FindAccessibleNodeForGoal(tmpStart, tmpGoalPoint, goals, finalGoals);
 
             if(tmpGoal.i < 0)
             {
@@ -937,51 +982,22 @@ bool ORCAAgentWithPARAndECBS::ComputeMAPFEnv(Point common, std::vector<std::pair
 
                 return false;
             }
-
             ag->MAPFGoal = MAPFMap.GetPoint(tmpGoal);
-
         }
         else
         {
             tmpGoal = MAPFMap.GetClosestNode(ag->MAPFGoal);
-            ag->MAPFGoal = MAPFMap.GetPoint(tmpGoal);
-            // std::cout << ag->id << " goal1: " << ag->MAPFGoal.ToString() << " goal2: " << MAPFMap.GetPoint(tmpGoal).ToString() << "\n";
-        }
-
-
-        if(ag->MAPFStart.X() < 0)
-        {
-            tmpStart = MAPFMap.GetClosestNode(ag->GetPosition());
-            tmpStart = MAPFMap.FindAvailableNode(tmpStart, starts);
-
-            if(tmpStart.i < 0)
-            {
-                for(auto &ag1 : MAPFAgents)
-                {
-                    while(!ag1->buffMAPF.empty())
-                    {
-                        ag1->planner->AddPointToPath(ag1->buffMAPF.back());
-                        ag1->buffMAPF.pop_back();
-                    }
-                    ag1->MAPFStart = Point(-1,-1);
-                    ag1->MAPFGoal = Point(-1,-1);
-                    ag1->inMAPFMode = false;
-                    ag1->moveToMAPFPos = false;
-                    ag1->MAPFVis = false;
-                    ag1->MAPFExec = false;
-                }
-                return false;
-            }
-            ag->MAPFStart = MAPFMap.GetPoint(tmpStart);
-        }
-        else
-        {
-            tmpStart = MAPFMap.GetClosestNode(ag->MAPFStart);
         }
 
         starts.insert({tmpStart.i * MAPFMap.GetWidth() + tmpStart.j, tmpStart});
-
-        goals.insert({tmpGoal.i * MAPFMap.GetWidth() + tmpGoal.j, tmpGoal});
+        if((tmpGoalPoint - ag->goal).EuclideanNorm() < options->delta)
+        {
+            finalGoals.insert({tmpGoal.i * MAPFMap.GetWidth() + tmpGoal.j, tmpGoal});
+        }
+        else
+        {
+            goals.insert({tmpGoal.i * MAPFMap.GetWidth() + tmpGoal.j, tmpGoal});
+        }
 
         MAPFSet.addActor(tmpStart.i, tmpStart.j, tmpGoal.i, tmpGoal.j);
         if(ag == this)
@@ -989,20 +1005,21 @@ bool ORCAAgentWithPARAndECBS::ComputeMAPFEnv(Point common, std::vector<std::pair
             MAPFActorId = MAPFSet.getActorId(tmpStart.i, tmpStart.j);
             currMAPFPos = 0;
         }
+
     }
     return true;
 }
 
 
-Point ORCAAgentWithPARAndECBS::PullOutIntermediateGoal(Point common)
+Point ORCAAgentWithPARAndECBS::GetGoalPointForMAPF(SubMap Area)
 {
     Point nextPoint = planner->PullOutNext();
     buffMAPF.push_back(nextPoint);
-    if(nextPoint == common)
+
+    while(Area.PointBelongsToArea(nextPoint) && !(nextPoint == this->goal))
     {
-        Point nextNextPoint = planner->PullOutNext();
-        buffMAPF.push_back(nextNextPoint);
-        return nextNextPoint;
+        nextPoint = planner->PullOutNext();
+        buffMAPF.push_back(nextPoint);
     }
 
     return nextPoint;
@@ -1039,12 +1056,13 @@ int ORCAAgentWithPARAndECBS::ComputeMAPF(int algToUse)
 }
 
 
-void ORCAAgentWithPARAndECBS::PrepareMAPFExecution(Point common)
+void ORCAAgentWithPARAndECBS::PrepareMAPFExecution()
 {
     MAPFAgents.clear();
     inMAPFMode = true;
     moveToMAPFPos = true;
     MAPFExec = false;
+    initCount++;
 
     MAPFAgents.insert(this);
     for (auto &el : Neighbours)
@@ -1079,7 +1097,7 @@ void ORCAAgentWithPARAndECBS::PrepareMAPFExecution(Point common)
         {
             ag->SetAgentsForCentralizedPlanning(MAPFAgents);
         }
-        if (!ag->ComputeMAPFEnv(common))
+        if (!ag->ComputeMAPFEnv())
         {
             for(auto &ag1 : MAPFAgents)
             {
@@ -1101,8 +1119,6 @@ void ORCAAgentWithPARAndECBS::PrepareMAPFExecution(Point common)
         }
     }
 
-
-
     int algToUse = PAR_AND_ECBS;
     int algUsed;
     auto startpnt = std::chrono::high_resolution_clock::now();
@@ -1111,6 +1127,10 @@ void ORCAAgentWithPARAndECBS::PrepareMAPFExecution(Point common)
         algUsed = ag->ComputeMAPF(algToUse);
         if(!algUsed)
         {
+            auto endpnt = std::chrono::high_resolution_clock::now();
+            size_t res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
+            timeMAPF += static_cast<float>(res);
+            unsuccessCount ++;
 
             for(auto &ag1 : MAPFAgents)
             {
@@ -1144,6 +1164,8 @@ void ORCAAgentWithPARAndECBS::PrepareMAPFExecution(Point common)
     auto endpnt = std::chrono::high_resolution_clock::now();
     size_t res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
 
+    timeMAPF += static_cast<float>(res);
+
     if(algUsed == ONLY_PAR)
     {
         PARCount++;
@@ -1153,7 +1175,7 @@ void ORCAAgentWithPARAndECBS::PrepareMAPFExecution(Point common)
         ECBSCount++;
     }
 
-#if MAPF_LOG
+#if PAR_LOG
     // Save here
     MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
 #endif
@@ -1164,13 +1186,11 @@ void ORCAAgentWithPARAndECBS::PrepareMAPFExecution(Point common)
         ag->moveToMAPFPos = true;
         ag->MAPFVis = false;
         ag->MAPFExec = false;
-        ag->MAPFcommon = common;
         ag->currMAPFPos = 0;
         ag->waitForStart = true;
-        //std::cout << ag->id << " " << ag->PARActorId << " " << ag->currPARPos << "\n";
     }
-    initCount++;
-    timeMAPF += (static_cast<float>(res) / MAPFAgents.size());
+    successCount++;
+
 }
 
 
@@ -1178,6 +1198,8 @@ bool ORCAAgentWithPARAndECBS::UniteMAPF()
 {
 
     MAPFUnion = false;
+    uniCount++;
+
     for(auto &ag : MAPFAgents)
     {
         ag->MAPFStart = Point(-1,-1);
@@ -1221,7 +1243,7 @@ bool ORCAAgentWithPARAndECBS::UniteMAPF()
         {
             ag->SetAgentsForCentralizedPlanning(MAPFAgents);
         }
-        if (!ag->ComputeMAPFEnv(MAPFcommon))
+        if (!ag->ComputeMAPFEnv())
         {
             for(auto &ag1 : MAPFAgents)
             {
@@ -1252,9 +1274,11 @@ bool ORCAAgentWithPARAndECBS::UniteMAPF()
 
         if(!algUsed)
         {
-#if PAR_LOG
-            MAPFLog->AddResults(ag->MAPFres);
-#endif
+            auto endpnt = std::chrono::high_resolution_clock::now();
+            size_t res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
+            timeMAPF += static_cast<float>(res);
+            unsuccessCount ++;
+
             for(auto &ag1 : MAPFAgents)
             {
                 while(!ag1->buffMAPF.empty())
@@ -1285,6 +1309,8 @@ bool ORCAAgentWithPARAndECBS::UniteMAPF()
     }
     auto endpnt = std::chrono::high_resolution_clock::now();
     size_t res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
+    timeMAPF += static_cast<float>(res);
+
     if(algUsed == ONLY_PAR)
     {
         PARCount++;
@@ -1294,18 +1320,22 @@ bool ORCAAgentWithPARAndECBS::UniteMAPF()
         ECBSCount++;
     }
 
+
+#if PAR_LOG
+    // Save here
+    MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
+#endif
     for(auto &ag : MAPFAgents)
     {
         ag->inMAPFMode = true;
         ag->moveToMAPFPos = true;
         ag->MAPFVis = false;
         ag->MAPFExec = false;
-        ag->MAPFcommon = MAPFcommon;
         ag->currMAPFPos = 0;
         ag->waitForStart = true;
     }
-    uniCount++;
-    timeMAPF += (static_cast<float>(res) / MAPFAgents.size());
+
+    successCount ++;
     return true;
 
 }
@@ -1314,6 +1344,7 @@ bool ORCAAgentWithPARAndECBS::UniteMAPF()
 bool ORCAAgentWithPARAndECBS::UpdateMAPF()
 {
 
+    updCount++;
     for(auto &ag : MAPFAgents)
     {
         ag->MAPFStart = Point(-1,-1);
@@ -1354,7 +1385,7 @@ bool ORCAAgentWithPARAndECBS::UpdateMAPF()
             ag->SetAgentsForCentralizedPlanning(MAPFAgents);
         }
 
-        if (!ag->ComputeMAPFEnv(MAPFcommon))
+        if (!ag->ComputeMAPFEnv())
         {
             for(auto &ag1 : MAPFAgents)
             {
@@ -1382,12 +1413,14 @@ bool ORCAAgentWithPARAndECBS::UpdateMAPF()
     for(auto &ag : MAPFAgents)
     {
         algUsed = ag->ComputeMAPF(algToUse);
-        //std::cout<< algUsed << std::endl;
+
         if(!algUsed)
         {
-#if PAR_LOG
-            MAPFLog->AddResults(ag->MAPFres);
-#endif
+            auto endpnt = std::chrono::high_resolution_clock::now();
+            size_t res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
+            timeMAPF += static_cast<float>(res);
+            unsuccessCount ++;
+
             for(auto &ag1 : MAPFAgents)
             {
                 while(!ag1->buffMAPF.empty())
@@ -1417,6 +1450,8 @@ bool ORCAAgentWithPARAndECBS::UpdateMAPF()
     }
     auto endpnt = std::chrono::high_resolution_clock::now();
     size_t res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
+    timeMAPF += static_cast<float>(res);
+
     if(algUsed == ONLY_PAR)
     {
         PARCount++;
@@ -1426,30 +1461,37 @@ bool ORCAAgentWithPARAndECBS::UpdateMAPF()
         ECBSCount++;
     }
 
+#if PAR_LOG
+    // Save here
+    MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
+#endif
     for(auto &ag : MAPFAgents)
     {
         ag->inMAPFMode = true;
         ag->moveToMAPFPos = true;
         ag->MAPFVis = false;
         ag->MAPFExec = false;
-        ag->MAPFcommon = MAPFcommon;
         ag->currMAPFPos = 0;
         ag->waitForStart = true;
-        //std::cout << ag->id << " " << ag->PARActorId << " " << ag->currPARPos << "\n";
     }
-    updCount++;
-    timeMAPF += (static_cast<float>(res) / MAPFAgents.size());
+    successCount ++;
     return true;
 }
 
 
-bool ORCAAgentWithPARAndECBS::isMAPFMember() const
+void ORCAAgentWithPARAndECBS::PrintMAPFMemberStat() const
 {
-    return inMAPFMode;
+    std::cout   << id << " "
+                << inMAPFMode << " "
+                << moveToMAPFPos << " "
+                << MAPFVis << " "
+                << notMAPFVis << " "
+                << MAPFUnion << " "
+                << MAPFExec << "\n";
 }
 
 #if PAR_LOG
-void ORCAAgenWithMAPFAndECBS::SetMAPFInstanceLoggerRef(MAPFInstancesLogger *log)
+void ORCAAgentWithPARAndECBS::SetMAPFInstanceLoggerRef(MAPFInstancesLogger *log)
 {
     MAPFLog = log;
 }
@@ -1457,8 +1499,6 @@ void ORCAAgenWithMAPFAndECBS::SetMAPFInstanceLoggerRef(MAPFInstancesLogger *log)
 
 unordered_map<std::string, float> ORCAAgentWithPARAndECBS::GetMAPFStatistics() const
 {
-    size_t allMapfCount = initCount + uniCount + updCount;
-
     unordered_map<std::string, float> stat;
     stat[CNS_MAPF_COMMON_TIME] = timeMAPF;
     stat[CNS_MAPF_INIT_COUNT] = static_cast<float>(initCount);
@@ -1466,6 +1506,9 @@ unordered_map<std::string, float> ORCAAgentWithPARAndECBS::GetMAPFStatistics() c
     stat[CNS_MAPF_UPDATE_COUNT] = static_cast<float>(updCount);
     stat[CNS_MAPF_ECBS_COUNT] = static_cast<float>(ECBSCount);
     stat[CNS_MAPF_PAR_COUNT] = static_cast<float>(PARCount);
+    stat[CNS_MAPF_FLOWTIME] = static_cast<float>(flowtimeCount);
+    stat[CNS_MAPF_SUCCESS_COUNT] = static_cast<float>(successCount);
+    stat[CNS_MAPF_UNSUCCESS_COUNT] = static_cast<float>(unsuccessCount);
 
     return stat;
 }

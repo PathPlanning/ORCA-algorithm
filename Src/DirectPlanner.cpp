@@ -43,3 +43,8 @@ Point DirectPlanner::PullOutNext()
     return glGoal;
 }
 
+Point DirectPlanner::GetPastPoint()
+{
+    return glStart;
+}
+

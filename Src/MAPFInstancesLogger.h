@@ -34,7 +34,7 @@ public:
 
 
     bool SaveInstance(MAPFActorSet &agents, SubMap &map, MAPFConfig &conf);
-    void AddResults(const MAPFSearchResult &result);
+//    void AddResults(const MAPFSearchResult &result);
     size_t GetFileID() const;
 
 
@@ -42,8 +42,8 @@ public:
 private:
     size_t fileID;
     std::string pathTemplate;
-    std::string resPath;
-    basic_ofstream<char> pre_log;
+//    std::string resPath;
+//    basic_ofstream<char> pre_log;
 
 
 

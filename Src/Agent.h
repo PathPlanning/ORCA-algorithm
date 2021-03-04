@@ -75,10 +75,10 @@ class Agent
 
 
     protected:
+        // bool MeanSpeedMAPFTrigger();
         bool CommonPointMAPFTrigger(float dist);
-        bool MeanSpeedMAPFTrigger();
-        bool GroupMeanSavedSpeedMAPFTrigger();
-        bool MeanSavedSpeedMAPFTrigger();
+        bool NeighbourGroupMeanSpeedMAPFTrigger();
+        bool SingleNeighbourMeanSpeedMAPFTrigger();
         
         int id;
         Point start;

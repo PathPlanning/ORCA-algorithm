@@ -22,7 +22,7 @@ class PathPlanner
         virtual bool GetNext(const Point &curr, Point &next) = 0;
         virtual void AddPointToPath(Point p) = 0;
         virtual Point PullOutNext() = 0;
-
+        virtual Point GetPastPoint() = 0;
 
         PathPlanner & operator = (const PathPlanner &obj)
         {map = obj.map; options = obj.options; glStart = obj.glStart; glGoal = obj.glGoal; radius = obj.radius; return *this;}

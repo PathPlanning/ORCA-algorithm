@@ -1,5 +1,6 @@
 #include "Agent.h"
-#define SpeedBuffSize 500
+#define SpeedBuffSize 250
+#define SmallSpeed 0.1
 
 Agent::Agent()
 {
@@ -49,8 +50,11 @@ Agent::Agent(const int &id, const Point &start, const Point &goal, const Map &ma
     invTimeBoundary = 1/param.timeBoundary;
     collisions = 0;
     collisionsObst = 0;
-    maxSqObstDist = std::pow((param.timeBoundaryObst * param.maxSpeed + param.radius), 2.0f);
-    speedSaveBuffer = std::list<float>(SpeedBuffSize, 1.0f);
+    float maxObstDist = param.maxSpeed;
+    maxSqObstDist = maxObstDist * maxObstDist;
+    //maxSqObstDist = std::pow((param.sightRadius + param.radius), 2.0f);
+   // maxSqObstDist = std::pow((param.maxSpeed * param.timeBoundaryObst + param.radius), 2.0f);
+    speedSaveBuffer = std::list<float>(SpeedBuffSize, param.maxSpeed);
     meanSavedSpeed = 1.0f;
 
 }
@@ -164,7 +168,7 @@ void Agent::UpdateNeighbourObst()
         for(int j = 0; j < tmpObstacles[i].size(); j++)
         {
 
-            distSq = Utils::SqPointSegDistance(tmpObstacles[i][j].left, tmpObstacles[i][j].right, position);
+            distSq = Utils::SqPointSegDistance(static_cast<Point>(tmpObstacles[i][j].left), static_cast<Point>(tmpObstacles[i][j].right), position);
             if(distSq < maxSqObstDist)
             {
                 NeighboursObst.push_back({distSq, tmpObstacles[i][j]});
@@ -254,64 +258,56 @@ bool Agent::CommonPointMAPFTrigger(float distToTargetPoint)
 }
 
 
-bool Agent::MeanSpeedMAPFTrigger()
-{
-    float mean = 0.0f;
-
-    if(options->MAPFNum > Neighbours.size()) return false;
-
-    for(size_t nCount = 0; nCount < options->MAPFNum; nCount++)
-    {
-        mean += Neighbours[nCount].second->GetVelocity().EuclideanNorm();
-    }
-    
-    mean /= options->MAPFNum;
-
-    return mean < 0.1;
-}
-
-
-bool Agent::GroupMeanSavedSpeedMAPFTrigger()
-{
-    float mean = 0.0f;
-
-    int nNum = (options->MAPFNum > Neighbours.size()) ? Neighbours.size() : options->MAPFNum;
-    if (nNum == 0)
-    {
-        return false;
-    }
+//bool Agent::MeanSpeedMAPFTrigger()
+//{
+//    float mean = 0.0f;
+//
 //    if(options->MAPFNum > Neighbours.size()) return false;
-    
+//
+//    for(size_t nCount = 0; nCount < options->MAPFNum; nCount++)
+//    {
+//        mean += Neighbours[nCount].second->GetVelocity().EuclideanNorm();
+//    }
+//    mean /= static_cast<float>(options->MAPFNum);
+//
+//    return (mean < SmallSpeed);
+//}
+
+
+bool Agent::NeighbourGroupMeanSpeedMAPFTrigger()
+{
+    size_t nNum = (options->MAPFNum > Neighbours.size()) ? Neighbours.size() : options->MAPFNum;
+    if (!nNum) return false;
+
+    // Kahan summation algorithm
+    float sum = 0.0f;
+    float c = 0.0f;
+    float y, t;
+
     for(size_t nCount = 0; nCount < nNum; nCount++)
     {
-        mean += Neighbours[nCount].second->meanSavedSpeed;
+        y = Neighbours[nCount].second->meanSavedSpeed - c;
+        t = sum + y;
+        c = (t - sum) - y;
+        sum = t;
     }
     
-    mean /= nNum;
-    return mean < 0.1;
+    float mean = sum / nNum;
+    return (mean < SmallSpeed);
 }
 
 
-bool Agent::MeanSavedSpeedMAPFTrigger()
+bool Agent::SingleNeighbourMeanSpeedMAPFTrigger()
 {
-    float mean = 0.0f;
+    if (!Neighbours.size()) return false;
 
-    if (Neighbours.size() == 0)
-    {
-        return false;
-    }
-
-    if(this->meanSavedSpeed < 0.1)
+    if(this->meanSavedSpeed < SmallSpeed)
     {
         for(size_t nCount = 0; nCount < Neighbours.size(); nCount++)
         {
-            if(Neighbours[nCount].second->meanSavedSpeed < 0.1)
-            {
-                return true;
-            }
+            if(Neighbours[nCount].second->meanSavedSpeed < SmallSpeed) return true;
         }
     }
-
 
     return false;
 }

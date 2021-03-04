@@ -21,7 +21,7 @@ class Mission
 {
     public:
         Mission() = delete;
-        Mission(std::string fileName, unsigned int agentsNum, unsigned int stepsTh, bool time, size_t timeTh);
+        Mission(std::string fileName, unsigned int agentsNum, unsigned int stepsTh, bool time, size_t timeTh, bool speedStop);
         Mission (const Mission &obj);
         ~Mission();
 
@@ -48,6 +48,8 @@ class Mission
         MAPFInstancesLogger PARLog;
 
         bool isTimeBounded;
+        bool stopByMeanSpeed;
+        bool allStops;
         size_t timeTreshhold;
 
         unsigned int stepsCount;
@@ -55,6 +57,8 @@ class Mission
         unsigned int agentsNum;
         unsigned int collisionsCount;
         unsigned int collisionsObstCount;
+        std::vector<std::list<float>> commonSpeedsBuffer;
+
 
 #if FULL_LOG
         Logger *taskLogger;

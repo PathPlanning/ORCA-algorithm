@@ -32,7 +32,6 @@ ORCAAgentWithPAR::ORCAAgentWithPAR() : Agent()
     buffPar = std::vector<Point>();
     PARUnion = false;
     notPARVis = false;
-    PARcommon = Point(-1,-1);
     currPARPos = -1;
     PARActorId = -1;
     waitForStart = false;
@@ -42,6 +41,9 @@ ORCAAgentWithPAR::ORCAAgentWithPAR() : Agent()
     updCount = 0;
     uniCount = 0;
     timeMAPF = 0.0;
+    successCount = 0;
+    unsuccessCount = 0;
+    flowtimeCount = 0;
 
 
 }
@@ -80,7 +82,6 @@ ORCAAgentWithPAR::ORCAAgentWithPAR(const int &id, const Point &start, const Poin
     buffPar = std::vector<Point>();
     PARUnion = false;
     notPARVis = false;
-    PARcommon = Point(-1,-1);
     currPARPos = -1;
     PARActorId = -1;
     waitForStart = false;
@@ -90,6 +91,9 @@ ORCAAgentWithPAR::ORCAAgentWithPAR(const int &id, const Point &start, const Poin
     updCount = 0;
     uniCount = 0;
     timeMAPF = 0.0;
+    successCount = 0;
+    unsuccessCount = 0;
+    flowtimeCount = 0;
 }
 
 
@@ -111,7 +115,6 @@ ORCAAgentWithPAR::ORCAAgentWithPAR(const ORCAAgentWithPAR &obj) : Agent(obj)
     buffPar = obj.buffPar;
     PARUnion = obj.PARUnion;
     notPARVis = obj.notPARVis;
-    PARcommon = obj.PARcommon;
     currPARPos = obj.currPARPos;
     PARActorId = obj.PARActorId;
     waitForStart = obj.waitForStart;
@@ -121,6 +124,10 @@ ORCAAgentWithPAR::ORCAAgentWithPAR(const ORCAAgentWithPAR &obj) : Agent(obj)
     updCount = obj.updCount;
     uniCount = obj.uniCount;
     timeMAPF = obj.timeMAPF;
+
+    successCount = obj.successCount;
+    unsuccessCount = obj.unsuccessCount;
+    flowtimeCount = obj.flowtimeCount;
 
 }
 
@@ -150,7 +157,6 @@ ORCAAgentWithPAR& ORCAAgentWithPAR::operator = (const ORCAAgentWithPAR &obj)
         buffPar = obj.buffPar;
         PARUnion = obj.PARUnion;
         notPARVis = obj.notPARVis;
-        PARcommon = obj.PARcommon;
         currPARPos = obj.currPARPos;
         PARActorId = obj.PARActorId;
         waitForStart = obj.waitForStart;
@@ -159,6 +165,9 @@ ORCAAgentWithPAR& ORCAAgentWithPAR::operator = (const ORCAAgentWithPAR &obj)
         updCount = obj.updCount;
         uniCount = obj.uniCount;
         timeMAPF = obj.timeMAPF;
+        successCount = obj.successCount;
+        unsuccessCount = obj.unsuccessCount;
+        flowtimeCount = obj.flowtimeCount;
     }
     return *this;
 }
@@ -550,7 +559,11 @@ void ORCAAgentWithPAR::ApplyNewVelocity()
     speedSaveBuffer.pop_front();
     if(inPARMode)
     {
-        speedSaveBuffer.push_back(1.0f);
+        if(PARExec)
+        {
+            flowtimeCount++;
+        }
+        speedSaveBuffer.push_back(param.maxSpeed);
     }
     else
     {
@@ -558,16 +571,18 @@ void ORCAAgentWithPAR::ApplyNewVelocity()
     }
 
 
-    float mean = 0.0f;
-
-
+    // Kahan summation algorithm
+    float sum = 0.0f;
+    float c = 0.0f;
+    float y, t;
     for(auto speed : speedSaveBuffer)
     {
-        mean += speed;
+        y = speed - c;
+        t = sum + y;
+        c = (t - sum) - y;
+        sum = t;
     }
-
-    mean /= speedSaveBuffer.size();
-    meanSavedSpeed = mean;
+    meanSavedSpeed = sum / speedSaveBuffer.size();
 }
 
 
@@ -577,8 +592,6 @@ bool ORCAAgentWithPAR::UpdatePrefVelocity()
     Point next;
     if(inPARMode)
     {
-        //std::cout<<id << " " << PARActorId << " " << PARExec << " " << PARAgents.size() << " X: " << PARStart.X() << " Y: " << PARStart.Y() << " Xpos: " << position.X() << " Ypos: " << position.Y() << "\n";
-
         if(PARUnion)
         {
             UnitePAR();
@@ -638,7 +651,6 @@ bool ORCAAgentWithPAR::UpdatePrefVelocity()
                 nextForLog = position;
                 PARres.Clear();
                 PARAgents.clear();
-                PARcommon = Point();
                 PARSet.clear();
                 buffPar.clear();
                 return true;
@@ -728,9 +740,9 @@ bool ORCAAgentWithPAR::UpdatePrefVelocity()
             Vector goalVector = next - position;
             float dist = goalVector.EuclideanNorm();
             if((options->trigger == MAPFTriggers::COMMON_POINT && CommonPointMAPFTrigger(dist)) ||
-                (options->trigger == MAPFTriggers::SPEED_BUFFER && MeanSavedSpeedMAPFTrigger()))
+                (options->trigger == MAPFTriggers::SPEED_BUFFER && SingleNeighbourMeanSpeedMAPFTrigger()))
             {
-                PreparePARExecution(next);
+                PreparePARExecution();
                 prefV = Point();
 
                 return true;
@@ -839,12 +851,13 @@ void ORCAAgentWithPAR::SetAgentsForCentralizedPlanning(std::set<ORCAAgentWithPAR
 }
 
 
-void ORCAAgentWithPAR::PreparePARExecution(Point common)
+void ORCAAgentWithPAR::PreparePARExecution()
 {
     PARAgents.clear();
     inPARMode = true;
     moveToPARPos = true;
     PARExec = false;
+    initCount ++;
 
     PARAgents.insert(this);
     for (auto &el : Neighbours)
@@ -879,7 +892,7 @@ void ORCAAgentWithPAR::PreparePARExecution(Point common)
         {
             ag->SetAgentsForCentralizedPlanning(PARAgents);
         }
-        if (!ag->ComputePAREnv(common))
+        if (!ag->ComputePAREnv())
         {
             for(auto &ag1 : PARAgents)
             {
@@ -906,6 +919,10 @@ void ORCAAgentWithPAR::PreparePARExecution(Point common)
     {
         if(!ag->ComputePAR())
         {
+            auto endpnt = std::chrono::high_resolution_clock::now();
+            size_t res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
+            timeMAPF += static_cast<float>(res);
+            unsuccessCount ++;
             for(auto &ag1 : PARAgents)
             {
                 while(!ag1->buffPar.empty())
@@ -927,11 +944,12 @@ void ORCAAgentWithPAR::PreparePARExecution(Point common)
     }
     auto endpnt = std::chrono::high_resolution_clock::now();
     size_t res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
+    timeMAPF += static_cast<float>(res);
+    successCount ++;
 #if PAR_LOG
     // Save here
     PARLog->SaveInstance(PARSet, PARMap, conf);
 #endif
-
 
     for(auto &ag : PARAgents)
     {
@@ -939,18 +957,16 @@ void ORCAAgentWithPAR::PreparePARExecution(Point common)
         ag->moveToPARPos = true;
         ag->PARVis = false;
         ag->PARExec = false;
-        ag->PARcommon = common;
         ag->currPARPos = 0;
         ag->waitForStart = true;
     }
-    initCount += 1;
-    timeMAPF += (static_cast<float>(res) / PARAgents.size());
 }
 
 
 bool ORCAAgentWithPAR::UnitePAR()
 {
     PARUnion = false;
+    uniCount++;
     for(auto &ag : PARAgents)
     {
         ag->PARStart = Point(-1,-1);
@@ -994,7 +1010,7 @@ bool ORCAAgentWithPAR::UnitePAR()
         {
             ag->SetAgentsForCentralizedPlanning(PARAgents);
         }
-        if (!ag->ComputePAREnv(PARcommon))
+        if (!ag->ComputePAREnv())
         {
             for(auto &ag1 : PARAgents)
             {
@@ -1021,6 +1037,10 @@ bool ORCAAgentWithPAR::UnitePAR()
     {
         if(!ag->ComputePAR())
         {
+            auto endpnt = std::chrono::high_resolution_clock::now();
+            size_t res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
+            timeMAPF += static_cast<float>(res);
+            unsuccessCount ++;
             for(auto &ag1 : PARAgents)
             {
                 while(!ag1->buffPar.empty())
@@ -1042,7 +1062,8 @@ bool ORCAAgentWithPAR::UnitePAR()
     }
     auto endpnt = std::chrono::high_resolution_clock::now();
     size_t res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
-
+    timeMAPF += static_cast<float>(res);
+    successCount ++;
 
     for(auto &ag : PARAgents)
     {
@@ -1050,12 +1071,11 @@ bool ORCAAgentWithPAR::UnitePAR()
         ag->moveToPARPos = true;
         ag->PARVis = false;
         ag->PARExec = false;
-        ag->PARcommon = PARcommon;
         ag->currPARPos = 0;
         ag->waitForStart = true;
     }
-    uniCount++;
-    timeMAPF += (static_cast<float>(res) / PARAgents.size());
+
+
     return true;
 
 }
@@ -1063,6 +1083,7 @@ bool ORCAAgentWithPAR::UnitePAR()
 
 bool ORCAAgentWithPAR::UpdatePAR()
 {
+    updCount++;
     for(auto &ag : PARAgents)
     {
         ag->PARStart = Point(-1,-1);
@@ -1102,7 +1123,7 @@ bool ORCAAgentWithPAR::UpdatePAR()
             ag->SetAgentsForCentralizedPlanning(PARAgents);
         }
 
-        if (!ag->ComputePAREnv(PARcommon))
+        if (!ag->ComputePAREnv())
         {
             for(auto &ag1 : PARAgents)
             {
@@ -1129,6 +1150,10 @@ bool ORCAAgentWithPAR::UpdatePAR()
     {
         if(!ag->ComputePAR())
         {
+            auto endpnt = std::chrono::high_resolution_clock::now();
+            size_t res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
+            timeMAPF += static_cast<float>(res);
+            unsuccessCount ++;
             for(auto &ag1 : PARAgents)
             {
                 while(!ag1->buffPar.empty())
@@ -1150,6 +1175,8 @@ bool ORCAAgentWithPAR::UpdatePAR()
     }
     auto endpnt = std::chrono::high_resolution_clock::now();
     size_t res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
+    timeMAPF += static_cast<float>(res);
+    successCount++;
 
 
     for(auto &ag : PARAgents)
@@ -1158,20 +1185,18 @@ bool ORCAAgentWithPAR::UpdatePAR()
         ag->moveToPARPos = true;
         ag->PARVis = false;
         ag->PARExec = false;
-        ag->PARcommon = PARcommon;
         ag->currPARPos = 0;
         ag->waitForStart = true;
     }
-    updCount++;
-    timeMAPF += (static_cast<float>(res) / PARAgents.size());
+
     return true;
 }
 
 
-bool ORCAAgentWithPAR::ComputePAREnv(Point common, std::vector<std::pair<Point, ORCAAgentWithPAR*>> oldGoals)
+bool ORCAAgentWithPAR::ComputePAREnv()
 {
 
-    float minX = map->GetWidth() * map->GetCellSize(), minY = map->GetHeight() * map->GetCellSize(), maxX = 0, maxY = 0;
+    float minX = static_cast<float>(map->GetWidth() * map->GetCellSize()), minY = static_cast<float>(map->GetHeight() * map->GetCellSize()), maxX = 0.0f, maxY = 0.0f;
 
     for(auto &ag : PARAgents)
     {
@@ -1203,24 +1228,7 @@ bool ORCAAgentWithPAR::ComputePAREnv(Point common, std::vector<std::pair<Point, 
     // Starts and goals
     std::unordered_map<int, Node> starts;
     std::unordered_map<int, Node> goals;
-    for(auto &og : oldGoals)
-    {
-        Node tmpOldGoal = PARMap.GetClosestNode(og.first);
-        if(goals.find(tmpOldGoal.i * PARMap.GetWidth() + tmpOldGoal.j) == goals.end())
-        {
-            goals.insert({tmpOldGoal.i * PARMap.GetWidth() + tmpOldGoal.j, tmpOldGoal});
-        }
-        else
-        {
-            og.second->PARGoal = Point(-1,-1);
-            while(!og.second->buffPar.empty())
-            {
-                og.second->planner->AddPointToPath(og.second->buffPar.back());
-                og.second->buffPar.pop_back();
-            }
-        }
-
-    }
+    std::unordered_map<int, Node> finalGoals;
 
     PARSet = MAPFActorSet();
     PARSet.clear();
@@ -1229,51 +1237,9 @@ bool ORCAAgentWithPAR::ComputePAREnv(Point common, std::vector<std::pair<Point, 
     {
         Node tmpStart, tmpGoal;
 
-        if(ag->PARGoal.X() < 0)
-        {
-            ag->buffPar.clear();
-            tmpGoalPoint = ag->PullOutIntermediateGoal(common);
-            tmpGoal = PARMap.GetClosestNode(tmpGoalPoint);
-            tmpGoal = PARMap.FindAvailableNode(tmpGoal, goals);
-
-
-            if(tmpGoal.i < 0)
-            {
-                PARMap.printSubMap();
-
-                auto deleteme = PARMap.FindAvailableNode(tmpGoal, goals);
-                for(auto &ag1 : PARAgents)
-                {
-                    while(!ag1->buffPar.empty())
-                    {
-                        ag1->planner->AddPointToPath(ag1->buffPar.back());
-                        ag1->buffPar.pop_back();
-                    }
-                    ag1->PARStart = Point(-1,-1);
-                    ag1->PARGoal = Point(-1,-1);
-                    ag1->inPARMode = false;
-                    ag1->moveToPARPos = false;
-                    ag1->PARVis = false;
-                    ag1->PARExec = false;
-                }
-
-                return false;
-            }
-
-            ag->PARGoal = PARMap.GetPoint(tmpGoal);
-
-        }
-        else
-        {
-            tmpGoal = PARMap.GetClosestNode(ag->PARGoal);
-            ag->PARGoal = PARMap.GetPoint(tmpGoal);
-        }
-
-
         if(ag->PARStart.X() < 0)
         {
-            tmpStart = PARMap.GetClosestNode(ag->GetPosition());
-            tmpStart = PARMap.FindAvailableNode(tmpStart, starts);
+            tmpStart = PARMap.FindCloseToPointAvailableNode(ag->GetPosition(), starts);
 
             if(tmpStart.i < 0)
             {
@@ -1284,6 +1250,37 @@ bool ORCAAgentWithPAR::ComputePAREnv(Point common, std::vector<std::pair<Point, 
                         ag1->planner->AddPointToPath(ag1->buffPar.back());
                         ag1->buffPar.pop_back();
                     }
+                    ag1->PARStart = Point(-1, -1);
+                    ag1->PARGoal = Point(-1, -1);
+                    ag1->inPARMode = false;
+                    ag1->moveToPARPos = false;
+                    ag1->PARVis = false;
+                    ag1->PARExec = false;
+                }
+                return false;
+            }
+            ag->PARStart = PARMap.GetPoint(tmpStart);
+        }
+        else
+        {
+            tmpStart = PARMap.GetClosestNode(ag->PARStart);
+        }
+
+        if(ag->PARGoal.X() < 0)
+        {
+            ag->buffPar.clear();
+            tmpGoalPoint = ag->GetGoalPointForMAPF(PARMap);
+            tmpGoal = PARMap.FindAccessibleNodeForGoal(tmpStart, tmpGoalPoint, goals, finalGoals);
+
+            if(tmpGoal.i < 0)
+            {
+                for(auto &ag1 : PARAgents)
+                {
+                    while(!ag1->buffPar.empty())
+                    {
+                        ag1->planner->AddPointToPath(ag1->buffPar.back());
+                        ag1->buffPar.pop_back();
+                    }
                     ag1->PARStart = Point(-1,-1);
                     ag1->PARGoal = Point(-1,-1);
                     ag1->inPARMode = false;
@@ -1291,21 +1288,34 @@ bool ORCAAgentWithPAR::ComputePAREnv(Point common, std::vector<std::pair<Point, 
                     ag1->PARVis = false;
                     ag1->PARExec = false;
                 }
-                PARMap.printSubMap();
 
                 return false;
             }
-            ag->PARStart = PARMap.GetPoint(tmpStart);
-
+            ag->PARGoal = PARMap.GetPoint(tmpGoal);
         }
         else
         {
-            tmpStart = PARMap.GetClosestNode(ag->PARStart);
+            tmpGoal = PARMap.GetClosestNode(ag->PARGoal);
         }
 
-        starts.insert({tmpStart.i * PARMap.GetWidth() + tmpStart.j, tmpStart});
 
-        goals.insert({tmpGoal.i * PARMap.GetWidth() + tmpGoal.j, tmpGoal});
+        starts.insert({tmpStart.i * PARMap.GetWidth() + tmpStart.j, tmpStart});
+        if((tmpGoalPoint - ag->goal).EuclideanNorm() < options->delta)
+        {
+//            if(finalGoals.find(tmpGoal.i * PARMap.GetWidth() + tmpGoal.j) != finalGoals.end())
+//            {
+//                std::cout << "AAAAAA 3\n";
+//            }
+            finalGoals.insert({tmpGoal.i * PARMap.GetWidth() + tmpGoal.j, tmpGoal});
+        }
+        else
+        {
+//            if(goals.find(tmpGoal.i * PARMap.GetWidth() + tmpGoal.j) != goals.end())
+//            {
+//                std::cout << "AAAAAA 3\n";
+//            }
+            goals.insert({tmpGoal.i * PARMap.GetWidth() + tmpGoal.j, tmpGoal});
+        }
 
         PARSet.addActor(tmpStart.i, tmpStart.j, tmpGoal.i, tmpGoal.j);
         if(ag == this)
@@ -1333,30 +1343,30 @@ std::vector<std::pair<float, Agent *>>& ORCAAgentWithPAR::GetNeighbours()
 }
 
 
-Point ORCAAgentWithPAR::PullOutIntermediateGoal(Point common)
+Point ORCAAgentWithPAR::GetGoalPointForMAPF(SubMap Area)
 {
     Point nextPoint = planner->PullOutNext();
     buffPar.push_back(nextPoint);
-    if(nextPoint == common)
-    {
-        Point nextNextPoint = planner->PullOutNext();
-        buffPar.push_back(nextNextPoint);
-        return nextNextPoint;
-    }
 
+    while(Area.PointBelongsToArea(nextPoint) && !(nextPoint == this->goal))
+    {
+        nextPoint = planner->PullOutNext();
+        buffPar.push_back(nextPoint);
+    }
     return nextPoint;
 }
 
 
 unordered_map<std::string, float> ORCAAgentWithPAR::GetMAPFStatistics() const
 {
-    size_t allMapfCount = initCount + uniCount + updCount;
-
     unordered_map<std::string, float> stat;
     stat[CNS_MAPF_COMMON_TIME] = timeMAPF;
     stat[CNS_MAPF_INIT_COUNT] = static_cast<float>(initCount);
     stat[CNS_MAPF_UNITE_COUNT] = static_cast<float>(uniCount);
     stat[CNS_MAPF_UPDATE_COUNT] = static_cast<float>(updCount);
+    stat[CNS_MAPF_FLOWTIME] = static_cast<float>(flowtimeCount);
+    stat[CNS_MAPF_SUCCESS_COUNT] = static_cast<float>(successCount);
+    stat[CNS_MAPF_UNSUCCESS_COUNT] = static_cast<float>(unsuccessCount);
 
     return stat;
 }

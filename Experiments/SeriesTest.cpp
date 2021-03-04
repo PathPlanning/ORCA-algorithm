@@ -7,10 +7,10 @@
 
 #define RESULT_FILE         "result.txt"
 #define INPUT_FILE_PART     "_task.xml"
-#define STEP_MAX            12800
+#define STEP_MAX            20000
 #define IS_TIME_BOUNDED     false
+#define STOP_BY_SPEED       true
 #define TIME_MAX            1000 * 60 * 1
-
 
 
 int main(int argc, char* argv[])
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
         {
             string taskfile = path + "/" +std::to_string(i) + INPUT_FILE_PART;
             cout<<"File: "<<taskfile<<"\n";
-            Mission *task = new Mission(taskfile, num, STEP_MAX, IS_TIME_BOUNDED, TIME_MAX);
+            Mission *task = new Mission(taskfile, num, STEP_MAX, IS_TIME_BOUNDED, TIME_MAX, STOP_BY_SPEED);
 
             if(task->ReadTask())
             {
@@ -89,7 +89,10 @@ int main(int argc, char* argv[])
                 sumStream << summary[CNS_SUM_MAPF_UPDATE_COUNT] << "\t";
                 sumStream << summary[CNS_SUM_MAPF_UNITE_COUNT] << "\t";
                 sumStream << summary[CNS_SUM_MAPF_ECBS_COUNT] << "\t";
-                sumStream << summary[CNS_SUM_MAPF_PAR_COUNT] << "\n";
+                sumStream << summary[CNS_SUM_MAPF_PAR_COUNT] << "\t";
+                sumStream << summary[CNS_SUM_MAPF_SUCCESS_COUNT] << "\t";
+                sumStream << summary[CNS_SUM_MAPF_UNSUCCESS_COUNT] << "\t";
+                sumStream << summary[CNS_SUM_MAPF_FLOWTIME] << "\n";
                 std::cout << sumStream.str();
                 pre_log << sumStream.str();
 

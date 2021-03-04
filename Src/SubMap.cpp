@@ -128,6 +128,7 @@ Point SubMap::GetPoint(const Node &node) const
     return {(originPoint.X() + node.j * cellSize + cellSize/2), (originPoint.Y() - (node.i * cellSize + cellSize/2))};
 }
 
+
 SubMap &SubMap::operator =(const SubMap &obj)
 {
     if(this != &obj)
@@ -141,6 +142,7 @@ SubMap &SubMap::operator =(const SubMap &obj)
     }
     return *this;
 }
+
 
 bool SubMap::CellIsTraversable(int i, int j, const std::unordered_set<Node, NodeHash> &occupiedNodes) const
 {
@@ -167,12 +169,14 @@ int SubMap::GetCellDegree(int i, int j) const
     return degree;
 }
 
+
 int SubMap::GetEmptyCellCount() const
 {
     return emptyCells;
 }
 
-Node SubMap::FindAvailableNode(Node start, std::unordered_map<int, Node> occupied)
+
+Node SubMap::FindUnoccupiedNode(Node start, std::unordered_map<int, Node> occupied)
 {
     if(occupied.find(start.i * GetWidth() + start.j) == occupied.end() && CellIsTraversable(start.i, start.j))
     {
@@ -185,7 +189,9 @@ Node SubMap::FindAvailableNode(Node start, std::unordered_map<int, Node> occupie
 
     while(!open.empty())
     {
+
         Node curr = open.front();
+
         close.insert({curr.i * GetWidth() + curr.j, curr});
         open.pop_front();
 
@@ -216,6 +222,129 @@ Node SubMap::FindAvailableNode(Node start, std::unordered_map<int, Node> occupie
     return Node(-1,-1);
 }
 
+
+Node SubMap::FindAccessibleNodeForGoal(Node start, Point goal, std::unordered_map<int, Node> occupied, std::unordered_map<int, Node> undesirable)
+{
+    std::list<Node> open = std::list<Node>();
+    std::unordered_map<int, Node> close = std::unordered_map<int, Node>();
+    auto popMin = [&open]() -> Node
+    {
+        auto bestIt = open.begin();
+        for (auto node = open.begin(); node != open.end(); node++)
+        {
+            if(node->g < bestIt->g)
+            {
+                bestIt = node;
+            }
+        }
+        Node best = *bestIt;
+        open.erase(bestIt);
+        return best;
+    };
+
+    auto addNode = [&open](Node item)
+    {
+        for(auto node = open.begin(); node != open.end(); node++)
+        {
+            if(*node == item)
+            {
+                if(node->g > item.g)
+                {
+                    node->H = item.H;
+                    node->g = item.g;
+                    node->F = item.F;
+                    node->parent = item.parent;
+                }
+                return;
+            }
+        }
+        open.push_back(item);
+        return;
+    };
+    Node currNode;
+
+    if(occupied.find(start.i * GetWidth() + start.j) != occupied.end() || undesirable.find(start.i * GetWidth() + start.j) != undesirable.end())
+    {
+        auto tmpOcupied = occupied;
+        tmpOcupied.insert(undesirable.begin(), undesirable.end());
+        currNode = FindUnoccupiedNode(start, tmpOcupied);
+        if (currNode.i < 0 )
+        {
+            return currNode;
+        }
+    }
+    else
+    {
+        currNode.i = start.i;
+        currNode.j = start.j;
+    }
+
+    currNode.g = 0;
+    currNode.H = (GetPoint(currNode) - goal).EuclideanNorm();
+    currNode.F = currNode.H;
+    currNode.parent = nullptr;
+
+
+    addNode(currNode);
+    Node bestNode = currNode;
+
+    while (open.size())
+    {
+        currNode = popMin();
+        close.insert({currNode.i * GetWidth() + currNode.j, currNode});
+
+        if((currNode.F < bestNode.F || (abs(currNode.F - bestNode.F) < CN_EPS && currNode.H < bestNode.H)) && undesirable.find(currNode.i * GetWidth() + currNode.j) == undesirable.end())
+        {
+            bestNode = currNode;
+        }
+
+        if (currNode.H < CN_EPS && undesirable.find(currNode.i * GetWidth() + currNode.j) == undesirable.end())
+        {
+            currNode.parent = nullptr;
+            currNode.F = 0.0;
+            currNode.H = 0.0;
+            currNode.g = 0.0;
+
+
+//            if(occupied.find(currNode.i * GetWidth() + currNode.j) != occupied.end())
+//            {
+//                std::cout << "AAAAAAAAAA\n";
+//            }
+            return currNode;
+        }
+
+        std::list<Node> successors = {Node(currNode.i + 1, currNode.j), Node(currNode.i - 1, currNode.j), Node(currNode.i, currNode.j + 1), Node(currNode.i, currNode.j - 1)};
+        auto it = successors.begin();
+        auto parent = &(close.find(currNode.i * GetWidth() + currNode.j)->second);
+        while (it != successors.end())
+        {
+            if(CellOnGrid(it->i,it->j) && CellIsTraversable(it->i,it->j) && occupied.find(it->i * GetWidth() + it->j) == occupied.end())
+            {
+                if(close.find(it->i * GetWidth() + it->j) == close.end())
+                {
+                    it->parent = parent;
+                    it->H = (GetPoint(currNode) - goal).EuclideanNorm();
+                    it->F = it->g + it->H;
+//                    std::cout << it->g << "\n";
+                    addNode(*it);
+                }
+            }
+            it++;
+        }
+    }
+    bestNode.parent = nullptr;
+    bestNode.F = 0.0;
+    bestNode.H = 0.0;
+    bestNode.g = 0.0;
+
+//    if(occupied.find(bestNode.i * GetWidth() + bestNode.j) != occupied.end())
+//    {
+//        std::cout << "AAAAAAAAAA 2\n";
+//    }
+    return bestNode;
+}
+
+
 Node SubMap::FindCloseToPointAvailableNode(Point pos, std::unordered_map<int, Node> occupied)
 {
     auto start = this->GetClosestNode(pos);
@@ -226,7 +355,7 @@ Node SubMap::FindCloseToPointAvailableNode(Point pos, std::unordered_map<int, No
         return start;
     }
 
-    start.H = (this->GetPoint(start) - pos).SquaredEuclideanNorm();
+    start.H = (this->GetPoint(start) - pos).EuclideanNorm();
 
     auto cmp = [](Node left, Node right) { return (left.H > right.H); };
 
@@ -281,4 +410,21 @@ Node SubMap::FindCloseToPointAvailableNode(Point pos, std::unordered_map<int, No
 
     }
     return Node(-1,-1);
+}
+
+
+bool SubMap::PointBelongsToArea(const Point &point) const
+{
+    Node res;
+    res.i = static_cast<int>(fullMap->GetHeight()) * divKoef - 1 - (int) (point.Y() / cellSize);
+    res.j = (int) (point.X() / cellSize);
+
+    res.i = res.i - origin.i * divKoef;
+    res.j = res.j - origin.j * divKoef;
+
+    if(res.i < 0 || res.i > size.first - 1 || res.j < 0 || res.j > size.second - 1)
+    {
+        return false;
+    }
+    return true;
 }

@@ -19,6 +19,7 @@ class DirectPlanner : public PathPlanner
         DirectPlanner & operator = (const DirectPlanner &obj);
         void AddPointToPath(Point p) override;
         Point PullOutNext() override;
+        Point GetPastPoint() override;
 
 };
 

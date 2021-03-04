@@ -30,11 +30,14 @@ class SubMap
         int GetEmptyCellCount() const;
         int GetCellDegree(int i, int j) const;
         float GetCellSize() const;
+        bool PointBelongsToArea(const Point &point) const;
 
         Node GetClosestNode(const Point &point) const;
         Point GetPoint(const Node &node) const;
-        Node FindAvailableNode(Node start, std::unordered_map<int, Node> occupied);
+        Node FindUnoccupiedNode(Node start, std::unordered_map<int, Node> occupied);
+        Node FindAccessibleNodeForGoal(Node start, Point goal, std::unordered_map<int, Node> occupied, std::unordered_map<int, Node> undesirable);
         Node FindCloseToPointAvailableNode(Point pos, std::unordered_map<int, Node> occupied);
+
 
         SubMap & operator = (const SubMap &obj);
 

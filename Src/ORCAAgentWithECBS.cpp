@@ -134,7 +134,6 @@ void ORCAAgentWithECBS::ComputeNewVelocity()
     if(MAPFExec)
     {
         // Collision count
-
         unsigned long minMaxNum = (param.agentsMaxNum < Neighbours.size()) ? param.agentsMaxNum : Neighbours.size();
 
         for(unsigned long i = 0; i < minMaxNum; i++)
@@ -171,9 +170,6 @@ void ORCAAgentWithECBS::ComputeNewVelocity()
             }
         }
 
-
-
-
         if(currMAPFPos < (*MAPFres.agentsPaths)[MAPFActorId].size())
         {
             auto currGoal =  MAPFMap.GetPoint((*MAPFres.agentsPaths)[MAPFActorId][currMAPFPos]);
@@ -192,14 +188,9 @@ void ORCAAgentWithECBS::ComputeNewVelocity()
         {
             newV = Point();
         }
-
         Neighbours.clear();
         return;
     }
-
-
-
-
     ORCALines.clear();
 
 
@@ -412,8 +403,6 @@ void ORCAAgentWithECBS::ComputeNewVelocity()
             continue;
         }
     }
-
-
     size_t numObstLines = ORCALines.size();
 
     //Получение ORCA-линий агентов
@@ -655,7 +644,7 @@ bool ORCAAgentWithECBS::UpdatePrefVelocity()
             Vector goalVector = next - position;
             float dist = goalVector.EuclideanNorm();
             if((options->trigger == MAPFTriggers::COMMON_POINT && CommonPointMAPFTrigger(dist)) ||
-               (options->trigger == MAPFTriggers::SPEED_BUFFER && GroupMeanSavedSpeedMAPFTrigger()))
+               (options->trigger == MAPFTriggers::SPEED_BUFFER && SingleNeighbourMeanSpeedMAPFTrigger()))
             {
                 PrepareMAPFExecution(next);
                 prefV = Point();
@@ -822,7 +811,7 @@ void ORCAAgentWithECBS::PrepareMAPFExecution(Point common)
         {
             #if PAR_LOG
                         // Save results here
-                        MAPFLog->AddResults(ag->MAPFres);
+//                        MAPFLog->AddResults(ag->MAPFres);
                         //MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
             #endif
 
@@ -845,7 +834,7 @@ void ORCAAgentWithECBS::PrepareMAPFExecution(Point common)
 
 #if PAR_LOG
     // Save results here
-    MAPFLog->AddResults(MAPFres);
+    //MAPFLog->AddResults(MAPFres);
     //MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
 #endif
 
@@ -932,7 +921,7 @@ bool ORCAAgentWithECBS::ComputeMAPFEnv(Point common, std::vector<std::pair<Point
             ag->buffMAPF.clear();
             tmpGoalPoint = ag->PullOutIntermediateGoal(common);
             tmpGoal = MAPFMap.GetClosestNode(tmpGoalPoint);
-            tmpGoal = MAPFMap.FindAvailableNode(tmpGoal, goals);
+            tmpGoal = MAPFMap.FindUnoccupiedNode(tmpGoal, goals);
 
 
             if(tmpGoal.i < 0)
@@ -969,7 +958,7 @@ bool ORCAAgentWithECBS::ComputeMAPFEnv(Point common, std::vector<std::pair<Point
         if(ag->MAPFStart.X() < 0)
         {
             tmpStart = MAPFMap.GetClosestNode(ag->GetPosition());
-            tmpStart = MAPFMap.FindAvailableNode(tmpStart, starts);
+            tmpStart = MAPFMap.FindUnoccupiedNode(tmpStart, starts);
 
             if(tmpStart.i < 0)
             {
@@ -1101,7 +1090,7 @@ bool ORCAAgentWithECBS::UniteMAPF()
 
 #if PAR_LOG
             // Save results here
-            MAPFLog->AddResults(ag->MAPFres);
+            //MAPFLog->AddResults(ag->MAPFres);
             //MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
 #endif
 
@@ -1128,7 +1117,7 @@ bool ORCAAgentWithECBS::UniteMAPF()
 
 #if PAR_LOG
     // Save results here
-    MAPFLog->AddResults(MAPFres);
+    //MAPFLog->AddResults(MAPFres);
     //MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
 #endif
 
@@ -1207,7 +1196,7 @@ bool ORCAAgentWithECBS::UpdateMAPF()
         {
         #if PAR_LOG
                     // Save results here
-                    MAPFLog->AddResults(ag->MAPFres);
+                    //MAPFLog->AddResults(ag->MAPFres);
                     //MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
         #endif
             for(auto &ag1 : MAPFAgents)
@@ -1231,7 +1220,7 @@ bool ORCAAgentWithECBS::UpdateMAPF()
 
     #if PAR_LOG
         // Save results here
-        MAPFLog->AddResults(MAPFres);
+        //MAPFLog->AddResults(MAPFres);
         //MAPFLog->SaveInstance(MAPFSet, MAPFMap, conf);
     #endif
 

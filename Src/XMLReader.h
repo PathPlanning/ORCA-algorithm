@@ -12,6 +12,7 @@
 #include "ORCAAgentWithPAR.h"
 #include "ORCAAgentWithECBS.h"
 #include "ORCAAgentWithPARAndECBS.h"
+#include "ORCAAgentWithReturning.h"
 
 
 
