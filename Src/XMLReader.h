@@ -5,8 +5,14 @@
 #include "Reader.h"
 #include "Const.h"
 #include "Agent.h"
+#import "ORCAAgent.h"
+#import "ORCADDAgent.h"
 #include "ThetaStar.h"
 #include "DirectPlanner.h"
+#include "ORCAAgentWithPAR.h"
+#include "ORCAAgentWithECBS.h"
+#include "ORCAAgentWithPARAndECBS.h"
+#include "ORCAAgentWithReturning.h"
 
 
 
@@ -34,14 +40,23 @@ class XMLReader : public Reader
         XMLReader & operator = (const XMLReader & obj);
 
 
+
     private:
         std::string fileName;
+
         XMLDocument *doc;
+        XMLElement *root;
+
         std::vector<Agent *> *allAgents;
         Map *map;
         EnvironmentOptions *options;
         std::vector<std::vector<int>> *grid;
         std::vector<std::vector<Point>> *obstacles;
+        int plannertype;
+
+        bool ReadMap();
+        bool ReadAgents();
+        bool ReadAlgorithmOptions();
 
 };
 

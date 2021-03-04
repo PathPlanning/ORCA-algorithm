@@ -41,23 +41,25 @@ bool XMLLogger::GenerateLog()
 }
 
 
-void XMLLogger::SetSummary(const Summary &res)
+void XMLLogger::SetSummary(Summary &res)
 {
     if(doc != nullptr)
     {
         XMLElement *tmpsum = doc->NewElement(CNS_TAG_SUM);
-        tmpsum->SetAttribute(CNS_TAG_ATTR_SR, res.successRate);
-        tmpsum->SetAttribute(CNS_TAG_ATTR_RUNTIME, res.runTime);
-        tmpsum->SetAttribute(CNS_TAG_ATTR_FLOWTIME, res.flowTime);
-        tmpsum->SetAttribute(CNS_TAG_ATTR_MAKESPAN, res.makeSpan);
-        tmpsum->SetAttribute(CNS_TAG_ATTR_COL_AGNT, res.collisions);
-        tmpsum->SetAttribute(CNS_TAG_ATTR_COL_OBST, res.collisionsObst);
+        tmpsum->SetAttribute(CNS_TAG_ATTR_SR, res[CNS_SUM_SUCCESS_RATE].c_str());
+        tmpsum->SetAttribute(CNS_TAG_ATTR_RUNTIME, res[CNS_SUM_RUN_TIME].c_str());
+        tmpsum->SetAttribute(CNS_TAG_ATTR_FLOWTIME, res[CNS_SUM_FLOW_TIME].c_str());
+        tmpsum->SetAttribute(CNS_TAG_ATTR_MAKESPAN, res[CNS_SUM_MAKESPAN].c_str());
+        tmpsum->SetAttribute(CNS_TAG_ATTR_COL_AGNT, res[CNS_SUM_COLLISIONS].c_str());
+        tmpsum->SetAttribute(CNS_TAG_ATTR_COL_OBST, res[CNS_SUM_COLLISIONS_OBS].c_str());
         log->InsertFirstChild(tmpsum);
     }
 }
 
 
-void XMLLogger::SetResults(const std::unordered_map<int, std::vector<Point>> &stepsLog, const std::unordered_map<int, std::pair<bool, int>> &resultsLog)
+void XMLLogger::SetResults(const std::unordered_map<int, std::vector<Point>> &stepsLog,
+                           const std::unordered_map<int, std::vector<Point>> &goalsLog,
+                           const std::unordered_map<int, std::pair<bool, int>> &resultsLog)
 {
     if(doc != nullptr)
     {
@@ -73,12 +75,17 @@ void XMLLogger::SetResults(const std::unordered_map<int, std::vector<Point>> &st
             tmppath->SetAttribute(CNS_TAG_ATTR_PATHFOUND, resultsLog.at(agentPath.first).first);
             tmppath->SetAttribute(CNS_TAG_ATTR_STEPS, resultsLog.at(agentPath.first).second);
 
-            for(auto &step : agentPath.second)
+            for(int i = 0; i < agentPath.second.size(); i++)
             {
+                Point step = agentPath.second[i];
                 tmpstep = doc->NewElement(CNS_TAG_STEP);
                 tmpstep->SetAttribute(CNS_TAG_ATTR_NUM, j);
                 tmpstep->SetAttribute(CNS_TAG_ATTR_X, step.X());
                 tmpstep->SetAttribute(CNS_TAG_ATTR_Y, step.Y());
+
+                tmpstep->SetAttribute("next.xr", goalsLog.at(agentPath.first)[i].X());
+                tmpstep->SetAttribute("next.yr", goalsLog.at(agentPath.first)[i].Y());
+
                 j++;
                 tmppath->InsertEndChild(tmpstep);
             }

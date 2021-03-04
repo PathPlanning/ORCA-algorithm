@@ -17,6 +17,10 @@ class DirectPlanner : public PathPlanner
         bool CreateGlobalPath() override;
         DirectPlanner* Clone() const override;
         DirectPlanner & operator = (const DirectPlanner &obj);
+        void AddPointToPath(Point p) override;
+        Point PullOutNext() override;
+        Point GetPastPoint() override;
+
 };
 
 #endif //ORCA_DIRECTPLANNER_H

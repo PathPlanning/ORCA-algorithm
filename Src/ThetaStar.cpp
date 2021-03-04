@@ -9,6 +9,7 @@ ThetaStar::ThetaStar(const Map &map, const EnvironmentOptions &options, const Po
     openSize = 0;
     glPathCreated = false;
     visChecker = LineOfSight(this->radius/ map.GetCellSize());
+    past = glStart;
 }
 
 
@@ -20,6 +21,7 @@ ThetaStar::ThetaStar(const ThetaStar &obj) : PathPlanner(obj)
     openSize = obj.openSize;
     glPathCreated = obj.glPathCreated;
     visChecker = obj.visChecker;
+    past = obj.past;
 
 }
 
@@ -33,8 +35,7 @@ bool ThetaStar::GetNext(const Point &curr, Point &next)
     {
         if(currPath.size() == 0)
         {
-            next = curr;
-            return true;
+            currPath.push_back(glGoal);
         }
 
         if(currPath.size() > 1)
@@ -43,28 +44,68 @@ bool ThetaStar::GetNext(const Point &curr, Point &next)
             float sqDelta = options->delta * options->delta;
             if(sqDistToCurr < sqDelta)
             {
+
+                if(!(currPath.front() == this->glGoal))
+                {
+                    past = currPath.front();
+                }
                 currPath.pop_front();
                 next = currPath.front();
                 return true;
             }
         }
 
-        Node currNode = map->GetClosestNode(curr), nextNode = map->GetClosestNode(currPath.front());
-        if(currNode == nextNode || visChecker.checkLine(currNode.i, currNode.j, nextNode.i, nextNode.j, *map))
+        Node currNode = map->GetClosestNode(curr);
+
+        Node nextNode = map->GetClosestNode(currPath.front());
+        if(std::next(currPath.begin()) != currPath.end())
         {
-            next = currPath.front();
-            return true;
+            Node nextNextNode = map->GetClosestNode(*std::next(currPath.begin()));
+            if(currNode == nextNode || visChecker.checkLine(currNode.i, currNode.j, nextNode.i, nextNode.j, *map))
+            {
+                next = currPath.front();
+                if(currNode == nextNextNode || visChecker.checkLine(currNode.i, currNode.j, nextNextNode.i, nextNextNode.j, *map))
+                {
+                    currPath.pop_front();
+                    next = currPath.front();
+                }
+                return true;
+            }
         }
+        else
+        {
+            if(currNode == nextNode || visChecker.checkLine(currNode.i, currNode.j, nextNode.i, nextNode.j, *map))
+            {
+                next = currPath.front();
+                return true;
+            }
+        }
+
+
+//        Node currNode = map->GetClosestNode(curr), nextNode = map->GetClosestNode(currPath.front());
+//        if(currNode == nextNode || visChecker.checkLine(currNode.i, currNode.j, nextNode.i, nextNode.j, *map))
+//        {
+//            next = currPath.front();
+//            return true;
+//        }
 
         Point last = currPath.front();
         currPath.pop_front();
 
-        bool isLastAccessible = SearchPath(map->GetClosestNode(curr), map->GetClosestNode(last));
-        if(isLastAccessible)
+//        bool isLastAccessible = SearchPath(map->GetClosestNode(curr), map->GetClosestNode(last));
+//        if(isLastAccessible)
+//        {
+//            next = currPath.front();
+//            return true;
+//        }
+        currPath.clear();
+        bool isGoalAccessible = SearchPath(map->GetClosestNode(curr), map->GetClosestNode(glGoal));
+        if(isGoalAccessible)
         {
             next = currPath.front();
             return true;
         }
+
 
     }
     return false;
@@ -329,6 +370,7 @@ bool ThetaStar::CreateGlobalPath()
     return  glPathCreated;
 }
 
+
 ThetaStar &ThetaStar::operator = (const ThetaStar &obj)
 {
     if(this != &obj)
@@ -340,6 +382,7 @@ ThetaStar &ThetaStar::operator = (const ThetaStar &obj)
         openSize = obj.openSize;
         glPathCreated = obj.glPathCreated;
         visChecker = obj.visChecker;
+        past = obj.past;
     }
     return *this;
 }
@@ -347,4 +390,29 @@ ThetaStar &ThetaStar::operator = (const ThetaStar &obj)
 ThetaStar *ThetaStar::Clone() const
 {
     return new ThetaStar(*this);
+}
+
+void ThetaStar::AddPointToPath(Point p)
+{
+    currPath.push_front(p);
+}
+
+Point ThetaStar::PullOutNext()
+{
+    if(currPath.size() > 0)
+    {
+        Point res = currPath.front();
+        if(currPath.size() > 1)
+        {
+            currPath.pop_front();
+        }
+        return res;
+    }
+
+    return Point();
+}
+
+Point ThetaStar::GetPastPoint()
+{
+    return past;
 }

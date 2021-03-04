@@ -10,7 +10,6 @@
 #define ORCA_THETASTAR_H
 
 
-
 class ThetaStar : public PathPlanner
 {
     public:
@@ -20,7 +19,10 @@ class ThetaStar : public PathPlanner
 
         bool GetNext(const Point &curr, Point &next) override;
         bool CreateGlobalPath() override;
+        void AddPointToPath(Point p) override;
+        Point PullOutNext() override;
         ThetaStar* Clone() const override;
+        Point GetPastPoint() override;
         ThetaStar & operator = (const ThetaStar &obj);
 
     private:
@@ -36,6 +38,7 @@ class ThetaStar : public PathPlanner
 
 
         std::list<Point> currPath;
+        Point past;
         std::unordered_map<int, Node>   close;
         std::vector<std::list<Node>>    open;
         int                             openSize;

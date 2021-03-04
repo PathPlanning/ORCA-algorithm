@@ -1,12 +1,14 @@
 #include "Mission.h"
 
 
-Mission::Mission(std::string fileName, unsigned int agentsNum, unsigned int stepsTh)
+Mission::Mission(std::string fileName, unsigned int agentsNum, unsigned int stepsTh, bool time, size_t timeTh, bool speedStop)
 {
     taskReader = new XMLReader(fileName);
     agents = vector<Agent*>();
     this->agentsNum = agentsNum;
     stepsTreshhold = stepsTh;
+    isTimeBounded = time;
+    timeTreshhold = timeTh;
 
     map = nullptr;
     options = nullptr;
@@ -14,22 +16,39 @@ Mission::Mission(std::string fileName, unsigned int agentsNum, unsigned int step
     resultsLog = std::unordered_map<int, std::pair<bool, int>>();
     resultsLog.reserve(agentsNum);
 
-#ifndef NDEBUG
+#if FULL_LOG
     taskLogger = new XMLLogger(XMLLogger::GenerateLogFileName(fileName, agentsNum), fileName);
     stepsLog = std::unordered_map<int, std::vector<Point>>();
     stepsLog.reserve(agentsNum);
+
+    goalsLog = std::unordered_map<int, std::vector<Point>>();
+    goalsLog.reserve(agentsNum);
 #endif
 
     collisionsCount = 0;
     collisionsObstCount = 0;
     stepsCount = 0;
 
+#if PAR_LOG
+    auto found = fileName.find_last_of(".");
+    string tmpPAR = fileName.erase(found);
+    std::string piece = "_" + std::to_string(agentsNum);
+    tmpPAR.insert(found, piece);
 
+    PARLog = MAPFInstancesLogger(tmpPAR);
+#endif
+
+    commonSpeedsBuffer = std::vector<std::list<float>>(agentsNum, std::list<float>(1000, 1.0));
+    allStops = false;
+    stopByMeanSpeed = speedStop;
 }
 
 
 Mission::Mission(const Mission &obj)
 {
+#if PAR_LOG
+    PARLog = obj.PARLog;
+#endif
     agents = obj.agents;
     map = obj.map;
     options = obj.options;
@@ -40,11 +59,16 @@ Mission::Mission(const Mission &obj)
     stepsCount = obj.stepsCount;
     taskReader = (obj.taskReader == nullptr) ? nullptr : obj.taskReader->Clone();
 
-#ifndef NDEBUG
+
+#if FULL_LOG
     taskLogger = (obj.taskLogger == nullptr) ? nullptr : obj.taskLogger->Clone();
     stepsLog = obj.stepsLog;
-#endif
+    goalsLog = obj.goalsLog;
 
+#endif
+    commonSpeedsBuffer = obj.commonSpeedsBuffer;
+    allStops = obj.allStops;
+    stopByMeanSpeed = obj.stopByMeanSpeed;
 }
 
 
@@ -77,7 +101,7 @@ Mission::~Mission()
         taskReader = nullptr;
     }
 
-#ifndef NDEBUG
+#if FULL_LOG
     if(taskLogger != nullptr)
     {
         delete taskLogger;
@@ -95,44 +119,69 @@ bool Mission::ReadTask()
 
 Summary Mission::StartMission()
 {
+#if FULL_OUTPUT
     std::cout<<"Start\n";
+#endif
 
     auto startpnt = std::chrono::high_resolution_clock::now();
     for(auto agent : agents)
     {
+#if PAR_LOG
+        dynamic_cast<ORCAAgentWithPARAndECBS*>(agent)->SetMAPFInstanceLoggerRef(&PARLog);
+#endif
         bool found = agent->InitPath();
+#if FULL_OUTPUT
         if(!found)
         {
             std::cout<<agent->GetID()<< " "<< "Path not found\n";
         }
+#endif
         resultsLog.insert({agent->GetID(), {false, 0}});
 
-#ifndef NDEBUG
+#if FULL_LOG
         stepsLog.insert({agent->GetID(), std::vector<Point>()});
         stepsLog[agent->GetID()].push_back({agent->GetPosition()});
+        goalsLog[agent->GetID()].push_back(agent->GetPosition());
 #endif
-        agent->UpdatePrefVelocity();
-    }
 
+    }
+    bool needToStop, needToStopByTime, needToStopBySteps, needToStopBySpeed;
     do
     {
         AssignNeighbours();
 
         for(auto &agent : agents)
         {
+            agent->UpdatePrefVelocity();
+        }
+
+        for(auto &agent : agents)
+        {
+
             agent->ComputeNewVelocity();
+
         }
 
         UpdateSate();
+        auto checkpnt = std::chrono::high_resolution_clock::now();
+        size_t nowtime = std::chrono::duration_cast<std::chrono::milliseconds>(checkpnt - startpnt).count();
+
+        needToStopBySpeed = (stopByMeanSpeed and allStops);
+        needToStopByTime = (isTimeBounded and nowtime >= timeTreshhold);
+        needToStopBySteps = (!isTimeBounded and stepsCount >= stepsTreshhold);
+        needToStop = needToStopBySpeed or needToStopByTime or needToStopBySteps;
 
     }
-    while(!IsFinished() && stepsCount < stepsTreshhold);
+    while(!IsFinished() && !needToStop);
 
     auto endpnt = std::chrono::high_resolution_clock::now();
-    long long int res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
+    size_t res = std::chrono::duration_cast<std::chrono::milliseconds>(endpnt - startpnt).count();
 
     float stepsSum = 0;
     float rate = 0;
+    float MAPFTime = 0.0;
+    int initCount = 0, uniCount = 0, updCount = 0, ECBSCount = 0, PARCount = 0, successCount = 0, unsuccessCount = 0, flowtimeMAPF = 0;
+
     for(auto &node : resultsLog)
     {
 
@@ -150,24 +199,69 @@ Summary Mission::StartMission()
     {
         collisionsCount += agent->GetCollision().first;
         collisionsObstCount += agent->GetCollision().second;
+        auto tmpPARAgent = dynamic_cast<ORCAAgentWithPAR*> (agent);
+        if(tmpPARAgent != nullptr)
+        {
+            auto statMAPF = tmpPARAgent->GetMAPFStatistics();
+            MAPFTime += statMAPF[CNS_MAPF_COMMON_TIME];
+            initCount += static_cast<int>(statMAPF[CNS_MAPF_INIT_COUNT]);
+            uniCount += static_cast<int>(statMAPF[CNS_MAPF_UNITE_COUNT]);
+            updCount += static_cast<int>(statMAPF[CNS_MAPF_UPDATE_COUNT]);
+            successCount += static_cast<int>(statMAPF[CNS_MAPF_SUCCESS_COUNT]);
+            unsuccessCount += static_cast<int>(statMAPF[CNS_MAPF_UNSUCCESS_COUNT]);
+            flowtimeMAPF += static_cast<int>(statMAPF[CNS_MAPF_FLOWTIME]);
+        }
+        else
+        {
+            auto tmpPARnECBSAgent = dynamic_cast<ORCAAgentWithPARAndECBS*> (agent);
+            if(tmpPARnECBSAgent != nullptr)
+            {
+                //tmpPARnECBSAgent->PrintMAPFMemberStat();
+                auto statMAPF = tmpPARnECBSAgent->GetMAPFStatistics();
+                MAPFTime += statMAPF[CNS_MAPF_COMMON_TIME];
+                initCount += static_cast<int>(statMAPF[CNS_MAPF_INIT_COUNT]);
+                uniCount += static_cast<int>(statMAPF[CNS_MAPF_UNITE_COUNT]);
+                updCount += static_cast<int>(statMAPF[CNS_MAPF_UPDATE_COUNT]);
+                ECBSCount += static_cast<int>(statMAPF[CNS_MAPF_ECBS_COUNT]);
+                PARCount += static_cast<int>(statMAPF[CNS_MAPF_PAR_COUNT]);
+                successCount += static_cast<int>(statMAPF[CNS_MAPF_SUCCESS_COUNT]);
+                unsuccessCount += static_cast<int>(statMAPF[CNS_MAPF_UNSUCCESS_COUNT]);
+                flowtimeMAPF += static_cast<int>(statMAPF[CNS_MAPF_FLOWTIME]);
+            }
+        }
     }
 
-    missionResult.successRate = rate * 100 / agentsNum;
-    missionResult.runTime = ((float) res) / 1000;
-    missionResult.collisions = collisionsCount / 2;
-    missionResult.flowTime = stepsSum * options->timestep;
-    missionResult.makeSpan = stepsCount * options->timestep;
-    missionResult.collisionsObst = collisionsObstCount;
+    missionResult[CNS_SUM_SUCCESS_RATE] = std::to_string(rate * 100 / agentsNum);
+    missionResult[CNS_SUM_RUN_TIME] = std::to_string(((float) res) / 1000);
+    missionResult[CNS_SUM_COLLISIONS] = std::to_string(collisionsCount / 2);
+    missionResult[CNS_SUM_FLOW_TIME] = std::to_string(stepsSum * options->timestep);
+    missionResult[CNS_SUM_MAKESPAN] = std::to_string(stepsCount * options->timestep);
+    missionResult[CNS_SUM_COLLISIONS_OBS] = std::to_string(collisionsObstCount);
 
+    missionResult[CNS_SUM_MAPF_MEAN_TIME] = std::to_string(MAPFTime);
+    missionResult[CNS_SUM_MAPF_INIT_COUNT] = std::to_string(initCount);
+    missionResult[CNS_SUM_MAPF_UNITE_COUNT] = std::to_string(uniCount);
+    missionResult[CNS_SUM_MAPF_UPDATE_COUNT] = std::to_string(updCount);
+
+    missionResult[CNS_SUM_MAPF_ECBS_COUNT] = std::to_string(ECBSCount);
+    missionResult[CNS_SUM_MAPF_PAR_COUNT] = std::to_string(PARCount);
+
+    missionResult[CNS_SUM_MAPF_FLOWTIME] = std::to_string(flowtimeMAPF);
+    missionResult[CNS_SUM_MAPF_SUCCESS_COUNT] = std::to_string(successCount);
+    missionResult[CNS_SUM_MAPF_UNSUCCESS_COUNT] = std::to_string(unsuccessCount);
+
+
+#if FULL_OUTPUT
     std::cout<<"End\n";
+#endif
     return missionResult;
 }
 
 
-#ifndef NDEBUG
+#if FULL_LOG
 bool Mission::SaveLog()
 {
-    taskLogger->SetResults(stepsLog, resultsLog);
+    taskLogger->SetResults(stepsLog, goalsLog, resultsLog);
     taskLogger->SetSummary(missionResult);
     return taskLogger->GenerateLog() && (stepsCount > 0);
 }
@@ -176,34 +270,57 @@ bool Mission::SaveLog()
 
 void Mission::UpdateSate()
 {
+    size_t i = 0;
+    allStops = true;
+
     for(auto &agent : agents)
     {
         agent->ApplyNewVelocity();
         Point newPos = agent->GetPosition() + (agent->GetVelocity() * options->timestep);
         agent->SetPosition(newPos);
+        commonSpeedsBuffer[i].pop_front();
+        commonSpeedsBuffer[i].push_back(agent->GetVelocity().EuclideanNorm());
 
-#ifndef NDEBUG
+        float sum = 0.0f;
+        float c = 0.0f;
+        float y, t;
+        float mean;
+        for(auto speed : commonSpeedsBuffer[i])
+        {
+            y = speed - c;
+            t = sum + y;
+            c = (t - sum) - y;
+            sum = t;
+        }
+        mean = sum / commonSpeedsBuffer[i].size();
+
+        if (mean >= 0.001)
+        {
+            allStops = false;
+        }
+
+#if FULL_LOG
         stepsLog[agent->GetID()].push_back(newPos);
+        goalsLog[agent->GetID()].push_back(agent->GetNext());
 #endif
-
-        agent->UpdatePrefVelocity();
+        i++;
     }
+
     stepsCount++;
 }
 
 
 void Mission::AssignNeighbours()
 {
-    float distSq, rSightSq;
     for(auto &agent : agents)
     {
-        rSightSq = agent->GetSightRadius() * agent->GetSightRadius();
-        for(auto &another : agents)
+
+        for(auto &neighbour : agents)
         {
-            if(agent != another &&
-                (distSq = (agent->GetPosition()-another->GetPosition()).SquaredEuclideanNorm()) < rSightSq)
+            if(agent != neighbour)
             {
-                agent->AddNeighbour(*another, distSq);
+                float distSq = (agent->GetPosition() - neighbour->GetPosition()).SquaredEuclideanNorm();
+                agent->AddNeighbour(*neighbour, distSq);
             }
         }
         agent->UpdateNeighbourObst();
@@ -241,11 +358,14 @@ Mission &Mission::operator = (const Mission &obj)
         taskReader = obj.taskReader;
         missionResult = obj.missionResult;
         resultsLog = obj.resultsLog;
+#if PAR_LOG
+        PARLog = obj.PARLog;
+#endif
 
         vector<Agent *> tmpAgents = vector<Agent *>(obj.agents.size());
         for(int i = 0; i < obj.agents.size(); i++)
         {
-            tmpAgents.push_back(new Agent(*obj.agents[i]));
+            tmpAgents.push_back(obj.agents[i]->Clone());
         }
 
         for(auto &agent : agents)
@@ -273,16 +393,18 @@ Mission &Mission::operator = (const Mission &obj)
         }
         taskReader = (obj.taskReader == nullptr) ? nullptr : obj.taskReader->Clone();
 
-#ifndef NDEBUG
+#if FULL_LOG
         if(taskLogger != nullptr)
         {
             delete taskLogger;
         }
         taskLogger = (obj.taskLogger == nullptr) ? nullptr : obj.taskLogger->Clone();
         stepsLog = obj.stepsLog;
+        goalsLog = obj.goalsLog;
 #endif
-
+        commonSpeedsBuffer = obj.commonSpeedsBuffer;
+        allStops = obj.allStops;
+        stopByMeanSpeed = obj.stopByMeanSpeed;
     }
-
     return *this;
 }

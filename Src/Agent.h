@@ -1,6 +1,7 @@
 #include "Const.h"
 #include "PathPlanner.h"
 #include "ThetaStar.h"
+#include "Geom.h"
 
 #include <vector>
 #include <cmath>
@@ -8,23 +9,26 @@
 #include <iostream>
 #include <type_traits>
 #include <cstddef>
+#include <list>
 
 #ifndef ORCA_AGENT_H
 #define ORCA_AGENT_H
+
 
 class AgentParam
 {
     public:
         AgentParam() : sightRadius(CN_DEFAULT_RADIUS_OF_SIGHT), timeBoundary(CN_DEFAULT_TIME_BOUNDARY), timeBoundaryObst(CN_DEFAULT_OBS_TIME_BOUNDARY),
-            radius(CN_DEFAULT_SIZE), maxSpeed(CN_DEFAULT_MAX_SPEED), agentsMaxNum(CN_DEFAULT_AGENTS_MAX_NUM) {}
-        AgentParam(float sr, float tb, float tbo, float r, float ms, int amn) : sightRadius(sr), timeBoundary(tb), timeBoundaryObst(tbo), radius(r),
-            maxSpeed(ms), agentsMaxNum(amn) {}
+                       radius(CN_DEFAULT_SIZE), maxSpeed(CN_DEFAULT_MAX_SPEED), agentsMaxNum(CN_DEFAULT_AGENTS_MAX_NUM), rEps(CN_DEFAULT_REPS){}
+        AgentParam(float sr, float tb, float tbo, float r, float reps, float ms, int amn, int parNum, MAPFTriggers trig) : sightRadius(sr), timeBoundary(tb), timeBoundaryObst(tbo), radius(r), rEps(reps),
+                                                                                                        maxSpeed(ms), agentsMaxNum(amn) {}
         ~AgentParam() = default;
 
         float sightRadius;
         float timeBoundary;
         float timeBoundaryObst;
         float radius;
+        float rEps;
         float maxSpeed;
         int agentsMaxNum;
 };
@@ -35,28 +39,28 @@ class Agent
         Agent();
         Agent(const int &id, const Point &start, const Point &goal, const Map &map, const EnvironmentOptions &options, AgentParam param);
         Agent(const Agent &obj);
-        ~Agent();
+        virtual ~Agent();
+
+        virtual Agent* Clone() const = 0;
+        virtual void ComputeNewVelocity() =0;
+        virtual void ApplyNewVelocity() = 0;
+        virtual bool UpdatePrefVelocity() = 0;
+
+
+
+        virtual void SetPosition(const Point &pos);
+        virtual void AddNeighbour(Agent &neighbour, float distSq);
+        virtual bool isFinished();
 
         bool InitPath();
-
-        void ComputeNewVelocity();
-        void ApplyNewVelocity();
-        bool UpdatePrefVelocity();
-
+        int GetID() const;
         Point GetPosition() const;
         Point GetVelocity() const;
         float GetRadius() const;
-        float GetSightRadius() const;
+        Point GetNext() const;
 
-        float GetDistToGoal() const;
 
         std::pair<unsigned int, unsigned int> GetCollision() const;
-        int GetID() const;
-
-        void SetPosition(const Point &pos);
-
-        bool isFinished();
-        void AddNeighbour(Agent &neighbour, float distSq);
         void UpdateNeighbourObst();
 
         bool operator == (const Agent &another) const;
@@ -70,7 +74,13 @@ class Agent
         }
 
 
-    private:
+    protected:
+        // bool MeanSpeedMAPFTrigger();
+        bool CommonPointMAPFTrigger(float dist);
+        bool NeighbourGroupMeanSpeedMAPFTrigger();
+        bool SingleNeighbourMeanSpeedMAPFTrigger();
+        
+        int id;
         Point start;
         Point goal;
         PathPlanner *planner;
@@ -78,8 +88,9 @@ class Agent
         const Map *map;
         std::vector <std::pair<float, Agent*>> Neighbours;
         std::vector <std::pair<float, ObstacleSegment>> NeighboursObst;
+
         std::vector <Line> ORCALines;
-        int id;
+
         Point position;
         Velocity prefV;
         Velocity newV;
@@ -92,6 +103,11 @@ class Agent
 
         unsigned int collisions;
         unsigned int collisionsObst;
+
+        Point nextForLog;
+        std::list<float> speedSaveBuffer;
+        float meanSavedSpeed;
+        
 
 };
 

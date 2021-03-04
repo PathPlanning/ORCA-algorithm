@@ -20,7 +20,7 @@ Map::Map(float cellSize, std::vector<std::vector<int>> &grid, std::vector<std::v
     width = 0;
     if(height)
     {
-        width = this->grid[0].size();
+        width = (*this->grid)[0].size();
     }
 
     int idCounter = 0;
@@ -54,7 +54,6 @@ Map::Map(float cellSize, std::vector<std::vector<int>> &grid, std::vector<std::v
         tmpObstacle[0].left.SetConvex(rCvx);
         this->obstacles->push_back(tmpObstacle);
         tmpObstacle.clear();
-
     }
 
     for(auto &obstacle : (*this->obstacles))
