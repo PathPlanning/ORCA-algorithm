@@ -4,12 +4,13 @@ language: cpp
 matrix:
   include:
     - os: linux
-      compiler: gcc
       addons:
         apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-9.3']
-      env: COMPILER=g++-9.3
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-9
+      env: COMPILER=g++-9
     - os: osx
       compiler: clang
       env:
