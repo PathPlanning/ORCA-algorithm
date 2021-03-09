@@ -1,4 +1,4 @@
-# Combination  ORCA* Algorithm + MAPF
+# Distributed Multi-agent Navigation Based on ORCA Algorithm
 
 Implementation of ORCA algorithm with global path planner based on Theta* algorithm and 
 local coordinated navigation in case of deadlocks. In this moment the README file contains a number of flaws. 
