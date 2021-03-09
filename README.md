@@ -1,8 +1,8 @@
 # Distributed Multi-agent Navigation Based on ORCA Algorithm
 
-Implementation of ORCA algorithm with global path planner based on Theta* algorithm and 
-local coordinated navigation in case of deadlocks. In this moment the README file contains a number of flaws. 
-README will be updated.
+Implementation of distributed multi-agent navigation algorithm based on combination of reciprocal 
+collision avoidance and individual path planner. There is an option that activate deadlock avoidance by locally 
+confined multi-agent path finding (MAPF) solvers, that coordinate sub-groups of the agents that appear to be in a deadlock
 
 ## Description
 
@@ -19,7 +19,7 @@ Theta* allows parent of current vertex may be any other vertex,
 which are visible from current [[1](https://arxiv.org/pdf/1401.3843.pdf)].
 
 The **ORCA** algorithm is a decentralized collision avoidance algorithm in a 
-multi-agent environment. The main idea of ​​the algorithm is iterative selection 
+multi-agent environment. The main idea of the algorithm is iterative selection 
 of new agent speed, close to a certain preferred velocity. Selection of 
 the new speed is based on ORCA principle. 
 **Optimal Reciprocal Collision Avoidance (ORCA)** — the principle, 
@@ -52,21 +52,41 @@ sequence becomes the target, and the previous one is deleted. Otherwise, a
 visibility check is made between the agent’s position and the last point. If 
 visibility is confirmed, then the last becomes the target point, otherwise the path 
 from the agent's position to the last point is searched. 
+High-level  pseudocode  of  the  suggested  method  is  presented below
+
+![orca_theta](Images/ORCA_theta_alg.png)
 
 ### Deadlock Avoidance
+In numerous scenarios, involving navigation through the tight passages or 
+confined spaces, deadlocks are likely to occur due to the egoistic behaviour 
+of the agents and as a result, the latter can not achieve their goal. To reach the goals the agents may to exhibit
+a form of coordination and some of them could to yield to the others
 
-***___Coming soon...___***
+So, it each time step, an agent gathers the information about the states of the agents that are within the 
+communication/visibility  range (neighbours). This data is used not only to choose the velocity but  
+also to detect deadlocks. If a deadlock is detected an agent initiates switching to the MAPF mode. 
+As a result, certain  agents  enter  this  mode.  These  agents share  the  information  about  their 
+states  and  current  goals (waypoints  on  the  geometric  paths  that  they  want  to  reach) so 
+each  of  them  possess  the  same  local  world  model.  The latter is used to create a MAPF instance 
+and solve it.  We  emphasize  that  each  agent  operates  individually in  the MAPF 
+mode and  no central controller  is  introduced. However  as  the  operations  in  this  mode  are 
+deterministic and  each  agent  knows  the  states  and  goals  of  other agents, the result of forming a 
+MAPF instance and solving it is the same  across  all  involved  agents.  Consequently,  each 
+agent obtains  the  same  MAPF  solution  –  a  set  of  collision-free plans. It 
+then  extracts  its  individual  plan  from  this  solution and follows it to resolve the deadlock. 
+After all agents finish execution  of  their  MAPF  plans  they  switch  back  to  normal mode, 
+i.e.  continue  moving  to  the  next  waypoint  on  their geometric path utilizing collision avoidance.
 
-![Alg](Images/Alg.png)
+![orca_thet_mapf](Images/ORCA_theta_MAPF_alg.png)
 
 ## Getting Started
 The implementation is self-contained. Code is written in C++ and is meant to be cross-platform. 
-Implementation relies only on C++11 standard and STL. 
+Implementation relies only on C++14 standard and STL. 
 Open-source library to work with XML (tinyXML) is included at the source level 
 (i.e. .h and .cpp files are part of the project).
 
 To build and run the project you can use CMake, CMakeLists file is available in the repo. 
-Please note that the code relies on C++14 standart. Make sure that your compiler supports it. 
+Please note that the code relies on C++14 standard. Make sure that your compiler supports it. 
 
 ### Installing
 
@@ -96,7 +116,6 @@ mkdir Debug
 cd Debug
 cmake -DCMAKE_BUILD_TYPE=Debug ..
 make
-cd Tests
 ```
 
 ## Launch
@@ -116,7 +135,7 @@ For example:
 ./Single ../../TaskExamples/empty_task.xml 10
 ```
   
-Summary will be displayed after execution using standard output, full log (if such option was chosen) will be saved in same directory as task file and will be named according to the following pattern:
+Summary will be displayed after execution using standard output, full log (if such option in main CMakeLists.txt was chosen) will be saved in same directory as task file and will be named according to the following pattern:
 ```
 *taskfilename*_*numberofagents*_log.xml
 ```
@@ -140,7 +159,7 @@ where
 
 For example:
 ```bash
-./Series 5 5 10 5 ../../TaskExamples
+./Series 5 5 10 2 ../../TaskExamples
 ```
 
 To run the series tests and get a result you need to pass a correct input XML-file(s). The task files must be named according to the following pattern:
@@ -152,8 +171,6 @@ For example:
 ```
 0_task.xml
 1_task.xml
-2_task.xml
-3_task.xml
 ```
 
 If the number of agents in the task is less than the required value, it will be started with the number of agents specified in the task.

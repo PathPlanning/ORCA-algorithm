@@ -669,19 +669,24 @@ bool ORCAAgentWithPARAndECBS::UpdatePrefVelocity()
                 moveToMAPFPos = false;
                 currMAPFPos = -1;
                 MAPFActorId = -1;
+                
                 MAPFStart = Point(-1,-1);
                 MAPFGoal = Point(-1,-1);
                 prefV = Point();
                 nextForLog = position;
+                
                 MAPFres.Clear();
                 MAPFAgents.clear();
                 MAPFSet.clear();
+                
                 buffMAPF.clear();
+                
                 return true;
             }
             else if(allOnPos)
             {
                 currMAPFPos++;
+                return true;
             }
             else
             {
@@ -689,9 +694,6 @@ bool ORCAAgentWithPARAndECBS::UpdatePrefVelocity()
                 nextForLog = MAPFGoal;
                 return true;
             }
-
-
-
         }
 
         if(moveToMAPFPos)

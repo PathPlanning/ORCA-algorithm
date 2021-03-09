@@ -149,19 +149,17 @@ Summary Mission::StartMission()
     do
     {
         AssignNeighbours();
-
+        
         for(auto &agent : agents)
         {
             agent->UpdatePrefVelocity();
         }
-
+        
         for(auto &agent : agents)
         {
-
             agent->ComputeNewVelocity();
-
         }
-
+        
         UpdateSate();
         auto checkpnt = std::chrono::high_resolution_clock::now();
         size_t nowtime = std::chrono::duration_cast<std::chrono::milliseconds>(checkpnt - startpnt).count();

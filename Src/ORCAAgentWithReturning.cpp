@@ -42,6 +42,8 @@ ORCAAgentWithReturning& ORCAAgentWithReturning::operator = (const ORCAAgentWithR
 ORCAAgentWithReturning* ORCAAgentWithReturning::Clone() const
 {
     return new ORCAAgentWithReturning(*this);
+    
+    
 }
 
 

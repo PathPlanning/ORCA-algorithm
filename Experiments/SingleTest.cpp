@@ -4,10 +4,10 @@
 
 #include "Mission.h"
 
-#define STEP_MAX            20000
+#define STEP_MAX            10000
 #define IS_TIME_BOUNDED     true
 #define STOP_BY_SPEED       false
-#define TIME_MAX            1000 * 60 * 1
+#define TIME_MAX            1000 * 60 * 0.2
 
 
 int main(int argc, char* argv[])
