@@ -1,4 +1,5 @@
 # Distributed Multi-agent Navigation Based on ORCA Algorithm
+[![Build Status](https://travis-ci.com/PathPlanning/ORCA-algorithm.svg?branch=master)](https://travis-ci.com/PathPlanning/ORCA-algorithm)
 
 Implementation of distributed multi-agent navigation algorithm based on combination of reciprocal 
 collision avoidance and individual path planner. There is an option that activate deadlock avoidance by locally 
