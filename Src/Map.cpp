@@ -190,6 +190,11 @@ Map &Map::operator =(const Map &obj)
     return *this;
 }
 
+const std::vector<std::vector<ObstacleSegment>> &Map::GetCloseObstacles(const Point &point, float radius) const
+{
+    return <#initializer#>;
+}
+
 
 
 

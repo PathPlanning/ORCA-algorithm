@@ -229,6 +229,11 @@ void ORCAAgent::ComputeNewVelocity()
     }
 
 
+
+
+
+
+
     size_t numObstLines = ORCALines.size();
 
     //Получение ORCA-линий агентов

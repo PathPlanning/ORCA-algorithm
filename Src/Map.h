@@ -26,7 +26,10 @@ class Map
 
         Node GetClosestNode(const Point &point) const;
         Point GetPoint(const Node &node) const;
-        const std::vector<std::vector<ObstacleSegment>> & GetObstacles() const;
+
+        const std::vector<std::vector<ObstacleSegment>> & GetCloseObstacles(const Point &point, float radius) const;
+
+        [[deprecated]] const std::vector<std::vector<ObstacleSegment>> & GetObstacles() const;
 
         Map & operator = (const Map &obj);
 
