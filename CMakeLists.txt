@@ -1,12 +1,11 @@
 cmake_minimum_required(VERSION 3.2)
 
 project(ORCAStar)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -w -O0 -frounding-math -fsignaling-nans " )
 
 set(FullOutput OFF)
-set(FullLog ON)
+set(FullLog OFF)
 set(MAPFEnvLog OFF)
-
-
 if(FullOutput)
     add_compile_definitions(FULL_OUTPUT=true)
 else(FullOutput)
@@ -25,10 +24,18 @@ else(MAPFEnvLog)
     add_compile_definitions(PAR_LOG=false)
 endif(MAPFEnvLog)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -w -O0" )
+add_subdirectory(src)
+add_subdirectory(simulation)
+add_subdirectory(libs/tinyxml)
 
 
-add_subdirectory(tinyxml)
-add_subdirectory(Src)
-add_subdirectory(Experiments)
+
+set(FullOutput OFF)
+set(FullLog OFF)
+set(MAPFEnvLog OFF)
+
+
+# TODO Rename files into snake_case
+# TODO Remove or change build options
+
 

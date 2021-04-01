@@ -55,7 +55,7 @@ visibility is confirmed, then the last becomes the target point, otherwise the p
 from the agent's position to the last point is searched. 
 High-level  pseudocode  of  the  suggested  method  is  presented below
 
-![orca_theta](Images/ORCA_theta_alg.png)
+![orca_theta](images/ORCA_theta_alg.png)
 
 ### Deadlock Avoidance
 In numerous scenarios, involving navigation through the tight passages or 
@@ -78,7 +78,7 @@ then  extracts  its  individual  plan  from  this  solution and follows it to re
 After all agents finish execution  of  their  MAPF  plans  they  switch  back  to  normal mode, 
 i.e.  continue  moving  to  the  next  waypoint  on  their geometric path utilizing collision avoidance.
 
-![orca_thet_mapf](Images/ORCA_theta_MAPF_alg.png)
+![orca_thet_mapf](images/ORCA_theta_MAPF_alg.png)
 
 ## Getting Started
 The implementation is self-contained. Code is written in C++ and is meant to be cross-platform. 
@@ -124,7 +124,7 @@ There are two options to test the algorithm: single test on one task and series 
 Use the following command to launch single test:
 
 ```bash
-cd Experiments
+cd simulation
 ./Single {filename num}
 ```
 where 
@@ -133,7 +133,7 @@ where
 
 For example:
 ```bash
-./Single ../../TaskExamples/empty_task.xml 10
+./Single ../../tasks_examples/empty_task.xml 10
 ```
   
 Summary will be displayed after execution using standard output, full log (if such option in main CMakeLists.txt was chosen) will be saved in same directory as task file and will be named according to the following pattern:
@@ -148,7 +148,7 @@ empty_task_10_log.xml
 
 Use the following command to launch series test:
 ```bash
-cd Experiments
+cd simulation
 ./Series {Nmin Nstep Nmax Ntasks Path}
 ```
 where 
@@ -160,7 +160,7 @@ where
 
 For example:
 ```bash
-./Series 5 5 10 2 ../../TaskExamples
+./Series 5 5 10 2 ../../tasks_examples
 ```
 
 To run the series tests and get a result you need to pass a correct input XML-file(s). The task files must be named according to the following pattern:
@@ -235,7 +235,7 @@ Input file should contain:
   * `<hweight` — defines the weight of the heuristic function. Should be real number greater or equal 1. Default value is "1" (Theta* parameter);
   * `<trigger>` – defines the switching to the coordinated mode trigger. Possible values: `speed-buffer`, `common-point`.
 
-![Map scheme](Images/map.png)
+![Map scheme](images/map.png)
 
 Examples locates in directory [TaskExamples](https://github.com/PathPlanning/ORCA-alorithm/tree/ORCAStar/TaskExamples).
 ### Output files
