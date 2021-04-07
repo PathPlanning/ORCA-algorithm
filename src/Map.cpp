@@ -182,6 +182,40 @@ Map &Map::operator =(const Map &obj)
 
 std::vector<ObstacleSegment> Map::GetCloseObstacles(const Point &point, float spacing) const
 {
+    auto next_in_line_ij_hash = [](int side, int ij, int width)
+            {
+                switch (side)
+                {
+                    case 0:
+                        return  ij + 1;
+                    case 1:
+                        return  ij - width;
+                    case 2:
+                        return  ij - 1;
+                    case 3:
+                        return  ij + width;
+                    default:
+                        return -1;
+                }
+            };
+    
+    auto next_diagonal_ij_hash = [](int side, int ij, int width)
+        {
+            switch (side)
+            {
+                case 0:
+                    return  ij + width + 1;
+                case 1:
+                    return  ij - width + 1;
+                case 2:
+                    return  ij - width - 1;
+                case 3:
+                    return  ij + width - 1;
+                default:
+                    return -1;
+            }
+        };
+    
     std::vector<ObstacleSegment> obstacles;
     
     float max_x, min_x, max_y, min_y;
@@ -201,70 +235,88 @@ std::vector<ObstacleSegment> Map::GetCloseObstacles(const Point &point, float sp
     {
         for(auto j = bottom_left_cell.j; j <= top_right_cell.j; j++)
         {
-            if((*grid)[i][j])
+            if ((*grid)[i][j])
             {
                 obst_cells.emplace(i * width + j, std::vector<ObstacleSegment>());
-                
+                obst_cells[i * width + j].reserve(4);
+        
                 int n_i, n_j;
                 auto cell_center = GetPoint({i, j});
                 auto cell_bl = Point(cell_center.x - half_cell, cell_center.y - half_cell);
                 auto cell_br = Point(cell_center.x + half_cell, cell_center.y - half_cell);
                 auto cell_tl = Point(cell_center.x - half_cell, cell_center.y + half_cell);
                 auto cell_tr = Point(cell_center.x + half_cell, cell_center.y + half_cell);
-                
-
-                auto neighbours = {std::pair<int, int>(i+1, j),
-                                   std::pair<int, int>(i, j+1),
-                                   std::pair<int, int>(i-1, j),
-                                   std::pair<int, int>(i, j-1)};
-    
+        
+        
+                auto neighbours = {std::pair<int, int>(i + 1, j),
+                                   std::pair<int, int>(i, j + 1),
+                                   std::pair<int, int>(i - 1, j),
+                                   std::pair<int, int>(i, j - 1)};
+        
                 Point corners[] = {cell_br, cell_tr, cell_tl, cell_bl};
                 ObstacleSegment a;
-                size_t side = 0;
+        
                 Vertex left, right = Vertex(cell_bl);
-                for(auto& n_cell : neighbours)
+                int side = 0;
+                for (auto &n_cell : neighbours)
                 {
+            
                     n_i = n_cell.first, n_j = n_cell.second;
-                    
+            
                     left = right;
                     right = corners[side];
-                    
-                    if(CellOnGrid(n_i, n_j) and n_i <= bottom_left_cell.i and n_i >= top_right_cell.i and
-                       n_j >= bottom_left_cell.j and n_j <= top_right_cell.j)
+            
+                    if (CellOnGrid(n_i, n_j) and n_i <= bottom_left_cell.i and n_i >= top_right_cell.i and
+                        n_j >= bottom_left_cell.j and n_j <= top_right_cell.j)
+                    {
+                        if (CellIsTraversable(n_i, n_j))
+                        {
+                            obst_cells[i * width + j].emplace_back(ObstacleSegment(obst_id, left, right));
+                            obst_id++;
+                        } else
+                        {
+                            obst_cells[i * width + j].emplace_back(ObstacleSegment(-1, Point(), Point()));
+                        }
+                    } else
                     {
                         obst_cells[i * width + j].emplace_back(ObstacleSegment(obst_id, left, right));
-                        obst_id ++;
-                    }
-                    else
-                    {
-                        obst_cells[i * width + j].emplace_back(ObstacleSegment(-1, Point(), Point()));
+                        obst_id++;
                     }
                     side++;
                 }
             }
     
-
-            for(auto& [pos_hash, pos_segm] : obst_cells)
+        }
+        
+        for(auto& [pos_hash, pos_segm] : obst_cells)
+        {
+            for(int side = 0; side < 4; side++)
             {
-                for(size_t side = 0; side < 4; side++)
+                if(pos_segm[side].id != -1)
                 {
-                    if(pos_segm[side].id != -1)
+                    int next_side = (side == 3) ? 0 : side + 1;
+                    if(pos_segm[next_side].id != -1)
                     {
-                        size_t next_side = (side == 3) ? 0 : side + 1;
-                        if(pos_segm[next_side].id != -1)
-                        {
-                            // TODO obst_cells as Map class field
-                            pos_segm[side].next = &pos_segm[next_side]
-                        }
-                        else if( /* TODO other cases*/)
-                        {
-                        
-                        }
-                        
+                        // TODO obst_cells as Map class field
+                        pos_segm[side].next = &pos_segm[next_side];
+                    }
+                    else if(obst_cells[next_in_line_ij_hash(side, pos_hash, width)][side].id != -1)
+                    {
+                        // TODO
+                    }
+                    else if(obst_cells[next_diagonal_ij_hash(side, pos_hash, width)][(side - 1 > 0) ? side -1 : 3].id != -1)
+                    {
+                        // TODO
+                    }
+                    else
+                    {
+                        std::cout << "WRONG!\n";
                     }
                     
-                    obstacles.
                 }
+                
+//                obstacles.
+            }
                 
             }
 //            Vertex left = obstacle[(i == 0 ? obstacle.size() - 1  : i - 1)];
@@ -280,7 +332,7 @@ std::vector<ObstacleSegment> Map::GetCloseObstacles(const Point &point, float sp
 //            left.SetConvex(lCvx);
 //
 //            tmpObstacle.emplace_back(ObstacleSegment(idCounter, left, right));
-        }
+    
     }
     return std::vector<ObstacleSegment>();
 }
