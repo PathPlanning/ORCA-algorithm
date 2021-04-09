@@ -37,7 +37,7 @@ class Agent
 {
     public:
         Agent();
-        Agent(const int &id, const Point &start, const Point &goal, const Map &map, const EnvironmentOptions &options, AgentParam param);
+        Agent(const int &id, const Point &start, const Point &goal, Map &map, const EnvironmentOptions &options, AgentParam param);
         Agent(const Agent &obj);
         virtual ~Agent();
 
@@ -45,9 +45,7 @@ class Agent
         virtual void ComputeNewVelocity() =0;
         virtual void ApplyNewVelocity() = 0;
         virtual bool UpdatePrefVelocity() = 0;
-
-
-
+        
         virtual void SetPosition(const Point &pos);
         virtual void AddNeighbour(Agent &neighbour, float distSq);
         virtual bool isFinished();
@@ -58,8 +56,7 @@ class Agent
         Point GetVelocity() const;
         float GetRadius() const;
         Point GetNext() const;
-
-
+        
         std::pair<unsigned int, unsigned int> GetCollision() const;
         void UpdateNeighbourObst();
 
@@ -85,7 +82,7 @@ class Agent
         Point goal;
         PathPlanner *planner;
         const EnvironmentOptions *options;
-        const Map *map;
+        Map *map;
         std::vector <std::pair<float, Agent*>> Neighbours;
         std::vector <std::pair<float, ObstacleSegment>> NeighboursObst;
 
@@ -107,12 +104,6 @@ class Agent
         Point nextForLog;
         std::list<float> speedSaveBuffer;
         float meanSavedSpeed;
-        
-
 };
-
-
-
-
 
 #endif //ORCA_AGENT_H

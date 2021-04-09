@@ -28,7 +28,7 @@ Agent::Agent()
 }
 
 
-Agent::Agent(const int &id, const Point &start, const Point &goal, const Map &map, const EnvironmentOptions &options, AgentParam param)
+Agent::Agent(const int &id, const Point &start, const Point &goal, Map &map, const EnvironmentOptions &options, AgentParam param)
 {
     this->id = id;
     this->start = start;

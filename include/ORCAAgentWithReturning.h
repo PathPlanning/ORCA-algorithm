@@ -13,7 +13,7 @@ class ORCAAgentWithReturning : public Agent
 {
     public:
         ORCAAgentWithReturning();
-        ORCAAgentWithReturning(const int &id, const Point &start, const Point &goal, const Map &map, const EnvironmentOptions &options,
+        ORCAAgentWithReturning(const int &id, const Point &start, const Point &goal, Map &map, const EnvironmentOptions &options,
                          AgentParam param);
         ORCAAgentWithReturning(const ORCAAgentWithReturning &obj);
         ~ORCAAgentWithReturning();

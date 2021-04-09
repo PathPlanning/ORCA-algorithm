@@ -22,7 +22,7 @@ class ORCAAgentWithECBS : public Agent
 
     public:
         ORCAAgentWithECBS();
-        ORCAAgentWithECBS(const int &id, const Point &start, const Point &goal, const Map &map, const EnvironmentOptions &options,
+        ORCAAgentWithECBS(const int &id, const Point &start, const Point &goal, Map &map, const EnvironmentOptions &options,
                          AgentParam param);
         ORCAAgentWithECBS(const ORCAAgentWithECBS &obj);
         ~ORCAAgentWithECBS();

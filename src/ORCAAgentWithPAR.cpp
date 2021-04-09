@@ -49,7 +49,7 @@ ORCAAgentWithPAR::ORCAAgentWithPAR() : Agent()
 }
 
 
-ORCAAgentWithPAR::ORCAAgentWithPAR(const int &id, const Point &start, const Point &goal, const Map &map,
+ORCAAgentWithPAR::ORCAAgentWithPAR(const int &id, const Point &start, const Point &goal, Map &map,
                      const EnvironmentOptions &options, AgentParam param) : Agent(id, start, goal, map, options, param)
 {
     fakeRadius = param.rEps + param.radius;

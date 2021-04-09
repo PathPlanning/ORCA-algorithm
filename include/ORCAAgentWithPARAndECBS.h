@@ -27,7 +27,7 @@ class ORCAAgentWithPARAndECBS : public Agent
 {
     public:
         ORCAAgentWithPARAndECBS();
-        ORCAAgentWithPARAndECBS(const int &id, const Point &start, const Point &goal, const Map &map, const EnvironmentOptions &options,
+        ORCAAgentWithPARAndECBS(const int &id, const Point &start, const Point &goal, Map &map, const EnvironmentOptions &options,
                                 AgentParam param);
         ORCAAgentWithPARAndECBS(const ORCAAgentWithPARAndECBS &obj);
         ~ORCAAgentWithPARAndECBS();

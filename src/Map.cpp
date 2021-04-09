@@ -180,8 +180,10 @@ Map &Map::operator =(const Map &obj)
     return *this;
 }
 
-std::vector<ObstacleSegment> Map::GetCloseObstacles(const Point &point, float spacing) const
+std::unordered_map<size_t, ObstacleSegment>& Map::GetCloseObstacles(const Point &point, float spacing)
 {
+    obstacle_segments.clear();
+    
     auto next_in_line_ij_hash = [](int side, int ij, int width)
             {
                 switch (side)
@@ -216,8 +218,6 @@ std::vector<ObstacleSegment> Map::GetCloseObstacles(const Point &point, float sp
             }
         };
     
-    std::vector<ObstacleSegment> obstacles;
-    
     float max_x, min_x, max_y, min_y;
     max_x = point.x + spacing;
     max_y = point.y + spacing;
@@ -246,8 +246,7 @@ std::vector<ObstacleSegment> Map::GetCloseObstacles(const Point &point, float sp
                 auto cell_br = Point(cell_center.x + half_cell, cell_center.y - half_cell);
                 auto cell_tl = Point(cell_center.x - half_cell, cell_center.y + half_cell);
                 auto cell_tr = Point(cell_center.x + half_cell, cell_center.y + half_cell);
-        
-        
+                
                 auto neighbours = {std::pair<int, int>(i + 1, j),
                                    std::pair<int, int>(i, j + 1),
                                    std::pair<int, int>(i - 1, j),
@@ -260,9 +259,7 @@ std::vector<ObstacleSegment> Map::GetCloseObstacles(const Point &point, float sp
                 int side = 0;
                 for (auto &n_cell : neighbours)
                 {
-            
                     n_i = n_cell.first, n_j = n_cell.second;
-            
                     left = right;
                     right = corners[side];
             
@@ -272,6 +269,7 @@ std::vector<ObstacleSegment> Map::GetCloseObstacles(const Point &point, float sp
                         if (CellIsTraversable(n_i, n_j))
                         {
                             obst_cells[i * width + j].emplace_back(ObstacleSegment(obst_id, left, right));
+                            obstacle_segments.emplace(obst_id, ObstacleSegment(obst_id, left, right));
                             obst_id++;
                         } else
                         {
@@ -280,61 +278,56 @@ std::vector<ObstacleSegment> Map::GetCloseObstacles(const Point &point, float sp
                     } else
                     {
                         obst_cells[i * width + j].emplace_back(ObstacleSegment(obst_id, left, right));
+                        obstacle_segments.emplace(obst_id, ObstacleSegment(obst_id, left, right));
                         obst_id++;
                     }
                     side++;
                 }
             }
-    
         }
-        
-        for(auto& [pos_hash, pos_segm] : obst_cells)
-        {
-            for(int side = 0; side < 4; side++)
-            {
-                if(pos_segm[side].id != -1)
-                {
-                    int next_side = (side == 3) ? 0 : side + 1;
-                    if(pos_segm[next_side].id != -1)
-                    {
-                        // TODO obst_cells as Map class field
-                        pos_segm[side].next = &pos_segm[next_side];
-                    }
-                    else if(obst_cells[next_in_line_ij_hash(side, pos_hash, width)][side].id != -1)
-                    {
-                        // TODO
-                    }
-                    else if(obst_cells[next_diagonal_ij_hash(side, pos_hash, width)][(side - 1 > 0) ? side -1 : 3].id != -1)
-                    {
-                        // TODO
-                    }
-                    else
-                    {
-                        std::cout << "WRONG!\n";
-                    }
-                    
-                }
-                
-//                obstacles.
-            }
-                
-            }
-//            Vertex left = obstacle[(i == 0 ? obstacle.size() - 1  : i - 1)];
-//            Vertex right = obstacle[i];
-//            Vertex next = obstacle[(i == obstacle.size() - 1 ? 0 : i + 1)];
-//            lCvx = rCvx;
-//            rCvx = true;
-//            if (obstacle.size() > 2)
-//            {
-//                rCvx = (left-next).Det(right - left) >= 0.0f;
-//            }
-//            right.SetConvex(rCvx);
-//            left.SetConvex(lCvx);
-//
-//            tmpObstacle.emplace_back(ObstacleSegment(idCounter, left, right));
-    
     }
-    return std::vector<ObstacleSegment>();
+    
+    for(auto& [pos_hash, pos_segm] : obst_cells)
+    {
+        for(int side = 0; side < 4; side++)
+        {
+            if(pos_segm[side].id != -1)
+            {
+                int next_side = (side == 3) ? 0 : side + 1;
+                int prev_side = (side - 1 > 0) ? side -1 : 3;
+                if(pos_segm[next_side].id != -1)
+                {
+                    obstacle_segments[pos_segm[side].id].next = &obstacle_segments[pos_segm[next_side].id];
+                    obstacle_segments[pos_segm[next_side].id].prev = &obstacle_segments[pos_segm[side].id];
+                }
+                else if(obst_cells[next_in_line_ij_hash(side, pos_hash, width)][side].id != -1)
+                {
+                    obstacle_segments[pos_segm[side].id].next = &obstacle_segments[obst_cells[next_in_line_ij_hash(side, pos_hash, width)][side].id];
+                    obstacle_segments[pos_segm[next_side].id].prev = &obstacle_segments[pos_segm[side].id];
+
+                }
+                else if(obst_cells[next_diagonal_ij_hash(side, pos_hash, width)][prev_side].id != -1)
+                {
+                    obstacle_segments[pos_segm[side].id].next = &obstacle_segments[obst_cells[next_diagonal_ij_hash(side, pos_hash, width)][prev_side].id];
+                    obstacle_segments[obst_cells[next_diagonal_ij_hash(side, pos_hash, width)][prev_side].id].prev = &obstacle_segments[pos_segm[side].id];
+                }
+                else
+                {
+                    std::cerr << "WRONG! OBSTACLE ERROR\n";
+                    exit(-1);
+                }
+                auto left = obstacle_segments[pos_segm[side].id].left;
+                auto right = obstacle_segments[pos_segm[side].id].right;
+                auto next = obstacle_segments[pos_segm[side].id].next->right;
+                bool cvx = (left - next).Det(right - left) >= 0.0;
+                
+                obstacle_segments[pos_segm[side].id].right.SetConvex(cvx);
+                obstacle_segments[pos_segm[side].id].next->left.SetConvex(cvx);
+            }
+            
+        }
+    }
+    return obstacle_segments;
 }
 
 

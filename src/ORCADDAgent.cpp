@@ -16,7 +16,7 @@ ORCADDAgent::ORCADDAgent() : Agent()
 }
 
 
-ORCADDAgent::ORCADDAgent(const int &id, const Point &start, const Point &goal, const Map &map, const EnvironmentOptions &options,
+ORCADDAgent::ORCADDAgent(const int &id, const Point &start, const Point &goal, Map &map, const EnvironmentOptions &options,
             AgentParam param, float effR, float wheelTrack) : Agent(id,start,goal,map,options, param)
 {
     this->effectiveRadius = effR;

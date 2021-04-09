@@ -27,8 +27,8 @@ class Map
 
         Node GetClosestNode(const Point &point) const;
         Point GetPoint(const Node &node) const;
-
-        std::vector<ObstacleSegment> GetCloseObstacles(const Point &point, float spacing) const;
+    
+        std::unordered_map<size_t, ObstacleSegment>& GetCloseObstacles(const Point &point, float spacing);
 
         [[deprecated]] const std::vector<std::vector<ObstacleSegment>> & GetObstacles() const;
 
@@ -38,11 +38,11 @@ class Map
         float cellSize;
         unsigned int height;
         unsigned int width;
-        std::vector<std::vector<int>> *grid;  // TODO Change to smart pointer and make it updatable
-        std::vector<std::vector<ObstacleSegment>> *obstacles;
+        std::vector<std::vector<int>> *grid;  // TODO Change to smart pointer or not dynamic at all and make it updatable
         
+        std::vector<std::vector<ObstacleSegment>> *obstacles; // TODO Delete
         
-
+        std::unordered_map<size_t, ObstacleSegment> obstacle_segments;
 };
 
 
