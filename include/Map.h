@@ -4,13 +4,12 @@
 
 #include "Geom.h"
 
-
 #ifndef ORCA_MAP_H
 #define ORCA_MAP_H
 
 
 
-class Map
+class [[deprecated]] Map
 {
     public:
         Map();
@@ -30,7 +29,7 @@ class Map
     
         std::unordered_map<size_t, ObstacleSegment>& GetCloseObstacles(const Point &point, float spacing);
 
-        [[deprecated]] const std::vector<std::vector<ObstacleSegment>> & GetObstacles() const;
+        const std::vector<std::vector<ObstacleSegment>> & GetObstacles() const;
 
         Map & operator = (const Map &obj);
 

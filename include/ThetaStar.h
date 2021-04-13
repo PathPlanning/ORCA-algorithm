@@ -10,7 +10,7 @@
 #define ORCA_THETASTAR_H
 
 
-class ThetaStar : public PathPlanner
+class [[deprecated]] ThetaStar : public PathPlanner
 {
     public:
         ThetaStar(const Map &map, const EnvironmentOptions &options, const Point &start, const Point &goal, const float &radius);

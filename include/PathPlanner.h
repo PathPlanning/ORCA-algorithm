@@ -10,7 +10,7 @@
 
 
 
-class PathPlanner
+class [[deprecated]] PathPlanner
 {
     public:
         PathPlanner(const PathPlanner &obj) : map(obj.map), options(obj.options), glStart(obj.glStart), glGoal(obj.glGoal), radius(obj.radius) {}

@@ -53,7 +53,8 @@ set(ORCA_HEADERS    ../include/Agent.h
                     ../include/SubMap.h
                     ../include/ORCAAgentWithECBS.h
                     ../include/ORCAAgentWithPARAndECBS.h
-                    ../include/ORCAAgentWithReturning.h)
+                    ../include/ORCAAgentWithReturning.h
+                    ../include/updatable_map.h ../include/navigation_agent.h)
 
 set(ORCA_SOURCES    Agent.cpp
                     Map.cpp
@@ -67,7 +68,8 @@ set(ORCA_SOURCES    Agent.cpp
                     SubMap.cpp
                     ORCAAgentWithECBS.cpp
                     ORCAAgentWithPARAndECBS.cpp
-                    ORCAAgentWithReturning.cpp)
+                    ORCAAgentWithReturning.cpp
+                    updatable_map.cpp navigation_agent.cpp)
 
 add_library(ORCAStar ${ORCA_HEADERS} ${ORCA_SOURCES} ${MAPF_HEADERS} ${MAPF_SOURCES})
 target_include_directories(ORCAStar PUBLIC ../include)
