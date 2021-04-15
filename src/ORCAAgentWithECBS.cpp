@@ -951,7 +951,7 @@ bool ORCAAgentWithECBS::ComputeMAPFEnv(Point common, std::vector<std::pair<Point
         {
             tmpGoal = MAPFMap.GetClosestNode(ag->MAPFGoal);
             ag->MAPFGoal = MAPFMap.GetPoint(tmpGoal);
-            // std::cout << ag->id << " goal1: " << ag->MAPFGoal.ToString() << " goal2: " << MAPFMap.GetPoint(tmpGoal).ToString() << "\n";
+            // std::cout << ag->id << " goal1: " << ag->MAPFGoal.ToString() << " goal2: " << MAPFMap.CenterPosition(tmpGoal).ToString() << "\n";
         }
 
 

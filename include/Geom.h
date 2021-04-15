@@ -8,6 +8,7 @@
 #ifndef ORCA_GEOM_H
 #define ORCA_GEOM_H
 
+//TODO divide search node and cell address (i, j)
 class Node
 {
     public:
@@ -112,13 +113,13 @@ class ObstacleSegment
     public:
         ObstacleSegment() = default;
         ObstacleSegment(const ObstacleSegment &obj) : left(obj.left), right(obj.right), id(obj.id), next(obj.next), prev(obj.prev), dir(obj.dir) {}
-        ObstacleSegment(int id, const Vertex &left, const Vertex &right) : left(left), right(right), id(id) {dir = right-left; dir = dir/dir.EuclideanNorm();}
+        ObstacleSegment(size_t id, const Vertex &left, const Vertex &right) : left(left), right(right), id(id) {dir = right-left; dir = dir/dir.EuclideanNorm();}
         ~ObstacleSegment() = default;
 
         bool operator == (const ObstacleSegment &another) const;
         ObstacleSegment & operator = (const ObstacleSegment &obj);
 
-        int id;
+        size_t id;
         Vertex left;
         Vertex right;
         Vector dir;

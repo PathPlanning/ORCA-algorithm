@@ -24,10 +24,9 @@ else(MAPFEnvLog)
     add_compile_definitions(PAR_LOG=false)
 endif(MAPFEnvLog)
 
+add_subdirectory(libs/tinyxml)
 add_subdirectory(src)
 add_subdirectory(simulation)
-add_subdirectory(libs/tinyxml)
-
 
 
 set(FullOutput OFF)

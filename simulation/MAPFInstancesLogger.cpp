@@ -30,8 +30,6 @@ MAPFInstancesLogger::MAPFInstancesLogger(std::string pathTempl)
 
 bool MAPFInstancesLogger::SaveInstance(MAPFActorSet &agents, SubMap &map, MAPFConfig &conf)
 {
-//    std::cout<<agents.getActorCount()<<"\n";
-//    std::cout<< map.GetHeight()<<"x"<<map.GetWidth()<<"\n";
 
     XMLDocument *docMainXML, *docAgentsXML;
     std::string tmp1 = pathTemplate;

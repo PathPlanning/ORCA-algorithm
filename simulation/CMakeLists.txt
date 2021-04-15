@@ -16,6 +16,6 @@ set(SIM_SOURCES XMLLogger.cpp
 add_executable(single single_experiment.cpp ${SIM_HEADERS} ${SIM_SOURCES})
 add_executable(series series_experiment.cpp ${SIM_HEADERS} ${SIM_SOURCES})
 
-target_link_libraries(single PRIVATE ORCAStar)
-target_link_libraries(series PRIVATE ORCAStar)
+target_link_libraries(single PRIVATE ORCAStar TINYXML)
+target_link_libraries(series PRIVATE ORCAStar TINYXML)
 

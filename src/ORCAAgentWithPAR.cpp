@@ -1302,7 +1302,7 @@ bool ORCAAgentWithPAR::ComputePAREnv()
         starts.insert({tmpStart.i * PARMap.GetWidth() + tmpStart.j, tmpStart});
         if((tmpGoalPoint - ag->goal).EuclideanNorm() < options->delta)
         {
-//            if(finalGoals.find(tmpGoal.i * PARMap.GetWidth() + tmpGoal.j) != finalGoals.end())
+//            if(finalGoals.find(tmpGoal.i * PARMap.GridWidth() + tmpGoal.j) != finalGoals.end())
 //            {
 //                std::cout << "AAAAAA 3\n";
 //            }
@@ -1310,7 +1310,7 @@ bool ORCAAgentWithPAR::ComputePAREnv()
         }
         else
         {
-//            if(goals.find(tmpGoal.i * PARMap.GetWidth() + tmpGoal.j) != goals.end())
+//            if(goals.find(tmpGoal.i * PARMap.GridWidth() + tmpGoal.j) != goals.end())
 //            {
 //                std::cout << "AAAAAA 3\n";
 //            }

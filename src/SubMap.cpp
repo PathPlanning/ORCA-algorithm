@@ -306,7 +306,7 @@ Node SubMap::FindAccessibleNodeForGoal(Node start, Point goal, std::unordered_ma
             currNode.g = 0.0;
 
 
-//            if(occupied.find(currNode.i * GetWidth() + currNode.j) != occupied.end())
+//            if(occupied.find(currNode.i * GridWidth() + currNode.j) != occupied.end())
 //            {
 //                std::cout << "AAAAAAAAAA\n";
 //            }
@@ -337,7 +337,7 @@ Node SubMap::FindAccessibleNodeForGoal(Node start, Point goal, std::unordered_ma
     bestNode.H = 0.0;
     bestNode.g = 0.0;
 
-//    if(occupied.find(bestNode.i * GetWidth() + bestNode.j) != occupied.end())
+//    if(occupied.find(bestNode.i * GridWidth() + bestNode.j) != occupied.end())
 //    {
 //        std::cout << "AAAAAAAAAA 2\n";
 //    }

@@ -82,7 +82,7 @@ bool ThetaStar::GetNext(const Point &curr, Point &next)
         }
 
 
-//        Node currNode = map->GetClosestNode(curr), nextNode = map->GetClosestNode(currPath.front());
+//        Node currNode = map->GetClosestNode(curr), nextNode = map->CreateNodeForPoint(currPath.front());
 //        if(currNode == nextNode || visChecker.checkLine(currNode.i, currNode.j, nextNode.i, nextNode.j, *map))
 //        {
 //            next = currPath.front();
@@ -92,7 +92,7 @@ bool ThetaStar::GetNext(const Point &curr, Point &next)
         Point last = currPath.front();
         currPath.pop_front();
 
-//        bool isLastAccessible = SearchPath(map->GetClosestNode(curr), map->GetClosestNode(last));
+//        bool isLastAccessible = SearchPath(map->GetClosestNode(curr), map->CreateNodeForPoint(last));
 //        if(isLastAccessible)
 //        {
 //            next = currPath.front();
@@ -314,7 +314,7 @@ void ThetaStar::MakePrimaryPath(Node curNode)
         currPath.push_front(map->GetPoint(current));
         current = *current.parent;
     }
-    //std::cout<<map->GetPoint(current).ToString();
+    //std::cout<<map->CenterPosition(current).ToString();
 }
 
 

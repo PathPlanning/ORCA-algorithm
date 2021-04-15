@@ -20,8 +20,6 @@
 #ifndef ORCA_XMLREADER_H
 #define ORCA_XMLREADER_H
 
-
-
 using namespace tinyxml2;
 
 class XMLReader : public Reader

@@ -1,6 +1,4 @@
 
-
-
 #include <cstdio>
 #include <string>
 #include <iostream>
@@ -12,6 +10,7 @@
 #include "MAPF/MAPFSearchResult.h"
 #include "xml_tags.h"
 #include "tinyxml2.h"
+
 
 #ifndef ORCASTAR_MAPFINSTANCESLOGGER_H
 #define ORCASTAR_MAPFINSTANCESLOGGER_H
