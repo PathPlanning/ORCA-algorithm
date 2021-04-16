@@ -32,14 +32,9 @@ public:
     bool isFinished();
     bool InitPath();
     
-
-
-    
-
-    
-
-
-//private:
+private:
+    UpdatableMap upd_map;
+    std::unordered_map<size_t, ObstacleSegment> obstacles_segments;
 
 };
 

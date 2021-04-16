@@ -2,7 +2,7 @@
 #include <string>
 #include <ostream>
 
-#include "include/Mission.h"
+#include "Mission.h"
 
 #define STEP_MAX            10000
 #define IS_TIME_BOUNDED     true

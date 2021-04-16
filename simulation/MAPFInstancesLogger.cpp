@@ -1,4 +1,4 @@
-#include "include/MAPFInstancesLogger.h"
+#include "MAPFInstancesLogger.h"
 
 
 MAPFInstancesLogger::MAPFInstancesLogger(std::string pathTempl)

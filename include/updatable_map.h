@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstddef>
 #include <iostream>
+#include "cassert"
 
 #include "Geom.h"
 
@@ -28,7 +29,7 @@ class UpdatableMap
         float CellSize() const;
         Node CreateNodeForPoint(const Point &point) const;
         Point CenterPosition(int64_t i, int64_t j) const;
-        std::unordered_map<size_t, ObstacleSegment>& GetCloseObstacles(const Point &point, float spacing);
+        void GetCloseObstacles(const Point &point, float spacing, std::unordered_map<size_t, ObstacleSegment>& obst_seg);
         
     private:
         std::pair<int64_t, int64_t> origin;
@@ -36,7 +37,7 @@ class UpdatableMap
         int64_t height;
         int64_t width;
         std::vector<std::vector<bool>> grid;
-        std::unordered_map<size_t, ObstacleSegment> obstacle_segments;
+//        std::unordered_map<size_t, ObstacleSegment> obstacle_segments;
 };
 
 

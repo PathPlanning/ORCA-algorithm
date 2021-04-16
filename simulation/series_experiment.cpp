@@ -3,7 +3,7 @@
 #include <ostream>
 #include <sstream>
 
-#include "include/Mission.h"
+#include "Mission.h"
 
 #define RESULT_FILE         "result.txt"
 #define INPUT_FILE_PART     "_task.xml"

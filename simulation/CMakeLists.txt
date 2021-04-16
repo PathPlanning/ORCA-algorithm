@@ -1,12 +1,12 @@
 
-set(SIM_HEADERS include/Mission.h
-                include/XMLLogger.h
-                include/Logger.h
-                include/Reader.h
-                include/XMLReader.h
-                include/Summary.h
-                include/MAPFInstancesLogger.h
-                include/xml_tags.h)
+set(SIM_HEADERS Mission.h
+        XMLLogger.h
+        Logger.h
+        Reader.h
+        XMLReader.h
+        Summary.h
+        MAPFInstancesLogger.h
+        xml_tags.h)
 
 set(SIM_SOURCES XMLLogger.cpp
                 Mission.cpp
@@ -16,6 +16,12 @@ set(SIM_SOURCES XMLLogger.cpp
 add_executable(single single_experiment.cpp ${SIM_HEADERS} ${SIM_SOURCES})
 add_executable(series series_experiment.cpp ${SIM_HEADERS} ${SIM_SOURCES})
 
-target_link_libraries(single PRIVATE ORCAStar TINYXML)
-target_link_libraries(series PRIVATE ORCAStar TINYXML)
+
+target_link_libraries(single ORCAStar TINYXML)
+target_include_directories(single PUBLIC ../include)
+target_include_directories(single PUBLIC ../libs/tinyxml)
+
+
+
+target_link_libraries(series ORCAStar TINYXML)
 

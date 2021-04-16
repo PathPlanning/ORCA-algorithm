@@ -1,4 +1,4 @@
-#include "include/Mission.h"
+#include "Mission.h"
 
 
 Mission::Mission(std::string fileName, unsigned int agentsNum, unsigned int stepsTh, bool time, size_t timeTh, bool speedStop)

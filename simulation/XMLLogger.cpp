@@ -1,4 +1,4 @@
-#include "include/XMLLogger.h"
+#include "XMLLogger.h"
 
 XMLLogger::XMLLogger(std::string fileName, std::string inpFileName)
 {

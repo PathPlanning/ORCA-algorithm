@@ -1499,9 +1499,9 @@ void ORCAAgentWithPARAndECBS::SetMAPFInstanceLoggerRef(MAPFInstancesLogger *log)
 }
 #endif
 
-unordered_map<std::string, float> ORCAAgentWithPARAndECBS::GetMAPFStatistics() const
+std::unordered_map<std::string, float> ORCAAgentWithPARAndECBS::GetMAPFStatistics() const
 {
-    unordered_map<std::string, float> stat;
+    std::unordered_map<std::string, float> stat;
     stat[CNS_MAPF_COMMON_TIME] = timeMAPF;
     stat[CNS_MAPF_INIT_COUNT] = static_cast<float>(initCount);
     stat[CNS_MAPF_UNITE_COUNT] = static_cast<float>(uniCount);

@@ -11,7 +11,7 @@
 #include "MAPF/SCIPP.h"
 
 // TODO Rewrite MAPF instance logger module from scratch (singleton)
-#include "../simulation/include/MAPFInstancesLogger.h"
+//#include "../simulation/MAPFInstancesLogger.h"
 
 #ifndef ORCASTAR_ORCAAGENTWITHECBS_H
 #define ORCASTAR_ORCAAGENTWITHECBS_H

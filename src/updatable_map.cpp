@@ -79,9 +79,10 @@ Point UpdatableMap::CenterPosition(int64_t i, int64_t j) const
     return {x, y};
 }
 
-std::unordered_map<size_t, ObstacleSegment> &UpdatableMap::GetCloseObstacles(const Point &point, float spacing)
+//TODO change from unordered_map to vector
+void UpdatableMap::GetCloseObstacles(const Point &point, float spacing, std::unordered_map<size_t, ObstacleSegment>& obst_seg)
 {
-    obstacle_segments.clear();
+    obst_seg.clear();
     
     auto next_in_line_ij_hash = [](char side, int64_t ij, int64_t width) -> int64_t
     {
@@ -158,7 +159,7 @@ std::unordered_map<size_t, ObstacleSegment> &UpdatableMap::GetCloseObstacles(con
                         if (CellIsTraversable(n_i, n_j))
                         {
                             obst_cells[i * width + j].emplace_back(ObstacleSegment(obst_id, left, right));
-                            obstacle_segments.emplace(obst_id, ObstacleSegment(obst_id, left, right));
+                            obst_seg.emplace(obst_id, ObstacleSegment(obst_id, left, right));
                             obst_id++;
                         }
                         else
@@ -169,7 +170,7 @@ std::unordered_map<size_t, ObstacleSegment> &UpdatableMap::GetCloseObstacles(con
                     else
                     {
                         obst_cells[i * width + j].emplace_back(ObstacleSegment(obst_id, left, right));
-                        obstacle_segments.emplace(obst_id, ObstacleSegment(obst_id, left, right));
+                        obst_seg.emplace(obst_id, ObstacleSegment(obst_id, left, right));
                         obst_id++;
                     }
                     side++;
@@ -186,37 +187,38 @@ std::unordered_map<size_t, ObstacleSegment> &UpdatableMap::GetCloseObstacles(con
             {
                 int next_side = (side == 3) ? 0 : side + 1;
                 int prev_side = (side - 1 > 0) ? side -1 : 3;
+    
+                assert((pos_segm[next_side].id != -1 or
+                        obst_cells[next_in_line_ij_hash(side, pos_hash, width)][side].id != -1 or
+                        obst_cells[next_diagonal_ij_hash(side, pos_hash, width)][prev_side].id != -1) and
+                        "WRONG! OBSTACLE ERROR");
+                
                 if(pos_segm[next_side].id != -1)
                 {
-                    obstacle_segments[pos_segm[side].id].next = &obstacle_segments[pos_segm[next_side].id];
-                    obstacle_segments[pos_segm[next_side].id].prev = &obstacle_segments[pos_segm[side].id];
+                    obst_seg[pos_segm[side].id].next = &obst_seg[pos_segm[next_side].id];
+                    obst_seg[pos_segm[next_side].id].prev = &obst_seg[pos_segm[side].id];
                 }
                 else if(obst_cells[next_in_line_ij_hash(side, pos_hash, width)][side].id != -1)
                 {
-                    obstacle_segments[pos_segm[side].id].next = &obstacle_segments[obst_cells[next_in_line_ij_hash(side, pos_hash, width)][side].id];
-                    obstacle_segments[pos_segm[next_side].id].prev = &obstacle_segments[pos_segm[side].id];
+                    obst_seg[pos_segm[side].id].next = &obst_seg[obst_cells[next_in_line_ij_hash(side, pos_hash, width)][side].id];
+                    obst_seg[pos_segm[next_side].id].prev = &obst_seg[pos_segm[side].id];
                     
                 }
                 else if(obst_cells[next_diagonal_ij_hash(side, pos_hash, width)][prev_side].id != -1)
                 {
-                    obstacle_segments[pos_segm[side].id].next = &obstacle_segments[obst_cells[next_diagonal_ij_hash(side, pos_hash, width)][prev_side].id];
-                    obstacle_segments[obst_cells[next_diagonal_ij_hash(side, pos_hash, width)][prev_side].id].prev = &obstacle_segments[pos_segm[side].id];
+                    obst_seg[pos_segm[side].id].next = &obst_seg[obst_cells[next_diagonal_ij_hash(side, pos_hash, width)][prev_side].id];
+                    obst_seg[obst_cells[next_diagonal_ij_hash(side, pos_hash, width)][prev_side].id].prev = &obst_seg[pos_segm[side].id];
                 }
-                else
-                {
-                    std::cerr << "WRONG! OBSTACLE ERROR\n";
-                    exit(EXIT_FAILURE);
-                }
-                auto left = obstacle_segments[pos_segm[side].id].left;
-                auto right = obstacle_segments[pos_segm[side].id].right;
-                auto next = obstacle_segments[pos_segm[side].id].next->right;
+   
+                auto left = obst_seg[pos_segm[side].id].left;
+                auto right = obst_seg[pos_segm[side].id].right;
+                auto next = obst_seg[pos_segm[side].id].next->right;
                 bool cvx = (left - next).Det(right - left) >= 0.0;
-                
-                obstacle_segments[pos_segm[side].id].right.SetConvex(cvx);
-                obstacle_segments[pos_segm[side].id].next->left.SetConvex(cvx);
+    
+                obst_seg[pos_segm[side].id].right.SetConvex(cvx);
+                obst_seg[pos_segm[side].id].next->left.SetConvex(cvx);
             }
         }
     }
-    return obstacle_segments;
 }
 

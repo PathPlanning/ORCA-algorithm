@@ -1,4 +1,4 @@
-#include "include/XMLReader.h"
+#include "XMLReader.h"
 
 
 XMLReader::XMLReader(const std::string &fileName)

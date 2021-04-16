@@ -10,7 +10,7 @@
 #include "MAPF/AStar.h"
 
 // TODO Rewrite MAPF instance logger module from scratch (singleton)
-#include "../simulation/include/MAPFInstancesLogger.h"
+//#include "../simulation/MAPFInstancesLogger.h"
 
 #ifndef ORCA_ORCAAGENTWITHPAR_H
 #define ORCA_ORCAAGENTWITHPAR_H
@@ -34,7 +34,7 @@ class ORCAAgentWithPAR : public Agent
         void AddNeighbour(Agent &neighbour, float distSq) override;
         bool isPARMember() const;
 
-        unordered_map<std::string, float> GetMAPFStatistics() const;
+        std::unordered_map<std::string, float> GetMAPFStatistics() const;
 
 
         bool operator == (const ORCAAgentWithPAR &another) const;

@@ -13,7 +13,7 @@
 #include "MAPF/PushAndRotate.h"
 
 // TODO Rewrite MAPF instance logger module from scratch (singleton)
-#include "../simulation/include/MAPFInstancesLogger.h"
+//#include "../simulation/MAPFInstancesLogger.h"
 
 
 #ifndef ORCASTAR_ORCAAGENWITHTPARANDECBS_H
@@ -40,7 +40,7 @@ class ORCAAgentWithPARAndECBS : public Agent
         void AddNeighbour(Agent &neighbour, float distSq) override;
 
         void PrintMAPFMemberStat() const;
-        unordered_map<std::string, float> GetMAPFStatistics() const;
+        std::unordered_map<std::string, float> GetMAPFStatistics() const;
 
 
         bool operator == (const ORCAAgentWithPARAndECBS &another) const;
