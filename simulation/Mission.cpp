@@ -129,7 +129,7 @@ Summary Mission::StartMission()
 #if PAR_LOG
         dynamic_cast<ORCAAgentWithPARAndECBS*>(agent)->SetMAPFInstanceLoggerRef(&PARLog);
 #endif
-        bool found = agent->InitPath();
+        bool found = agent->CreateGlobalPath();
 #if FULL_OUTPUT
         if(!found)
         {

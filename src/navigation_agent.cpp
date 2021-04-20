@@ -356,7 +356,7 @@ void NavigationAgent::AddNeighbour(Agent &neighbour, float distSq)
 
 void NavigationAgent::UpdateNeighbourObst()
 {
-    upd_map.GetCloseObstacles(position, 1, obstacles_segments); // TODO create agent param for spacing
+    upd_map->GetCloseObstacles(position, 1, obstacles_segments); // TODO create agent param for spacing
     // TODO
 }
 
@@ -366,9 +366,10 @@ bool NavigationAgent::isFinished()
     return false;
 }
 
-bool NavigationAgent::InitPath()
+bool NavigationAgent::CreateGlobalPath()
 {
     // TODO
+    
     return false;
 }
 

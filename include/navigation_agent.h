@@ -1,8 +1,10 @@
 #include <vector>
+#include <memory>
 
 #include "ORCAAgent.h"
-#include "updatable_map.h"
 #include "EnvironmentOptions.h"
+#include "updatable_map.h"
+#include "jump_point_search.h"
 
 #ifndef ORCASTAR_NAVIGATION_AGENT_H
 #define ORCASTAR_NAVIGATION_AGENT_H
@@ -30,11 +32,14 @@ public:
     void UpdateNeighbourObst();
     
     bool isFinished();
-    bool InitPath();
+    bool CreateGlobalPath();
     
 private:
-    UpdatableMap upd_map;
+    std::shared_ptr<UpdatableMap> upd_map;
     std::unordered_map<size_t, ObstacleSegment> obstacles_segments;
+    JumpPointSearch global_planner;
+    
+    
 
 };
 

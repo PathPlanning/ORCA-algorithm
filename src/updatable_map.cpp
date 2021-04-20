@@ -18,34 +18,57 @@ UpdatableMap &UpdatableMap::operator=(const UpdatableMap &obj)
         height = obj.height;
         width = obj.width;
         grid = obj.grid;
-        obstacle_segments = obj.obstacle_segments;
+        offset = obj.offset;
     }
     return *this;
 }
 
 
-bool UpdatableMap::Update(std::vector<std::vector<bool>> grid, int64_t origin_i, int64_t origin_j, float c_size)
+bool UpdatableMap::Update(std::vector<std::vector<bool>> grid, int64_t origin_i, int64_t origin_j,
+                          float c_size, int64_t offset)
 {
     this->grid = std::move(grid);
     this->origin = {origin_i, origin_j};
     this->cell_size = c_size;
     this->height = static_cast<int64_t>(this->grid.size());
     this->width = (height > 0) ? static_cast<int64_t>(this->grid[0].size()) : 0;
+    this->offset = offset;
+    this->offset_grid = this->grid;
+    if(this->offset != 0)
+    {
+        for(int64_t i = 0; i < this->height; i++)
+        {
+            for(int64_t j = 0; j < this->width; j++)
+            {
+                if(this->grid[i][j] == CN_GC_OBS)
+                {
+                    for(int64_t di = -offset; di <= offset; di++)
+                        for(int64_t dj = -offset; dj <= offset; dj++)
+                            if(CellOnGrid(i+dj, j+dj))
+                                this->offset_grid[i+di][j+dj] = CN_GC_OBS;
+                }
+            }
+        }
+    }
+    
 }
 
-bool UpdatableMap::CellIsObstacle(int64_t i, int64_t j) const
+bool UpdatableMap::CellIsObstacle(int64_t i, int64_t j, bool offset) const
 {
-    return grid[i][j] != CN_GC_NOOBS;
+    if(offset) return offset_grid[i][j] != CN_GC_NOOBS;
+    else return grid[i][j] != CN_GC_NOOBS;
+
+}
+
+bool UpdatableMap::CellIsTraversable(int64_t i, int64_t j, bool offset) const
+{
+    if(offset) return offset_grid[i][j] == CN_GC_NOOBS;
+    else return grid[i][j] == CN_GC_NOOBS;
 }
 
 bool UpdatableMap::CellOnGrid(int64_t i, int64_t j) const
 {
     return (i < height) and (i >= 0) and (j < width) and (j >= 0);;
-}
-
-bool UpdatableMap::CellIsTraversable(int64_t i, int64_t j) const
-{
-    return grid[i][j] == CN_GC_NOOBS;
 }
 
 int64_t UpdatableMap::GridHeight() const
@@ -125,7 +148,7 @@ void UpdatableMap::GetCloseObstacles(const Point &point, float spacing, std::uno
     {
         for(auto j = bottom_left_cell.j; j <= top_right_cell.j; j++)
         {
-            if (CellIsTraversable(i, j))
+            if (CellIsTraversable(i, j, false))
             {
                 obst_cells.emplace(i * width + j, std::vector<ObstacleSegment>());
                 obst_cells[i * width + j].reserve(4);
@@ -156,7 +179,7 @@ void UpdatableMap::GetCloseObstacles(const Point &point, float spacing, std::uno
                     if (CellOnGrid(n_i, n_j) and n_i <= bottom_left_cell.i and n_i >= top_right_cell.i and
                         n_j >= bottom_left_cell.j and n_j <= top_right_cell.j)
                     {
-                        if (CellIsTraversable(n_i, n_j))
+                        if (CellIsTraversable(n_i, n_j, false))
                         {
                             obst_cells[i * width + j].emplace_back(ObstacleSegment(obst_id, left, right));
                             obst_seg.emplace(obst_id, ObstacleSegment(obst_id, left, right));
@@ -222,3 +245,132 @@ void UpdatableMap::GetCloseObstacles(const Point &point, float spacing, std::uno
     }
 }
 
+std::pair<int64_t, int64_t> UpdatableMap::FindCellForPoint(const Point &point) const
+{
+    int64_t res_i = origin.first - std::lround(point.Y() / cell_size);
+    int64_t res_j = std::lround(point.x / cell_size) + origin.second;
+    
+    return {static_cast<int>(res_i), static_cast<int>(res_j)};
+}
+
+
+bool UpdatableMap::CheckVisibility(int64_t i1, int64_t j1, int64_t i2, int64_t j2, bool cutcorners, bool offset)
+{
+	int delta_i = std::abs(i1 - i2);
+	int delta_j = std::abs(j1 - j2);
+	int step_i = (i1 < i2 ? 1 : -1);
+	int step_j = (j1 < j2 ? 1 : -1);
+	int error = 0;
+	int i = i1;
+	int j = j1;
+	if (delta_i == 0)
+	{
+		for (; j != j2; j += step_j)
+			if (CellIsObstacle(i, j, offset))
+				return false;
+		return true;
+	}
+	else if (delta_j == 0)
+	{
+		for (; i != i2; i += step_i)
+			if (CellIsObstacle(i, j, offset))
+				return false;
+		return true;
+	}
+	if (cutcorners)
+	{
+		if (delta_i > delta_j)
+		{
+			for (; i != i2; i += step_i)
+			{
+				if (CellIsObstacle(i, j, offset))
+					return false;
+				error += delta_j;
+				if ((error << 1) > delta_i)
+				{
+					if (((error << 1) - delta_j) < delta_i && CellIsObstacle(i + step_i, j, offset))
+						return false;
+					else if (((error << 1) - delta_j) > delta_i && CellIsObstacle(i, j + step_j, offset))
+						return false;
+					j += step_j;
+					error -= delta_i;
+				}
+			}
+		}
+		else
+		{
+			for (; j != j2; j += step_j)
+			{
+				if (CellIsObstacle(i, j, offset))
+					return false;
+				error += delta_i;
+				if ((error << 1) > delta_j)
+				{
+					if (((error << 1) - delta_i) < delta_j && CellIsObstacle(i, j + step_j, offset))
+						return false;
+					else if (((error << 1) - delta_i) > delta_j && CellIsObstacle(i + step_i, j, offset))
+						return false;
+					i += step_i;
+					error -= delta_j;
+				}
+			}
+		}
+		
+	}
+	else
+	{
+		int sep_value = delta_i * delta_i + delta_j * delta_j;
+		if (delta_i > delta_j)
+		{
+			for (; i != i2; i += step_i)
+			{
+				if (CellIsObstacle(i, j, offset))
+					return false;
+				if (CellIsObstacle(i, j + step_j, offset))
+					return false;
+				error += delta_j;
+				if (error >= delta_i)
+				{
+					if (((error << 1) - delta_i - delta_j) * ((error << 1) - delta_i - delta_j) < sep_value)
+						if (CellIsObstacle(i + step_i, j, offset))
+							return false;
+					if ((3 * delta_i - ((error << 1) - delta_j)) * (3 * delta_i - ((error << 1) - delta_j)) <
+						sep_value)
+						if (CellIsObstacle(i, j + 2 * step_j, offset))
+							return false;
+					j += step_j;
+					error -= delta_i;
+				}
+			}
+			if (CellIsObstacle(i, j, offset))
+				return false;
+		}
+		else
+		{
+			for (; j != j2; j += step_j)
+			{
+				if (CellIsObstacle(i, j, offset))
+					return false;
+				if (CellIsObstacle(i + step_i, j, offset))
+					return false;
+				error += delta_i;
+				if (error >= delta_j)
+				{
+					if (((error << 1) - delta_i - delta_j) * ((error << 1) - delta_i - delta_j) <
+						(delta_i * delta_i + delta_j * delta_j))
+						if (CellIsObstacle(i, j + step_j, offset))
+							return false;
+					if ((3 * delta_j - ((error << 1) - delta_i)) * (3 * delta_j - ((error << 1) - delta_i)) <
+						(delta_i * delta_i + delta_j * delta_j))
+						if (CellIsObstacle(i + 2 * step_i, j, offset))
+							return false;
+					i += step_i;
+					error -= delta_j;
+				}
+			}
+			if (CellIsObstacle(i, j, offset))
+				return false;
+		}
+	}
+	return true;
+}

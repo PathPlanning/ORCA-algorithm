@@ -50,7 +50,7 @@ class Agent
         virtual void AddNeighbour(Agent &neighbour, float distSq);
         virtual bool isFinished();
 
-        bool InitPath();
+        bool CreateGlobalPath();
         int GetID() const;
         Point GetPosition() const;
         Point GetVelocity() const;

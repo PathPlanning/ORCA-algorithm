@@ -193,7 +193,7 @@ std::pair<unsigned int, unsigned int> Agent::GetCollision() const
 }
 
 
-bool Agent::InitPath()
+bool Agent::CreateGlobalPath()
 {
     return planner->CreateGlobalPath();
 }
