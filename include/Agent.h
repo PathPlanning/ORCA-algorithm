@@ -2,6 +2,7 @@
 #include "PathPlanner.h"
 #include "ThetaStar.h"
 #include "Geom.h"
+#include "utils.h"
 
 #include <vector>
 #include <cmath>
@@ -10,6 +11,7 @@
 #include <type_traits>
 #include <cstddef>
 #include <list>
+#include <memory>
 
 #ifndef ORCA_AGENT_H
 #define ORCA_AGENT_H
@@ -37,7 +39,7 @@ class Agent
 {
     public:
         Agent();
-        Agent(const int &id, const Point &start, const Point &goal, Map &map, const EnvironmentOptions &options, AgentParam param);
+        Agent(const int &id, const Point &start, const Point &goal, Map *map, const EnvironmentOptions &options, AgentParam param);
         Agent(const Agent &obj);
         virtual ~Agent();
 
@@ -64,11 +66,8 @@ class Agent
         bool operator != (const Agent &another) const;
         Agent & operator = (const Agent& obj);
 
-        template <class Planner> void SetPlanner(const Planner &pl)
-        {
-            static_assert(std::is_base_of<PathPlanner, Planner>::value, "Planner should be inheritor of PathPlanner");
-            this->planner = new Planner(pl);
-        }
+        void SetPlanner(const PathPlanner &pl);
+
 
 
     protected:
@@ -81,7 +80,7 @@ class Agent
         Point start;
         Point goal;
         PathPlanner *planner;
-        const EnvironmentOptions *options;
+        std::shared_ptr<EnvironmentOptions> options;
         Map *map;
         std::vector <std::pair<float, Agent*>> Neighbours;
         std::vector <std::pair<float, ObstacleSegment>> NeighboursObst;

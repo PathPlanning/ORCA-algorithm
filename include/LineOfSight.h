@@ -19,7 +19,7 @@
 
 #include "Const.h"
 
-class LineOfSight
+class [[deprecated]] LineOfSight
 {
 public:
     LineOfSight(double agentSize = 0.5)

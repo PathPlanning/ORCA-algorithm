@@ -54,7 +54,7 @@ ORCAAgentWithPARAndECBS::ORCAAgentWithPARAndECBS() : Agent()
 }
 
 
-ORCAAgentWithPARAndECBS::ORCAAgentWithPARAndECBS(const int &id, const Point &start, const Point &goal, Map &map,
+ORCAAgentWithPARAndECBS::ORCAAgentWithPARAndECBS(const int &id, const Point &start, const Point &goal, Map *map,
                                                  const EnvironmentOptions &options, AgentParam param) : Agent(id, start, goal, map, options, param)
 {
 //    srand (42);

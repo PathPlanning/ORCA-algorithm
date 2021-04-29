@@ -56,7 +56,7 @@ set(ORCA_HEADERS    ../include/Agent.h
                     ../include/ORCAAgentWithPARAndECBS.h
                     ../include/ORCAAgentWithReturning.h
                     ../include/updatable_map.h
-                    ../include/navigation_agent.h ../include/jump_point_search.h ../include/path_follower.h)
+                    ../include/navigation_agent.h ../include/jump_point_search.h ../include/global_path_planner.h)
 
 set(ORCA_SOURCES    Agent.cpp
                     Map.cpp
@@ -72,7 +72,7 @@ set(ORCA_SOURCES    Agent.cpp
                     ORCAAgentWithPARAndECBS.cpp
                     ORCAAgentWithReturning.cpp
                     updatable_map.cpp
-                    navigation_agent.cpp jump_point_search.cpp path_follower.cpp ../include/utils.h)
+                    navigation_agent.cpp jump_point_search.cpp global_path_planner.cpp ../include/utils.h)
 
 add_library(ORCAStar ${ORCA_HEADERS} ${ORCA_SOURCES} ${MAPF_HEADERS} ${MAPF_SOURCES})
 target_include_directories(ORCAStar PUBLIC ../include)

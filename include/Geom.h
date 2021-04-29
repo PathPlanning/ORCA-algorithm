@@ -12,7 +12,9 @@
 class Node
 {
     public:
-        int     i, j;
+
+		
+		int     i, j;
         double  F, g, H;
         Node    *parent;
 
@@ -22,13 +24,15 @@ class Node
 
         Node(int i = 0, int j = 0, Node *p = nullptr, double g = 0, double h = 0, int d = 0, int conf = 0)
             : i(i), j(j), parent(p), g(g), H(h), F(g+h), depth(d), conflictsCount(conf){}
+		Node(std::pair<int64_t, int64_t> cell);
 
         bool operator != (const Node &other) const;
 
         bool operator < (const Node &other) const;
-
-
+        
         bool operator == (const Node &another) const;
+		
+		void operator=(const std::pair<int64_t, int64_t> &cell);
 
         int convolution(int width, int height, bool withTime = false) const;
 };
@@ -137,43 +141,7 @@ struct ActorMove
 };
 
 
-namespace Utils
-{
-    float SqPointSegDistance(Point L1, Point L2, Point P);
 
-    bool linearProgram1(const std::vector<Line> &lines, unsigned long curr, float radius, const Vector &optVelocity,
-                               bool directionOpt, Vector &result);
-    unsigned long int linearProgram2(const std::vector<Line> &lines, float radius, const Vector &optVelocity,
-                                bool directionOpt, Vector &result);
-    void linearProgram3(const std::vector<Line> &lines, size_t numObstLines, size_t beginLine,
-                                float radius, Vector &result);
-
-    template<typename T>
-    bool More( std::pair<float, T> a, std::pair<float, T> b)
-    {
-        return (a.first > b.first);
-    }
-
-    template<typename T>
-    bool Less( std::pair<float, T> a, std::pair<float, T> b)
-    {
-        return (a.first < b.first);
-    }
-
-    struct NodeHash {
-        size_t operator()(const Node& node) const {
-            return (node.i + node.j) * (node.i + node.j + 1) + node.j;
-        }
-    };
-
-    struct NodePairHash {
-        size_t operator()(const std::pair<Node, Node>& pair) const {
-            NodeHash nodeHash;
-            size_t hash1 = nodeHash(pair.first), hash2 = nodeHash(pair.second);
-            return (hash1 + hash2) * (hash1 + hash2 + 1) + hash2;
-        }
-    };
-};
 
 namespace std
 {
@@ -213,6 +181,18 @@ inline bool Node::operator == (const Node &another) const
 inline bool Node::operator != (const Node &other) const
 {
     return i != other.i || j != other.j;
+}
+
+void Node::operator=(const std::pair<int64_t, int64_t> &cell)
+{
+	i = cell.first;
+	j = cell.second;
+}
+
+Node::Node(std::pair<int64_t, int64_t> cell)
+{
+	i = cell.first;
+	j = cell.second;
 }
 
 inline bool ObstacleSegment::operator ==(const ObstacleSegment &another) const

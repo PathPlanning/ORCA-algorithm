@@ -1,4 +1,6 @@
 #include "../include/Agent.h"
+
+#include <memory>
 #define SpeedBuffSize 250
 #define SmallSpeed 0.1
 
@@ -8,7 +10,6 @@ Agent::Agent()
     start = Point();
     goal = Point();
     planner = nullptr;
-    options = nullptr;
     map = nullptr;
     Neighbours = std::vector <std::pair<float, Agent*>>();
     NeighboursObst = std::vector <std::pair<float, ObstacleSegment>>();
@@ -28,13 +29,13 @@ Agent::Agent()
 }
 
 
-Agent::Agent(const int &id, const Point &start, const Point &goal, Map &map, const EnvironmentOptions &options, AgentParam param)
+Agent::Agent(const int &id, const Point &start, const Point &goal, Map *map, const EnvironmentOptions &options, AgentParam param)
 {
     this->id = id;
     this->start = start;
     this->goal = goal;
-    this->map = &map;
-    this->options = &options;
+    this->map = map;
+    this->options = std::make_shared<EnvironmentOptions>(options);
     this->param = param;
 
     Neighbours = std::vector <std::pair<float, Agent*>>();
@@ -256,6 +257,11 @@ Point Agent::GetNext() const
 bool Agent::CommonPointMAPFTrigger(float distToTargetPoint)
 {
     return (Neighbours.size() >= options->MAPFNum) && (distToTargetPoint < param.sightRadius);
+}
+
+void Agent::SetPlanner(const PathPlanner &pl)
+{
+		this->planner = pl.Clone();
 }
 
 

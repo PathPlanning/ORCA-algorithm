@@ -37,9 +37,9 @@ class [[deprecated]] Map
         float cellSize;
         unsigned int height;
         unsigned int width;
-        std::vector<std::vector<int>> *grid;  // TODO Change to smart pointer or not dynamic at all and make it updatable
+        std::vector<std::vector<int>> *grid;
         
-        std::vector<std::vector<ObstacleSegment>> *obstacles; // TODO Delete
+        std::vector<std::vector<ObstacleSegment>> *obstacles;
         
         std::unordered_map<size_t, ObstacleSegment> obstacle_segments;
 };

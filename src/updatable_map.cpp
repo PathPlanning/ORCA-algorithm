@@ -253,7 +253,6 @@ std::pair<int64_t, int64_t> UpdatableMap::FindCellForPoint(const Point &point) c
     return {static_cast<int>(res_i), static_cast<int>(res_j)};
 }
 
-
 bool UpdatableMap::CheckVisibility(int64_t i1, int64_t j1, int64_t i2, int64_t j2, bool cutcorners, bool offset)
 {
 	int delta_i = std::abs(i1 - i2);

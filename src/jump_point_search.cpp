@@ -2,38 +2,24 @@
 
 JumpPointSearch &JumpPointSearch::operator=(const JumpPointSearch &obj)
 {
-    // TODO
+    if(&obj != this)
+	{
+    	map = obj.map;
+		options = obj.options;
+		start = obj.start;
+ 		goal = obj.goal;
+		close = obj.close;
+		open = obj.open;
+		open_size = obj.open_size;
+	}
     return *this;
-}
-
-bool JumpPointSearch::FindPath(Point start, Point goal, std::weak_ptr<UpdatableMap> map_ptr,
-                               std::weak_ptr<EnvironmentOptions> options_ptr, std::list<Point>& path)
-{
-    map = map_ptr.lock();
-    options = options_ptr.lock();
-    if(map and options)
-    {
-		this->start = start;
-		this->goal = goal;
-        start_cell = map->FindCellForPoint(start);
-        goal_cell = map->FindCellForPoint(goal);
-        
-        path_created = StartSearch(path);
-
-        map.reset();
-        options.reset();
-        
-        return path_created;
-    }
-    assert("map and options ptr should be transferred to planner");
-    return false;
 }
 
 bool JumpPointSearch::FindNeighbors(int64_t move_i, int64_t move_j, Node cur_node)
 {
     while(map->CellOnGrid(cur_node.i, cur_node.j) && map->CellIsTraversable(cur_node.i, cur_node.j))
     {
-        if(goal_cell.first == cur_node.i && goal_cell.second == cur_node.j) //goal location is found
+        if(goal.first == cur_node.i && goal.second == cur_node.j) //goal location is found
             return true;
         if(options->cutcorners)
         {
@@ -126,7 +112,7 @@ void JumpPointSearch::FindJP(int64_t move_i, int64_t move_j, Node cur_node, std:
         else
             return;
         
-        if (goal_cell.first == cur_node.i && goal_cell.second == cur_node.j)
+        if (goal.first == cur_node.i && goal.second == cur_node.j)
             findOK = true;
 
         if (options->cutcorners)
@@ -206,7 +192,6 @@ void JumpPointSearch::FindJP(int64_t move_i, int64_t move_j, Node cur_node, std:
     }
     if (close.find(cur_node.i * map->GridWidth() + cur_node.j) == close.end())
         successors.push_front(cur_node);
-    return;
 }
 
 int JumpPointSearch::FindDirection(int64_t current_i, int64_t parent_i)
@@ -225,12 +210,12 @@ std::list<Node> JumpPointSearch::FindSuccessors(Node cur_node)
     std::list<Node> successors;
     
 
-    if(cur_node.i == start_cell.first && cur_node.j == start_cell.second) //if cur_node is the start location, then look for jump points in all directions
+    if(cur_node.i == start.first && cur_node.j == start.second) //if cur_node is the start location, then look for jump points in all directions
         for(int n = -1; n <= 1; n++)
             for(int m = -1; m <= 1; m++)
                 if(n != 0 || m != 0)
                     FindJP(n, m, cur_node, successors);
-    if(cur_node.i != start_cell.first || cur_node.j != start_cell.second)
+    if(cur_node.i != start.first || cur_node.j != start.second)
     {
         move_i = FindDirection(cur_node.i, cur_node.parent->i);
         move_j = FindDirection(cur_node.j, cur_node.parent->j);
@@ -304,26 +289,28 @@ std::list<Node> JumpPointSearch::FindSuccessors(Node cur_node)
     return successors;
 }
 
-bool JumpPointSearch::StartSearch(std::list<Point>& path)
+bool JumpPointSearch::StartSearch(std::pair<int64_t, int64_t> start_cell,
+								  std::pair<int64_t, int64_t> goal_cell,
+								  std::shared_ptr<UpdatableMap> map_ptr,
+								  std::shared_ptr<EnvironmentOptions> options_ptr,
+								  std::list<Point>& path)
 {
-    if(path_created)
-    {
-        close.clear();
-        for(auto &l : open)
-        {
-            l.clear();
-        }
-        open_size = 0;
-    }
-    
+	map = map_ptr;
+	options = options_ptr;
+	close.clear();
+	for(auto &l : open)
+	{
+		l.clear();
+	}
+	open_size = 0;
     open.resize(map->GridHeight());
     
     
     Node cur_node;
-    cur_node.i = start_cell.first;
-    cur_node.j = start_cell.second;
+    cur_node.i = start.first;
+    cur_node.j = start.second;
     cur_node.g = 0;
-    cur_node.H = ComputeHFromCellToCell(cur_node.i, cur_node.j, goal_cell.first, goal_cell.second);
+    cur_node.H = ComputeHFromCellToCell(cur_node.i, cur_node.j, goal.first, goal.second);
     cur_node.F = options->hweight * cur_node.H;
     cur_node.parent = nullptr;
     AddToOpen(cur_node);
@@ -336,7 +323,7 @@ bool JumpPointSearch::StartSearch(std::list<Point>& path)
         close_size++;
         open[cur_node.i].pop_front();
         open_size--;
-        if (cur_node.i == goal_cell.first and cur_node.j == goal_cell.second)
+        if (cur_node.i == goal.first and cur_node.j == goal.second)
         {
             pathfound = true;
             break;
@@ -347,7 +334,7 @@ bool JumpPointSearch::StartSearch(std::list<Point>& path)
         while (it != successors.end())
         {
             it->parent = parent;
-            it->H = ComputeHFromCellToCell(it->i, it->j, goal_cell.first, goal_cell.second);
+            it->H = ComputeHFromCellToCell(it->i, it->j, goal.first, goal.second);
             it->F = it->g + options->hweight * it->H;
             AddToOpen(*it);
             it++;
@@ -357,6 +344,10 @@ bool JumpPointSearch::StartSearch(std::list<Point>& path)
 	{
 		MakePrimaryPath(cur_node, path);
 	}
+    
+    map.reset();
+    options.reset();
+    
     return pathfound;
 }
 
@@ -369,9 +360,9 @@ float JumpPointSearch::ComputeHFromCellToCell(int64_t i1, int64_t j1, int64_t i2
         case CN_SP_MT_DIAG:
             return static_cast<float>(abs(abs(i2 - i1) - abs(j2 - j1)) + sqrt(2) * (std::min(abs(i2 - i1),abs(j2 - j1))));
         case CN_SP_MT_MANH:
-            return (abs(i2 - i1) + abs(j2 - j1));
+            return static_cast<float>(abs(i2 - i1) + abs(j2 - j1));
         case CN_SP_MT_CHEB:
-            return std::max(abs(i2 - i1),abs(j2 - j1));
+            return static_cast<float>(std::max(abs(i2 - i1),abs(j2 - j1)));
         default:
             return 0;
     }
@@ -413,30 +404,24 @@ bool JumpPointSearch::StopCriterion() const
 
 void JumpPointSearch::MakePrimaryPath(Node last_node, std::list<Point>& path)
 {
-	
-	// TODO
-//	Node cur_node = last_node;
-//	path.push_back(map->CenterPosition(cur_node.i, cur_node.j));
-//	while(cur_node.parent != nullptr)
-//	{
-//		cur_node = *cur_node.parent;
-//		if(!map->CheckVisibility(last_node.i, last_node.j, cur_node.i, cur_node.j, options->cutcorners))
-//		{
-//			path.push_back(map->CenterPosition(cur_node.i, cur_node.j));
-//			new_hppath.push_back(*std::prev(node));
-//		}
-//	}
-//
-//	sr.pathlength += static_cast<float>(Theta::distance(new_hppath.back().i, new_hppath.back().j, sr.hppath->back().i, sr.hppath->back().j));
-//	new_hppath.push_back(sr.hppath->back());
-//	*sr.hppath = new_hppath;
+	Node cur_node = last_node;
+	path.push_back(map->CenterPosition(cur_node.i, cur_node.j));
+	while(cur_node.parent != nullptr)
+	{
+		if(not map->CheckVisibility(last_node.i, last_node.j, cur_node.parent->i, cur_node.parent->j, options->cutcorners))
+		{
+			path.push_back(map->CenterPosition(cur_node.i, cur_node.j));
+			last_node = cur_node;
+		}
+		cur_node = *cur_node.parent;
+	}
+	path.push_back(map->CenterPosition(cur_node.i, cur_node.j));
 }
 
 float JumpPointSearch::Distance(int64_t i1, int64_t j1, int64_t i2, int64_t j2) const
 {
     return static_cast<float>(sqrt(pow(i1 - i2, 2.0f) + pow(j1 - j2, 2.0f)));
 }
-
 
 void JumpPointSearch::AddToOpen(Node new_node)
 {

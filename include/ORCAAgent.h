@@ -9,7 +9,7 @@ class ORCAAgent : public Agent
 
 public:
     ORCAAgent();
-    ORCAAgent(const int &id, const Point &start, const Point &goal, Map &map, const EnvironmentOptions &options,
+    ORCAAgent(const int &id, const Point &start, const Point &goal, Map *map, const EnvironmentOptions &options,
               AgentParam param);
     ORCAAgent(const ORCAAgent &obj);
     ~ORCAAgent();

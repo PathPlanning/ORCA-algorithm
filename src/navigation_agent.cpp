@@ -1,49 +1,58 @@
 #include "navigation_agent.h"
 
 
-NavigationAgent::NavigationAgent()
+NavigationAgent::NavigationAgent() : ORCAAgent()
 {
-    //TODO
+    global_planner = std::unique_ptr<JPSPlanner>(new JPSPlanner());
 }
 
 
 NavigationAgent::NavigationAgent(const int &id, const EnvironmentOptions &options, AgentParam param)
-{
-    //TODO
-}
+: ORCAAgent(id, Point(), Point(), nullptr, options, param) {}
 
-NavigationAgent::NavigationAgent(const NavigationAgent &obj)
+
+NavigationAgent::NavigationAgent(const NavigationAgent &obj) : ORCAAgent(obj)
 {
-    //TODO
+	upd_map.reset();
+	upd_map = std::make_shared<UpdatableMap>(UpdatableMap(*obj.upd_map));
+	obstacles_segments = obj.obstacles_segments;
+	global_planner.reset();
+	global_planner = std::unique_ptr<GlobalPathPlanner>(obj.global_planner->Clone());
 }
 
 NavigationAgent::~NavigationAgent()
 {
-    //TODO
+    global_planner.reset();
+    upd_map.reset();
 }
 
 NavigationAgent *NavigationAgent::Clone() const
 {
-    //TODO
-    return nullptr;
+	return new NavigationAgent(*this);
 }
 
 bool NavigationAgent::operator==(const NavigationAgent &another) const
 {
-    //TODO
-    return false;
+	return this->id == another.id;
 }
 
 bool NavigationAgent::operator!=(const NavigationAgent &another) const
 {
-    //TODO
-    return false;
+	return this->id != another.id;
 }
 
 NavigationAgent &NavigationAgent::operator=(const NavigationAgent &obj)
 {
-    //TODO
-    return *this->Clone();
+	if(this != &obj)
+	{
+		ORCAAgent::operator=(obj);
+		upd_map.reset();
+		upd_map = std::make_shared<UpdatableMap>(UpdatableMap(*obj.upd_map));
+		obstacles_segments = obj.obstacles_segments;
+		global_planner.reset();
+		global_planner = std::unique_ptr<GlobalPathPlanner>(obj.global_planner->Clone());
+	}
+	return *this;
 }
 
 void NavigationAgent::ComputeNewVelocity()
@@ -334,43 +343,84 @@ void NavigationAgent::ComputeNewVelocity()
 
 void NavigationAgent::ApplyNewVelocity()
 {
-    //TODO
+    currV = newV;
 }
 
 bool NavigationAgent::UpdatePrefVelocity()
 {
-    //TODO
+	Point next;
+	if (global_planner->GetNextTarget(position, next))
+	{
+		Vector goalVector = next - position;
+		float dist = goalVector.EuclideanNorm();
+		if(next == goal && dist < options->delta)
+		{
+			prefV = Point();
+			return true;
+		}
+		
+		if(dist > CN_EPS)
+		{
+			goalVector = (goalVector/dist) * param.maxSpeed;
+		}
+		
+		prefV = goalVector;
+		nextForLog = next;
+		return true;
+	}
+	nextForLog = Point();
+	prefV = Point();
+	return false;
 }
 
 bool NavigationAgent::UpdateEnvironmentInfo(std::vector<std::vector<bool>> &grid, size_t origin_i, size_t origin_j,
-                                            float c_size, Point position, Point target)
+											float c_size)
 {
-    //TODO
+    upd_map->Update(grid, origin_j, origin_j, c_size, 0);
+    // TODO param for offset
     return false;
 }
 
 void NavigationAgent::AddNeighbour(Agent &neighbour, float distSq)
 {
-    // TODO
+	float sightSq = param.sightRadius * param.sightRadius;
+	
+	if(distSq >= sightSq)
+	{
+		return;
+	}
+	int i = 0;
+	auto tmpit = Neighbours.begin();
+	while(tmpit != Neighbours.end() && i < param.agentsMaxNum && Neighbours[i].first < distSq)
+	{
+		i++;
+		tmpit++;
+	}
+	if(i < param.agentsMaxNum)
+	{
+		Neighbours.insert(tmpit,std::pair<float, Agent *>(distSq, &neighbour));
+	}
 }
 
 void NavigationAgent::UpdateNeighbourObst()
 {
     upd_map->GetCloseObstacles(position, 1, obstacles_segments); // TODO create agent param for spacing
-    // TODO
 }
 
 bool NavigationAgent::isFinished()
 {
-    // TODO
-    return false;
+	return ((this->position - this->goal).EuclideanNorm() < options->delta);
 }
 
 bool NavigationAgent::CreateGlobalPath()
 {
-    // TODO
-    
-    return false;
+    return global_planner->FindPath(position, goal);
+}
+
+void NavigationAgent::UpdateGoal(Point goal)
+{
+	this->goal = goal;
+
 }
 
 
