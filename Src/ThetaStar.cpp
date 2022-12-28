@@ -41,7 +41,7 @@ bool ThetaStar::GetNext(const Point &curr, Point &next)
         if(currPath.size() > 1)
         {
             float sqDistToCurr = (currPath.front() - curr).SquaredEuclideanNorm();
-            float sqDelta = options->delta * options->delta;
+            float sqDelta = options->delta * options->delta; // TODO Separate option
             if(sqDistToCurr < sqDelta)
             {
 

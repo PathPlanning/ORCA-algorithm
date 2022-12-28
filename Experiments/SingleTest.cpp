@@ -4,10 +4,10 @@
 
 #include "Mission.h"
 
-#define STEP_MAX            10000
-#define IS_TIME_BOUNDED     true
+#define STEP_MAX            1000
+#define IS_TIME_BOUNDED     false
 #define STOP_BY_SPEED       false
-#define TIME_MAX            1000 * 60 * 0.2
+#define TIME_MAX            1000 * 60 * 1.0
 
 
 int main(int argc, char* argv[])
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
     {
         auto summary = task.StartMission();
 
-        std::cout << "\nSuccess\tRuntime\tMakespan\tFlowtime\tCollisions\tCollisionsObst\tMeanMAPFTime\tInits\tUpdates\tUnites\tECBS\tPnR\tSuccessMAPF\tUnsuccessMAPF\tFlowtimeMAPF\n";
+        std::cout << "\nSuccess\t\tRuntime\t\tMakespan\tFlowtime\tCollisions\tCollisionsObst\tMeanMAPFTime\tInits\tUpdates\tUnites\tECBS\tPnR\tSuccessMAPF\tUnsuccessMAPF\tFlowtimeMAPF\n";
         std::cout << summary[CNS_SUM_SUCCESS_RATE] << "\t";
         std::cout << summary[CNS_SUM_RUN_TIME] << "\t";
         std::cout << summary[CNS_SUM_MAKESPAN] << "\t";

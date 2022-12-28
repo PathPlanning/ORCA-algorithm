@@ -706,19 +706,19 @@ bool XMLReader::ReadAgents()
     tmpElement = agents->FirstChildElement(CNS_TAG_AGENT);
 
     int id;
-    float stx = 0, sty = 0, gx = 0, gy = 0;
+    float stx = 0, sty = 0, gx = 0, gy = 0, stt = CN_DEFAULT_START_THETA;
 
     /* Each individual agent */
     for(count = 0; tmpElement; tmpElement = tmpElement->NextSiblingElement(CNS_TAG_AGENT), count++)
     {
         AgentParam param = AgentParam(defaultParam);
-
+        stt = CN_DEFAULT_START_THETA;
         bool correct = true;
 
         /* Agent's ID */
         if (tmpElement->QueryIntAttribute(CNS_TAG_ATTR_ID, &id) != XMLError::XML_SUCCESS)
         {
-            std::cout <<CNS_TAG_ATTR_ID <<" element not found in XML file at agent №"<<count<<"\n";
+            std::cout <<CNS_TAG_ATTR_ID <<" element not found in XML file at agent "<<count<<"\n";
             return false;
         }
         for(auto agent : *allAgents)
@@ -733,12 +733,20 @@ bool XMLReader::ReadAgents()
         /* Agent's params */
         if (tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_STX, &stx) != XMLError::XML_SUCCESS)
         {
-            std::cout <<CNS_TAG_ATTR_STX <<" element not found in XML file at agent №"<<count<<"\n";
+            std::cout <<CNS_TAG_ATTR_STX <<" element not found in XML file at agent"<<count<<"\n";
             return false;
         }
         if (tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_STY, &sty) != XMLError::XML_SUCCESS)
         {
             std::cout <<CNS_TAG_ATTR_STY <<" element not found in XML file at agent "<<id<<"\n";
+            return false;
+        }
+        if (tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_STT, &stt) != XMLError::XML_SUCCESS)
+        {
+            #if FULL_OUTPUT
+            std::cout <<CNS_TAG_ATTR_STT << " element not found in XML file at agent " << id << " It was defined to " << CN_DEFAULT_START_THETA << "\n";
+            #endif
+
             return false;
         }
         if (tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_GX, &gx) != XMLError::XML_SUCCESS)
@@ -851,7 +859,7 @@ bool XMLReader::ReadAgents()
         }
         else if (agTypeStr == CNS_AT_ST_ORCADD)
         {
-            a = new ORCADDAgent(id, Point(stx, sty), Point(gx, gy), *map, *options, param, 2 * (param.radius + param.rEps), 2 * (param.radius));
+            a = new ORCADDAgent(id, Point(stx, sty), Point(gx, gy), *map, *options, param, 2 * (param.radius + param.rEps), 2 * (param.radius), stt);
         }
         else if (agTypeStr == CNS_AT_ST_ORCAPAR)
         {

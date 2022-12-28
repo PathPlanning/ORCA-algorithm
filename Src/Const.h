@@ -32,10 +32,13 @@
 
 #define CNS_TAG_AGENT                   "agent"
     #define CNS_TAG_ATTR_ID             "id"
-    #define CNS_TAG_ATTR_STX             "start.xr"
-    #define CNS_TAG_ATTR_STY             "start.yr"
+    #define CNS_TAG_ATTR_STX            "start.xr"
+    #define CNS_TAG_ATTR_STY            "start.yr"
+    #define CNS_TAG_ATTR_STT            "start.theta"
     #define CNS_TAG_ATTR_GX             "goal.xr"
     #define CNS_TAG_ATTR_GY             "goal.yr"
+    #define CNS_TAG_ATTR_GT             "goal.theta"
+
 
 #define CNS_TAG_ALG         "algorithm"
     #define CNS_TAG_ST              "searchtype"
@@ -154,6 +157,7 @@
 #define CN_DEFAULT_MAPFNUM 3
 #define CN_DEFAULT_MAPF_MAXTIME 1000
 #define CN_DEFAULT_MAPF_TRIGGER COMMON_POINT
+#define CN_DEFAULT_START_THETA  0.0
 
 
 

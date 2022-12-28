@@ -1,6 +1,7 @@
 #include <list>
 #include <unordered_map>
 #include <iostream>
+#include <limits>
 
 #include "PathPlanner.h"
 #include "Geom.h"

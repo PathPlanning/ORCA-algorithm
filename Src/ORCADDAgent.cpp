@@ -17,7 +17,7 @@ ORCADDAgent::ORCADDAgent() : Agent()
 
 
 ORCADDAgent::ORCADDAgent(const int &id, const Point &start, const Point &goal, const Map &map, const EnvironmentOptions &options,
-            AgentParam param, float effR, float wheelTrack) : Agent(id,start,goal,map,options, param)
+            AgentParam param, float effR, float wheelTrack, float theta) : Agent(id, start, goal, map, options, param)
 {
     this->effectiveRadius = effR;
     this->wheelTrack = wheelTrack;
@@ -26,9 +26,11 @@ ORCADDAgent::ORCADDAgent(const int &id, const Point &start, const Point &goal, c
     rightV = 0;
     effectivePosition = Point();
     effectiveVelocity = Point();
-    sin0 = 0.0f;
-    cos0 = 1.0f;
-    tet = 0.0f;
+
+    tet = theta;
+    sin0 = sin(tet);
+    cos0 = cos(tet);
+
     effectivePosition = Point(position.X() + D * cos0, position.Y() + D * sin0);
 }
 
@@ -420,17 +422,30 @@ bool ORCADDAgent::UpdatePrefVelocity()
     if (planner->GetNext(effectivePosition, next))
     {
         Vector goalVector = next - effectivePosition;
+
+
+
+
         float dist = goalVector.EuclideanNorm();
 
 
 
         if(next == goal && dist < options->delta)
-        {
-            prefV = Point();
-            return true;
+        {   
+            Vector true_goal_vector = next - position;
+            float true_dist = true_goal_vector.EuclideanNorm();
+
+            if (true_dist < options->delta)
+            {
+                prefV = Point();
+                return true;
+            }
+            else
+            {
+                goalVector = true_goal_vector;
+                dist = true_dist;
+            }
         }
-
-
 
         if(dist > CN_EPS)
         {
@@ -438,6 +453,18 @@ bool ORCADDAgent::UpdatePrefVelocity()
         }
 
         prefV = goalVector;
+
+        std::random_device rd{};
+        std::mt19937 gen{rd()};
+
+        std::normal_distribution<> d{0.0, 0.3};
+
+        float rand_x = d(gen);
+        float rand_y = d(gen);
+    
+    
+        prefV = prefV + Point(rand_x, rand_y);
+
         return true;
     }
     prefV = Point();
@@ -462,15 +489,42 @@ void ORCADDAgent::ComputeWheelsSpeed()
     float l = (newV.X() - newV.Y() * divB) * invden;
     float r = (newV.Y() - A2 * l) * (1 / B2);
 
+    if (isnan(l) or isnan(r)) // TODO refactoring
+    {
+        tet += 0.0001;
+        sin0 = sin(tet);
+        cos0 = cos(tet);
+
+
+        const float invL = 1 / wheelTrack;
+        float A1 = cos0 * 0.5f + D * sin0 * invL;
+        float A2 = sin0 * 0.5f - D * cos0 * invL;
+        float B1 = cos0 * 0.5f - D * sin0 * invL;
+        float B2 = sin0 * 0.5f + D * cos0 * invL;
+
+        float divB = B1 * (1 / B2);
+
+        float invden = 1 / (A1 - A2 * divB);
+        float l = (newV.X() - newV.Y() * divB) * invden;
+        float r = (newV.Y() - A2 * l) * (1 / B2);
+
+    }
+
     this->leftV = (abs(l) <= param.maxSpeed) ? l : copysign(param.maxSpeed, l);
     this->rightV = (abs(r) <= param.maxSpeed) ? r : copysign(param.maxSpeed, r);
 
     float avg = (leftV + rightV) * 0.5f;
+
+    currV = Point(avg * cos0, avg * sin0);
     tet = tet + ((rightV - leftV) * invL) * options->timestep;
+    
+
     sin0 = sin(tet);
     cos0 = cos(tet);
 
-    currV = Point(avg * cos0, avg * sin0);
+    
+
+    
 }
 
 
@@ -482,5 +536,5 @@ void ORCADDAgent::SetPosition(const Point &pos)
 
 bool ORCADDAgent::isFinished()
 {
-    return ((this->effectivePosition - this->goal).EuclideanNorm() < effectiveRadius);
+    return ((this->effectivePosition - this->goal).EuclideanNorm() < options->delta);
 }
