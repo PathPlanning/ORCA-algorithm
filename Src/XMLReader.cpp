@@ -741,13 +741,11 @@ bool XMLReader::ReadAgents()
             std::cout <<CNS_TAG_ATTR_STY <<" element not found in XML file at agent "<<id<<"\n";
             return false;
         }
-        if (tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_STT, &stt) != XMLError::XML_SUCCESS)
+        if (agTypeStr == CNS_AT_ST_ORCADD and tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_STT, &stt) != XMLError::XML_SUCCESS)
         {
             #if FULL_OUTPUT
             std::cout <<CNS_TAG_ATTR_STT << " element not found in XML file at agent " << id << " It was defined to " << CN_DEFAULT_START_THETA << "\n";
             #endif
-
-            return false;
         }
         if (tmpElement->QueryFloatAttribute(CNS_TAG_ATTR_GX, &gx) != XMLError::XML_SUCCESS)
         {
