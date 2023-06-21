@@ -59,7 +59,7 @@ sequence becomes the target, and the previous one is deleted. Otherwise, a
 visibility check is made between the agent’s position and the last point. If 
 visibility is confirmed, then the last becomes the target point, otherwise the path 
 from the agent's position to the last point is searched. 
-High-level  pseudocode  of  the  suggested  method  is  presented below
+High-level pseudocode of the suggested method is presented below
 
 ![orca_theta](img/orca_theta_alg.png)
 
@@ -69,7 +69,21 @@ In numerous scenarios, involving navigation through the tight passages or  confi
 ![deadlock_avoidance_example](img/deadlock_avoidance_example.png)
 
 So, it each time step, an agent gathers the information about the states of the agents that are within the 
-communication/visibility  range (neighbours). This data is used not only to choose the velocity but also to detect deadlocks. If a deadlock is detected (Picture (a) on figure above) an agent initiates switching to the MAPF mode.  As a result, certain  agents  enter  this  mode.  These  agents share  the  information  about  their  states  and  current  goals (waypoints  on  the  geometric  paths  that  they  want  to  reach) so  each  of  them  possess  the  same  local  world  model.  The latter is used to create a MAPF (Multi-Agent Pathfinding) instance and solve it (Picture (b) on figure above).  We  emphasize  that  each  agent  operates  individually in  the MAPF  mode and  no central controller  is  introduced. However  as  the  operations  in  this  mode  are deterministic and  each  agent  knows  the  states  and  goals  of  other agents, the result of forming a MAPF instance and solving it is the same  across  all  involved  agents.  In our works we suggest using Push and Rotate [[4](https://www.ifaamas.org/Proceedings/aamas2013/docs/p87.pdf)] and ECBS [[5](https://ojs.aaai.org/index.php/SOCS/article/download/18315/18106)] algorithms. Consequently,  each agent obtains  the  same  MAPF  solution  –  a  set  of  collision-free plans (Picture (c) on figure above). It then  extracts  its  individual  plan  from  this  solution and follows it to resolve the deadlock. After all agents finish execution  of  their  MAPF  plans  they  switch  back  to  normal mode, i.e.  continue  moving  to  the  next  waypoint  on  their geometric path utilizing collision avoidance (Picture (d) on figure above). High-level  pseudocode  of  the  suggested  method  is  presented below
+communication/visibility  range (neighbours). This data is used not only to choose the velocity but also to detect deadlocks. 
+If a deadlock is detected (Picture (a) on figure above) an agent initiates switching to the MAPF mode.  
+As a result, certain  agents  enter  this  mode.  These  agents share  the  information  about  their  states  and  
+current  goals (waypoints  on  the  geometric  paths  that  they  want  to  reach) so  each  of  them  possess  the 
+same  local  world  model.  The latter is used to create a MAPF (Multi-Agent Pathfinding) instance and solve it (Picture (b) on figure above).  
+We  emphasize  that  each  agent  operates  individually in  the MAPF  mode and  no central controller  is  introduced. 
+However  as  the  operations  in  this  mode  are deterministic and  each  agent  knows  the  states  and  goals  of  other agents, 
+the result of forming a MAPF instance and solving it is the same  across  all  involved  agents.  
+In our works we suggest using Push and Rotate [[4](https://www.ifaamas.org/Proceedings/aamas2013/docs/p87.pdf)] and 
+ECBS [[5](https://ojs.aaai.org/index.php/SOCS/article/download/18315/18106)] algorithms. 
+Consequently,  each agent obtains  the  same  MAPF  solution  –  a  set  of  collision-free plans (Picture (c) on figure above). 
+It then  extracts  its  individual  plan  from  this  solution and follows it to resolve the deadlock. 
+After all agents finish execution  of  their  MAPF  plans  they  switch  back  to  normal mode, i.e.  
+continue  moving  to  the  next  waypoint  on  their geometric path utilizing collision avoidance (Picture (d) on figure above).
+High-level  pseudocode  of  the  suggested  method  is  presented below
 
 ![deadlock_avoidance_alg](img/deadlock_avoidance_alg.png)
 
@@ -83,7 +97,8 @@ Open-source library to work with XML (tinyXML2) is included as git submodule
 Original implementation of MAPF algorithms you can find in GitHub repository [[6](https://github.com/PathPlanning/Push-and-Rotate--CBS--PrioritizedPlanning)]
 
 To build and run the project you can use CMake, `CMakeLists.txt` file is available in the repo. 
-Please note that the code relies on C++14 standard. Make sure that your compiler supports it. At the moment, the build and launch were tested only on Manjaro Linux using the GCC 13.1 C++ compiler.
+Please note that the code relies on C++14 standard. Make sure that your compiler supports it. 
+At the moment, the build and launch were tested only on Manjaro Linux using the GCC 13.1 C++ compiler.
 
 ### Download
 
@@ -106,7 +121,7 @@ make
 ```
 
 where optins:
-- `CMAKE_BUILD_TYPE` — Standart CMake option that specifies the build type. For more information see [[CMake Documantation](https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html)]    
+- `CMAKE_BUILD_TYPE` — Standard CMake option that specifies the build type. For more information see [[CMake Documentation](https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html)]    
 etc
   - `Release` uses to build with no debugging information. 
   - `Debug` usually uses to enable debugging information, disable optimization 
@@ -130,7 +145,8 @@ For example:
 ./single_test ../task_examples/empty_task.xml 10
 ```
   
-Summary will be displayed after execution using standard output, full log (if such option in in CMake was chosen) will be saved in same directory as task file and will be named according to the following pattern:
+Summary will be displayed after execution using standard output, full log (if such option in in CMake was chosen) 
+will be saved in same directory as task file and will be named according to the following pattern:
 ```
 *taskfilename*_*number_of_agents*_log.xml
 ```
@@ -187,7 +203,7 @@ Input file should contain:
 * Mandatory tag `<agents>`. It describes the parameters of the agents.
     * `number` — mandatory attribute that define the number of agents;
     * `type` — attribute that define the type of agents. Possible values: 
-      - `orca` — running the algorithm in standart mode without avoiding deadlocks
+      - `orca` — running the algorithm in standard mode without avoiding deadlocks
       - `orca-par` — running the algorithm with avoiding deadlocks using Push and Rotate algorithm to create common coordinated plan. For more detains see out paper "A Combination of Theta*, ORCA and Push and Rotate for Multi-agent Navigation".
       - `orca-par-ecbs` — running the algorithm with avoiding deadlocks using combination of Push and Rotate and ECBS algorithms to create common coordinated plan. For more detains see out paper "Distributed Multi-Agent Navigation Based on Reciprocal Collision Avoidance and Locally Confined Multi-Agent Path Finding".
       - `orca-return` — experimental mode in which random agents return to their previous waypoints in case of deadlocks.
@@ -227,7 +243,7 @@ Input file should contain:
   * `<timestep>` — mandatory tag that defines the time step of simulation (ORCA parameter);
   * `<searchtype>` — tag that defines the type of planning. Possible values - "thetastar" (use Theta* for planning), "direct" (turn off global planning and always use direction to global goal). Default value is "thetastar" (global planning parameter);
   * `<breakingties>` — tag that defines the priority in OPEN list for nodes with equal f-values. Possible values - "0" (break ties in favor of the node with smaller g-value), "1" (break ties in favor of the node with greater g-value). Default value is "0" (Theta* parameter);
-  * `<cutcorners>` — boolean tag that defines the possibilty to make diagonal moves when one adjacent cell is untraversable. The tag is ignored if diagonal moves are not allowed. Default value is "false" (Theta* parameter);
+  * `<cutcorners>` — boolean tag that defines the possibility to make diagonal moves when one adjacent cell is untraversable. The tag is ignored if diagonal moves are not allowed. Default value is "false" (Theta* parameter);
   * `<allowsqueeze>` — boolean tag that defines the possibility to make diagonal moves when both adjacent cells are untraversable. The tag is ignored if cutting corners is not allowed. Default value is "false" (Theta* parameter);
   * `<hweight>` — defines the weight of the heuristic function. Should be real number greater or equal 1. Default value is "1" (Theta* parameter);
   * `<trigger>` — defines the switching to the coordinated mode trigger. Possible values:
@@ -247,7 +263,7 @@ In `include/const.h` file:
 - `COMMON_SPEED_BUFF_SIZE` — the number of steps that are taken into account to calculate the average speed that is used as a criterion for stopping the execution of an instance.
 - `MISSION_SMALL_SPEED` — the value, when the average speed decreases below which the execution of the instance stops.
 - `SPEED_BUFF_SIZE` — the number of steps that are taken into account to calculate the average speed that is used as a criterion for deadlock detection (for `speed-buffer` trigger).
-- `SMALL_SPEED` — the value, when the average speed decreases below which the agent assume that deadlock is occured (for `speed-buffer` trigger).
+- `SMALL_SPEED` — the value, when the average speed decreases below which the agent assume that deadlock is occurred (for `speed-buffer` trigger).
 - `ECBS_SUBOUT_FACTOR` — Sub-optimal factor for ECBS algorithm.
 
 In `src/experiments/single_test.cpp` or `src/experiments/series_test.cpp`:
@@ -265,7 +281,7 @@ There are 6 columns:
 * `success_rate` — shows the percent of agents, which succeed their tasks; 
 * `run_time` — shows the time of running of task;
 * `flow_time` — shows the sum of steps of all agents;
-* `makespan` — shows the maximum value of steps of amoung all agents;
+* `makespan` — shows the maximum value of steps of among all agents;
 * `collisions` — shows the number of collisions between agents while execution of task;
 * `collisions_obs` — shows the number of collisions between agents and static obstacles while execution of task;
 * `init_count` — shows the number of coordinated mode launches;
