@@ -1,0 +1,677 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+    <agents number="50" type="orca-par">
+	    <default_parameters size="0.3" movespeed="1" agentsmaxnum="10" timeboundary="5.4" sightradius="3.0" timeboundaryobst="33"/>
+        <agent id="0" start.x="1" start.y="9" goal.x="3" goal.y="28" start.xr="1.5" start.yr="22.5" goal.xr="3.5" goal.yr="3.5"/>
+        <agent id="1" start.x="6" start.y="6" goal.x="2" goal.y="2" start.xr="6.5" start.yr="25.5" goal.xr="2.5" goal.yr="29.5"/>
+        <agent id="2" start.x="13" start.y="9" goal.x="19" goal.y="6" start.xr="13.5" start.yr="22.5" goal.xr="19.5" goal.yr="25.5"/>
+        <agent id="3" start.x="6" start.y="22" goal.x="9" goal.y="22" start.xr="6.5" start.yr="9.5" goal.xr="9.5" goal.yr="9.5"/>
+        <agent id="4" start.x="30" start.y="1" goal.x="26" goal.y="7" start.xr="30.5" start.yr="30.5" goal.xr="26.5" goal.yr="24.5"/>
+        <agent id="5" start.x="25" start.y="6" goal.x="18" goal.y="6" start.xr="25.5" start.yr="25.5" goal.xr="18.5" goal.yr="25.5"/>
+        <agent id="6" start.x="12" start.y="27" goal.x="9" goal.y="20" start.xr="12.5" start.yr="4.5" goal.xr="9.5" goal.yr="11.5"/>
+        <agent id="7" start.x="11" start.y="27" goal.x="22" goal.y="25" start.xr="11.5" start.yr="4.5" goal.xr="22.5" goal.yr="6.5"/>
+        <agent id="8" start.x="17" start.y="22" goal.x="6" goal.y="21" start.xr="17.5" start.yr="9.5" goal.xr="6.5" goal.yr="10.5"/>
+        <agent id="9" start.x="14" start.y="30" goal.x="14" goal.y="29" start.xr="14.5" start.yr="1.5" goal.xr="14.5" goal.yr="2.5"/>
+        <agent id="10" start.x="27" start.y="24" goal.x="23" goal.y="22" start.xr="27.5" start.yr="7.5" goal.xr="23.5" goal.yr="9.5"/>
+        <agent id="11" start.x="31" start.y="11" goal.x="23" goal.y="21" start.xr="31.5" start.yr="20.5" goal.xr="23.5" goal.yr="10.5"/>
+        <agent id="12" start.x="13" start.y="10" goal.x="26" goal.y="10" start.xr="13.5" start.yr="21.5" goal.xr="26.5" goal.yr="21.5"/>
+        <agent id="13" start.x="23" start.y="31" goal.x="29" goal.y="27" start.xr="23.5" start.yr="0.5" goal.xr="29.5" goal.yr="4.5"/>
+        <agent id="14" start.x="20" start.y="21" goal.x="0" goal.y="15" start.xr="20.5" start.yr="10.5" goal.xr="0.5" goal.yr="16.5"/>
+        <agent id="15" start.x="26" start.y="22" goal.x="14" goal.y="9" start.xr="26.5" start.yr="9.5" goal.xr="14.5" goal.yr="22.5"/>
+        <agent id="16" start.x="25" start.y="0" goal.x="9" goal.y="7" start.xr="25.5" start.yr="31.5" goal.xr="9.5" goal.yr="24.5"/>
+        <agent id="17" start.x="29" start.y="0" goal.x="21" goal.y="23" start.xr="29.5" start.yr="31.5" goal.xr="21.5" goal.yr="8.5"/>
+        <agent id="18" start.x="13" start.y="0" goal.x="21" goal.y="10" start.xr="13.5" start.yr="31.5" goal.xr="21.5" goal.yr="21.5"/>
+        <agent id="19" start.x="19" start.y="7" goal.x="14" goal.y="22" start.xr="19.5" start.yr="24.5" goal.xr="14.5" goal.yr="9.5"/>
+        <agent id="20" start.x="27" start.y="17" goal.x="29" goal.y="0" start.xr="27.5" start.yr="14.5" goal.xr="29.5" goal.yr="31.5"/>
+        <agent id="21" start.x="1" start.y="13" goal.x="16" goal.y="18" start.xr="1.5" start.yr="18.5" goal.xr="16.5" goal.yr="13.5"/>
+        <agent id="22" start.x="14" start.y="13" goal.x="6" goal.y="11" start.xr="14.5" start.yr="18.5" goal.xr="6.5" goal.yr="20.5"/>
+        <agent id="23" start.x="9" start.y="14" goal.x="31" goal.y="10" start.xr="9.5" start.yr="17.5" goal.xr="31.5" goal.yr="21.5"/>
+        <agent id="24" start.x="30" start.y="14" goal.x="10" goal.y="27" start.xr="30.5" start.yr="17.5" goal.xr="10.5" goal.yr="4.5"/>
+        <agent id="25" start.x="23" start.y="3" goal.x="7" goal.y="25" start.xr="23.5" start.yr="28.5" goal.xr="7.5" goal.yr="6.5"/>
+        <agent id="26" start.x="10" start.y="1" goal.x="10" goal.y="23" start.xr="10.5" start.yr="30.5" goal.xr="10.5" goal.yr="8.5"/>
+        <agent id="27" start.x="23" start.y="13" goal.x="13" goal.y="2" start.xr="23.5" start.yr="18.5" goal.xr="13.5" goal.yr="29.5"/>
+        <agent id="28" start.x="29" start.y="3" goal.x="25" goal.y="9" start.xr="29.5" start.yr="28.5" goal.xr="25.5" goal.yr="22.5"/>
+        <agent id="29" start.x="7" start.y="17" goal.x="18" goal.y="9" start.xr="7.5" start.yr="14.5" goal.xr="18.5" goal.yr="22.5"/>
+        <agent id="30" start.x="22" start.y="19" goal.x="5" goal.y="26" start.xr="22.5" start.yr="12.5" goal.xr="5.5" goal.yr="5.5"/>
+        <agent id="31" start.x="1" start.y="11" goal.x="25" goal.y="27" start.xr="1.5" start.yr="20.5" goal.xr="25.5" goal.yr="4.5"/>
+        <agent id="32" start.x="7" start.y="19" goal.x="17" goal.y="11" start.xr="7.5" start.yr="12.5" goal.xr="17.5" goal.yr="20.5"/>
+        <agent id="33" start.x="29" start.y="25" goal.x="6" goal.y="31" start.xr="29.5" start.yr="6.5" goal.xr="6.5" goal.yr="0.5"/>
+        <agent id="34" start.x="22" start.y="13" goal.x="17" goal.y="26" start.xr="22.5" start.yr="18.5" goal.xr="17.5" goal.yr="5.5"/>
+        <agent id="35" start.x="30" start.y="27" goal.x="11" goal.y="4" start.xr="30.5" start.yr="4.5" goal.xr="11.5" goal.yr="27.5"/>
+        <agent id="36" start.x="21" start.y="14" goal.x="6" goal.y="30" start.xr="21.5" start.yr="17.5" goal.xr="6.5" goal.yr="1.5"/>
+        <agent id="37" start.x="2" start.y="3" goal.x="15" goal.y="24" start.xr="2.5" start.yr="28.5" goal.xr="15.5" goal.yr="7.5"/>
+        <agent id="38" start.x="26" start.y="7" goal.x="1" goal.y="21" start.xr="26.5" start.yr="24.5" goal.xr="1.5" goal.yr="10.5"/>
+        <agent id="39" start.x="9" start.y="10" goal.x="2" goal.y="14" start.xr="9.5" start.yr="21.5" goal.xr="2.5" goal.yr="17.5"/>
+        <agent id="40" start.x="27" start.y="7" goal.x="2" goal.y="26" start.xr="27.5" start.yr="24.5" goal.xr="2.5" goal.yr="5.5"/>
+        <agent id="41" start.x="2" start.y="2" goal.x="19" goal.y="19" start.xr="2.5" start.yr="29.5" goal.xr="19.5" goal.yr="12.5"/>
+        <agent id="42" start.x="2" start.y="7" goal.x="27" goal.y="15" start.xr="2.5" start.yr="24.5" goal.xr="27.5" goal.yr="16.5"/>
+        <agent id="43" start.x="17" start.y="31" goal.x="1" goal.y="5" start.xr="17.5" start.yr="0.5" goal.xr="1.5" goal.yr="26.5"/>
+        <agent id="44" start.x="15" start.y="2" goal.x="7" goal.y="27" start.xr="15.5" start.yr="29.5" goal.xr="7.5" goal.yr="4.5"/>
+        <agent id="45" start.x="22" start.y="7" goal.x="23" goal.y="11" start.xr="22.5" start.yr="24.5" goal.xr="23.5" goal.yr="20.5"/>
+        <agent id="46" start.x="6" start.y="31" goal.x="1" goal.y="1" start.xr="6.5" start.yr="0.5" goal.xr="1.5" goal.yr="30.5"/>
+        <agent id="47" start.x="26" start.y="26" goal.x="30" goal.y="13" start.xr="26.5" start.yr="5.5" goal.xr="30.5" goal.yr="18.5"/>
+        <agent id="48" start.x="20" start.y="13" goal.x="1" goal.y="15" start.xr="20.5" start.yr="18.5" goal.xr="1.5" goal.yr="16.5"/>
+        <agent id="49" start.x="31" start.y="20" goal.x="31" goal.y="26" start.xr="31.5" start.yr="11.5" goal.xr="31.5" goal.yr="5.5"/>
+    </agents>
+
+    <obstacles number="50" >
+        <obstacle>
+            <vertex xr="0" yr="29"/>
+            <vertex xr="1" yr="29"/>
+            <vertex xr="1" yr="31"/>
+            <vertex xr="3" yr="31"/>
+            <vertex xr="3" yr="32"/>
+            <vertex xr="0" yr="32"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="5" yr="28"/>
+            <vertex xr="5" yr="32"/>
+            <vertex xr="4" yr="32"/>
+            <vertex xr="4" yr="27"/>
+            <vertex xr="6" yr="27"/>
+            <vertex xr="6" yr="28"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="6" yr="32"/>
+            <vertex xr="6" yr="31"/>
+            <vertex xr="9" yr="31"/>
+            <vertex xr="9" yr="32"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="12" yr="29"/>
+            <vertex xr="13" yr="29"/>
+            <vertex xr="13" yr="32"/>
+            <vertex xr="10" yr="32"/>
+            <vertex xr="10" yr="31"/>
+            <vertex xr="12" yr="31"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="16" yr="30"/>
+            <vertex xr="17" yr="30"/>
+            <vertex xr="17" yr="32"/>
+            <vertex xr="14" yr="32"/>
+            <vertex xr="14" yr="31"/>
+            <vertex xr="16" yr="31"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="18" yr="32"/>
+            <vertex xr="18" yr="31"/>
+            <vertex xr="21" yr="31"/>
+            <vertex xr="21" yr="32"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="24" yr="29"/>
+            <vertex xr="25" yr="29"/>
+            <vertex xr="25" yr="32"/>
+            <vertex xr="22" yr="32"/>
+            <vertex xr="22" yr="31"/>
+            <vertex xr="24" yr="31"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="28" yr="30"/>
+            <vertex xr="29" yr="30"/>
+            <vertex xr="29" yr="32"/>
+            <vertex xr="26" yr="32"/>
+            <vertex xr="26" yr="31"/>
+            <vertex xr="28" yr="31"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="30" yr="32"/>
+            <vertex xr="30" yr="31"/>
+            <vertex xr="32" yr="31"/>
+            <vertex xr="32" yr="32"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="8" yr="26"/>
+            <vertex xr="9" yr="26"/>
+            <vertex xr="9" yr="27"/>
+            <vertex xr="11" yr="27"/>
+            <vertex xr="11" yr="28"/>
+            <vertex xr="9" yr="28"/>
+            <vertex xr="9" yr="30"/>
+            <vertex xr="8" yr="30"/>
+            <vertex xr="8" yr="28"/>
+            <vertex xr="7" yr="28"/>
+            <vertex xr="7" yr="27"/>
+            <vertex xr="8" yr="27"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="20" yr="25"/>
+            <vertex xr="21" yr="25"/>
+            <vertex xr="21" yr="27"/>
+            <vertex xr="24" yr="27"/>
+            <vertex xr="24" yr="23"/>
+            <vertex xr="25" yr="23"/>
+            <vertex xr="25" yr="27"/>
+            <vertex xr="27" yr="27"/>
+            <vertex xr="27" yr="28"/>
+            <vertex xr="21" yr="28"/>
+            <vertex xr="21" yr="30"/>
+            <vertex xr="20" yr="30"/>
+            <vertex xr="20" yr="28"/>
+            <vertex xr="17" yr="28"/>
+            <vertex xr="17" yr="29"/>
+            <vertex xr="16" yr="29"/>
+            <vertex xr="16" yr="28"/>
+            <vertex xr="15" yr="28"/>
+            <vertex xr="15" yr="27"/>
+            <vertex xr="20" yr="27"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="28" yr="26"/>
+            <vertex xr="29" yr="26"/>
+            <vertex xr="29" yr="27"/>
+            <vertex xr="30" yr="27"/>
+            <vertex xr="30" yr="28"/>
+            <vertex xr="29" yr="28"/>
+            <vertex xr="29" yr="29"/>
+            <vertex xr="28" yr="29"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="0" yr="26"/>
+            <vertex xr="1" yr="26"/>
+            <vertex xr="1" yr="27"/>
+            <vertex xr="3" yr="27"/>
+            <vertex xr="3" yr="28"/>
+            <vertex xr="0" yr="28"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="12" yr="28"/>
+            <vertex xr="12" yr="27"/>
+            <vertex xr="14" yr="27"/>
+            <vertex xr="14" yr="28"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="31" yr="27"/>
+            <vertex xr="32" yr="27"/>
+            <vertex xr="32" yr="28"/>
+            <vertex xr="31" yr="28"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="4" yr="22"/>
+            <vertex xr="5" yr="22"/>
+            <vertex xr="5" yr="23"/>
+            <vertex xr="6" yr="23"/>
+            <vertex xr="6" yr="24"/>
+            <vertex xr="5" yr="24"/>
+            <vertex xr="5" yr="26"/>
+            <vertex xr="4" yr="26"/>
+            <vertex xr="4" yr="24"/>
+            <vertex xr="1" yr="24"/>
+            <vertex xr="1" yr="25"/>
+            <vertex xr="0" yr="25"/>
+            <vertex xr="0" yr="23"/>
+            <vertex xr="4" yr="23"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="12" yr="21"/>
+            <vertex xr="13" yr="21"/>
+            <vertex xr="13" yr="23"/>
+            <vertex xr="14" yr="23"/>
+            <vertex xr="14" yr="24"/>
+            <vertex xr="13" yr="24"/>
+            <vertex xr="13" yr="26"/>
+            <vertex xr="12" yr="26"/>
+            <vertex xr="12" yr="24"/>
+            <vertex xr="9" yr="24"/>
+            <vertex xr="9" yr="25"/>
+            <vertex xr="8" yr="25"/>
+            <vertex xr="8" yr="24"/>
+            <vertex xr="7" yr="24"/>
+            <vertex xr="7" yr="23"/>
+            <vertex xr="12" yr="23"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="17" yr="24"/>
+            <vertex xr="17" yr="26"/>
+            <vertex xr="16" yr="26"/>
+            <vertex xr="16" yr="24"/>
+            <vertex xr="15" yr="24"/>
+            <vertex xr="15" yr="23"/>
+            <vertex xr="18" yr="23"/>
+            <vertex xr="18" yr="24"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="28" yr="22"/>
+            <vertex xr="29" yr="22"/>
+            <vertex xr="29" yr="23"/>
+            <vertex xr="31" yr="23"/>
+            <vertex xr="31" yr="24"/>
+            <vertex xr="29" yr="24"/>
+            <vertex xr="29" yr="25"/>
+            <vertex xr="28" yr="25"/>
+            <vertex xr="28" yr="24"/>
+            <vertex xr="26" yr="24"/>
+            <vertex xr="26" yr="23"/>
+            <vertex xr="28" yr="23"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="20" yr="21"/>
+            <vertex xr="21" yr="21"/>
+            <vertex xr="21" yr="23"/>
+            <vertex xr="23" yr="23"/>
+            <vertex xr="23" yr="24"/>
+            <vertex xr="19" yr="24"/>
+            <vertex xr="19" yr="23"/>
+            <vertex xr="20" yr="23"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="0" yr="17"/>
+            <vertex xr="1" yr="17"/>
+            <vertex xr="1" yr="19"/>
+            <vertex xr="4" yr="19"/>
+            <vertex xr="4" yr="16"/>
+            <vertex xr="3" yr="16"/>
+            <vertex xr="3" yr="15"/>
+            <vertex xr="4" yr="15"/>
+            <vertex xr="4" yr="13"/>
+            <vertex xr="5" yr="13"/>
+            <vertex xr="5" yr="15"/>
+            <vertex xr="6" yr="15"/>
+            <vertex xr="6" yr="16"/>
+            <vertex xr="5" yr="16"/>
+            <vertex xr="5" yr="21"/>
+            <vertex xr="4" yr="21"/>
+            <vertex xr="4" yr="20"/>
+            <vertex xr="1" yr="20"/>
+            <vertex xr="1" yr="22"/>
+            <vertex xr="0" yr="22"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="6" yr="19"/>
+            <vertex xr="9" yr="19"/>
+            <vertex xr="9" yr="22"/>
+            <vertex xr="8" yr="22"/>
+            <vertex xr="8" yr="20"/>
+            <vertex xr="6" yr="20"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="16" yr="18"/>
+            <vertex xr="17" yr="18"/>
+            <vertex xr="17" yr="19"/>
+            <vertex xr="18" yr="19"/>
+            <vertex xr="18" yr="20"/>
+            <vertex xr="17" yr="20"/>
+            <vertex xr="17" yr="22"/>
+            <vertex xr="16" yr="22"/>
+            <vertex xr="16" yr="20"/>
+            <vertex xr="10" yr="20"/>
+            <vertex xr="10" yr="19"/>
+            <vertex xr="12" yr="19"/>
+            <vertex xr="12" yr="18"/>
+            <vertex xr="13" yr="18"/>
+            <vertex xr="13" yr="19"/>
+            <vertex xr="16" yr="19"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="24" yr="14"/>
+            <vertex xr="25" yr="14"/>
+            <vertex xr="25" yr="15"/>
+            <vertex xr="27" yr="15"/>
+            <vertex xr="27" yr="16"/>
+            <vertex xr="25" yr="16"/>
+            <vertex xr="25" yr="19"/>
+            <vertex xr="27" yr="19"/>
+            <vertex xr="27" yr="20"/>
+            <vertex xr="25" yr="20"/>
+            <vertex xr="25" yr="22"/>
+            <vertex xr="24" yr="22"/>
+            <vertex xr="24" yr="20"/>
+            <vertex xr="23" yr="20"/>
+            <vertex xr="23" yr="19"/>
+            <vertex xr="24" yr="19"/>
+            <vertex xr="24" yr="16"/>
+            <vertex xr="23" yr="16"/>
+            <vertex xr="23" yr="15"/>
+            <vertex xr="24" yr="15"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="28" yr="18"/>
+            <vertex xr="29" yr="18"/>
+            <vertex xr="29" yr="19"/>
+            <vertex xr="31" yr="19"/>
+            <vertex xr="31" yr="20"/>
+            <vertex xr="29" yr="20"/>
+            <vertex xr="29" yr="21"/>
+            <vertex xr="28" yr="21"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="19" yr="20"/>
+            <vertex xr="19" yr="19"/>
+            <vertex xr="22" yr="19"/>
+            <vertex xr="22" yr="20"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="8" yr="14"/>
+            <vertex xr="9" yr="14"/>
+            <vertex xr="9" yr="15"/>
+            <vertex xr="11" yr="15"/>
+            <vertex xr="11" yr="16"/>
+            <vertex xr="9" yr="16"/>
+            <vertex xr="9" yr="18"/>
+            <vertex xr="8" yr="18"/>
+            <vertex xr="8" yr="16"/>
+            <vertex xr="7" yr="16"/>
+            <vertex xr="7" yr="15"/>
+            <vertex xr="8" yr="15"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="21" yr="16"/>
+            <vertex xr="21" yr="18"/>
+            <vertex xr="20" yr="18"/>
+            <vertex xr="20" yr="16"/>
+            <vertex xr="19" yr="16"/>
+            <vertex xr="19" yr="15"/>
+            <vertex xr="22" yr="15"/>
+            <vertex xr="22" yr="16"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="12" yr="9"/>
+            <vertex xr="13" yr="9"/>
+            <vertex xr="13" yr="11"/>
+            <vertex xr="16" yr="11"/>
+            <vertex xr="16" yr="10"/>
+            <vertex xr="17" yr="10"/>
+            <vertex xr="17" yr="11"/>
+            <vertex xr="22" yr="11"/>
+            <vertex xr="22" yr="12"/>
+            <vertex xr="21" yr="12"/>
+            <vertex xr="21" yr="14"/>
+            <vertex xr="20" yr="14"/>
+            <vertex xr="20" yr="12"/>
+            <vertex xr="17" yr="12"/>
+            <vertex xr="17" yr="13"/>
+            <vertex xr="16" yr="13"/>
+            <vertex xr="16" yr="12"/>
+            <vertex xr="13" yr="12"/>
+            <vertex xr="13" yr="15"/>
+            <vertex xr="16" yr="15"/>
+            <vertex xr="16" yr="14"/>
+            <vertex xr="17" yr="14"/>
+            <vertex xr="17" yr="15"/>
+            <vertex xr="18" yr="15"/>
+            <vertex xr="18" yr="16"/>
+            <vertex xr="17" yr="16"/>
+            <vertex xr="17" yr="17"/>
+            <vertex xr="16" yr="17"/>
+            <vertex xr="16" yr="16"/>
+            <vertex xr="13" yr="16"/>
+            <vertex xr="13" yr="17"/>
+            <vertex xr="12" yr="17"/>
+            <vertex xr="12" yr="12"/>
+            <vertex xr="10" yr="12"/>
+            <vertex xr="10" yr="11"/>
+            <vertex xr="12" yr="11"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="28" yr="14"/>
+            <vertex xr="29" yr="14"/>
+            <vertex xr="29" yr="15"/>
+            <vertex xr="31" yr="15"/>
+            <vertex xr="31" yr="16"/>
+            <vertex xr="29" yr="16"/>
+            <vertex xr="29" yr="17"/>
+            <vertex xr="28" yr="17"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="0" yr="16"/>
+            <vertex xr="0" yr="15"/>
+            <vertex xr="2" yr="15"/>
+            <vertex xr="2" yr="16"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="0" yr="9"/>
+            <vertex xr="1" yr="9"/>
+            <vertex xr="1" yr="11"/>
+            <vertex xr="2" yr="11"/>
+            <vertex xr="2" yr="12"/>
+            <vertex xr="1" yr="12"/>
+            <vertex xr="1" yr="14"/>
+            <vertex xr="0" yr="14"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="4" yr="10"/>
+            <vertex xr="5" yr="10"/>
+            <vertex xr="5" yr="11"/>
+            <vertex xr="9" yr="11"/>
+            <vertex xr="9" yr="13"/>
+            <vertex xr="8" yr="13"/>
+            <vertex xr="8" yr="12"/>
+            <vertex xr="3" yr="12"/>
+            <vertex xr="3" yr="11"/>
+            <vertex xr="4" yr="11"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="25" yr="8"/>
+            <vertex xr="25" yr="11"/>
+            <vertex xr="27" yr="11"/>
+            <vertex xr="27" yr="12"/>
+            <vertex xr="25" yr="12"/>
+            <vertex xr="25" yr="13"/>
+            <vertex xr="24" yr="13"/>
+            <vertex xr="24" yr="12"/>
+            <vertex xr="23" yr="12"/>
+            <vertex xr="23" yr="11"/>
+            <vertex xr="24" yr="11"/>
+            <vertex xr="24" yr="7"/>
+            <vertex xr="27" yr="7"/>
+            <vertex xr="27" yr="8"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="28" yr="9"/>
+            <vertex xr="29" yr="9"/>
+            <vertex xr="29" yr="11"/>
+            <vertex xr="31" yr="11"/>
+            <vertex xr="31" yr="12"/>
+            <vertex xr="29" yr="12"/>
+            <vertex xr="29" yr="13"/>
+            <vertex xr="28" yr="13"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="8" yr="2"/>
+            <vertex xr="9" yr="2"/>
+            <vertex xr="9" yr="3"/>
+            <vertex xr="10" yr="3"/>
+            <vertex xr="10" yr="4"/>
+            <vertex xr="9" yr="4"/>
+            <vertex xr="9" yr="7"/>
+            <vertex xr="11" yr="7"/>
+            <vertex xr="11" yr="8"/>
+            <vertex xr="9" yr="8"/>
+            <vertex xr="9" yr="10"/>
+            <vertex xr="8" yr="10"/>
+            <vertex xr="8" yr="8"/>
+            <vertex xr="5" yr="8"/>
+            <vertex xr="5" yr="9"/>
+            <vertex xr="4" yr="9"/>
+            <vertex xr="4" yr="8"/>
+            <vertex xr="2" yr="8"/>
+            <vertex xr="2" yr="7"/>
+            <vertex xr="4" yr="7"/>
+            <vertex xr="4" yr="6"/>
+            <vertex xr="5" yr="6"/>
+            <vertex xr="5" yr="7"/>
+            <vertex xr="8" yr="7"/>
+            <vertex xr="8" yr="4"/>
+            <vertex xr="5" yr="4"/>
+            <vertex xr="5" yr="5"/>
+            <vertex xr="4" yr="5"/>
+            <vertex xr="4" yr="2"/>
+            <vertex xr="5" yr="2"/>
+            <vertex xr="5" yr="3"/>
+            <vertex xr="8" yr="3"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="20" yr="6"/>
+            <vertex xr="21" yr="6"/>
+            <vertex xr="21" yr="7"/>
+            <vertex xr="23" yr="7"/>
+            <vertex xr="23" yr="8"/>
+            <vertex xr="21" yr="8"/>
+            <vertex xr="21" yr="10"/>
+            <vertex xr="20" yr="10"/>
+            <vertex xr="20" yr="8"/>
+            <vertex xr="18" yr="8"/>
+            <vertex xr="18" yr="7"/>
+            <vertex xr="20" yr="7"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="16" yr="5"/>
+            <vertex xr="17" yr="5"/>
+            <vertex xr="17" yr="9"/>
+            <vertex xr="16" yr="9"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="0" yr="6"/>
+            <vertex xr="1" yr="6"/>
+            <vertex xr="1" yr="8"/>
+            <vertex xr="0" yr="8"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="12" yr="5"/>
+            <vertex xr="13" yr="5"/>
+            <vertex xr="13" yr="7"/>
+            <vertex xr="15" yr="7"/>
+            <vertex xr="15" yr="8"/>
+            <vertex xr="12" yr="8"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="28" yr="1"/>
+            <vertex xr="29" yr="1"/>
+            <vertex xr="29" yr="3"/>
+            <vertex xr="31" yr="3"/>
+            <vertex xr="31" yr="4"/>
+            <vertex xr="29" yr="4"/>
+            <vertex xr="29" yr="7"/>
+            <vertex xr="30" yr="7"/>
+            <vertex xr="30" yr="8"/>
+            <vertex xr="28" yr="8"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="31" yr="7"/>
+            <vertex xr="32" yr="7"/>
+            <vertex xr="32" yr="8"/>
+            <vertex xr="31" yr="8"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="24" yr="1"/>
+            <vertex xr="25" yr="1"/>
+            <vertex xr="25" yr="3"/>
+            <vertex xr="27" yr="3"/>
+            <vertex xr="27" yr="4"/>
+            <vertex xr="25" yr="4"/>
+            <vertex xr="25" yr="6"/>
+            <vertex xr="24" yr="6"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="1" yr="4"/>
+            <vertex xr="1" yr="5"/>
+            <vertex xr="0" yr="5"/>
+            <vertex xr="0" yr="3"/>
+            <vertex xr="3" yr="3"/>
+            <vertex xr="3" yr="4"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="20" yr="1"/>
+            <vertex xr="21" yr="1"/>
+            <vertex xr="21" yr="3"/>
+            <vertex xr="23" yr="3"/>
+            <vertex xr="23" yr="4"/>
+            <vertex xr="21" yr="4"/>
+            <vertex xr="21" yr="5"/>
+            <vertex xr="20" yr="5"/>
+            <vertex xr="20" yr="4"/>
+            <vertex xr="19" yr="4"/>
+            <vertex xr="19" yr="3"/>
+            <vertex xr="20" yr="3"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="12" yr="0"/>
+            <vertex xr="13" yr="0"/>
+            <vertex xr="13" yr="3"/>
+            <vertex xr="16" yr="3"/>
+            <vertex xr="16" yr="1"/>
+            <vertex xr="17" yr="1"/>
+            <vertex xr="17" yr="3"/>
+            <vertex xr="18" yr="3"/>
+            <vertex xr="18" yr="4"/>
+            <vertex xr="11" yr="4"/>
+            <vertex xr="11" yr="3"/>
+            <vertex xr="12" yr="3"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="0" yr="0"/>
+            <vertex xr="1" yr="0"/>
+            <vertex xr="1" yr="2"/>
+            <vertex xr="0" yr="2"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="4" yr="0"/>
+            <vertex xr="5" yr="0"/>
+            <vertex xr="5" yr="1"/>
+            <vertex xr="4" yr="1"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="8" yr="0"/>
+            <vertex xr="9" yr="0"/>
+            <vertex xr="9" yr="1"/>
+            <vertex xr="8" yr="1"/>
+        </obstacle>
+        <obstacle>
+            <vertex xr="0" yr="0"/>
+            <vertex xr="0" yr="32"/>
+            <vertex xr="32" yr="32"/>
+            <vertex xr="32" yr="0"/>
+        </obstacle>
+    </obstacles>
+    <map>
+        <width>32</width>
+        <height>32</height>
+        <cellsize>1</cellsize>
+        <grid>
+            <row>1 1 1 0 1 0 1 1 1 0 1 1 1 0 1 1 1 0 1 1 1 0 1 1 1 0 1 1 1 0 1 1</row>
+            <row>1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0</row>
+            <row>1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0</row>
+            <row>0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0</row>
+            <row>1 1 1 0 1 1 0 1 1 1 1 0 1 1 0 1 1 1 1 1 1 1 1 1 1 1 1 0 1 1 0 1</row>
+            <row>1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0</row>
+            <row>0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0</row>
+            <row>1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0</row>
+            <row>1 1 1 1 1 1 0 1 1 1 1 1 1 1 0 1 1 1 0 1 1 1 1 0 1 0 1 1 1 1 1 0</row>
+            <row>0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0</row>
+            <row>1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0</row>
+            <row>1 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0</row>
+            <row>1 1 1 1 1 0 1 1 1 0 1 1 1 1 1 1 1 1 0 1 1 1 0 1 1 1 1 0 1 1 1 0</row>
+            <row>1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0</row>
+            <row>1 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0</row>
+            <row>0 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0</row>
+            <row>1 1 0 1 1 1 0 1 1 1 1 0 1 1 1 1 1 1 0 1 1 1 0 1 1 1 1 0 1 1 1 0</row>
+            <row>0 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0</row>
+            <row>1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0</row>
+            <row>1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0</row>
+            <row>1 1 0 1 1 1 1 1 1 0 1 1 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 0 1 1 1 0</row>
+            <row>1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0</row>
+            <row>1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0</row>
+            <row>0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0</row>
+            <row>1 0 1 1 1 1 1 1 1 1 1 0 1 1 1 0 1 0 1 1 1 1 1 0 1 1 1 0 1 1 0 1</row>
+            <row>1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0</row>
+            <row>0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0</row>
+            <row>1 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0</row>
+            <row>1 1 1 0 1 1 1 1 1 1 0 1 1 1 1 1 1 1 0 1 1 1 1 0 1 1 1 0 1 1 1 0</row>
+            <row>0 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0</row>
+            <row>1 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0</row>
+            <row>1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</row>
+    </grid>
+    </map>
+    <algorithm>
+        <searchtype>thetastar</searchtype>
+        <breakingties>0</breakingties>
+        <allowsqueeze>false</allowsqueeze>
+        <cutcorners>false</cutcorners>
+        <hweight>1</hweight>
+        <timestep>0.1</timestep>
+        <delta>0.1</delta>
+        <trigger>speed-buffer</trigger>
+        <mapfnum>3</mapfnum>
+    </algorithm>
+</root>
