@@ -1220,10 +1220,3 @@ unordered_map<std::string, float> agent_pnr::GetMAPFStatistics() const {
 
 	return stat;
 }
-
-#if MAPF_LOG
-void ORCAAgentWithPAR::SetMAPFInstanceLoggerRef(MAPFInstancesLogger *log)
-{
-	PARLog = log;
-}
-#endif

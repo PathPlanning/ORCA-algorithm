@@ -120,9 +120,6 @@ Summary Mission::StartMission() {
 		if (dynamic_cast<ORCAAgentWithPARAndECBS*>(agent) != nullptr) {
 			dynamic_cast<ORCAAgentWithPARAndECBS *>(agent)->SetMAPFInstanceLoggerRef(&MAPFLog);
 		}
-		else if (dynamic_cast<ORCAAgentWithPAR*>(agent) != nullptr) {
-			dynamic_cast<ORCAAgentWithPAR *>(agent)->SetMAPFInstanceLoggerRef(&MAPFLog);
-		}
 #endif
 		bool found = agent->InitPath();
 #if FULL_OUTPUT
